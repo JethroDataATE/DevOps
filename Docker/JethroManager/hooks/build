@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker build -t jethrodata/jethromanager --build-arg JETHROMNG_RPM_LOACTION=$JETHROMNG_RPM .
