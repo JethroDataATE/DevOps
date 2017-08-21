@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+# Jethro Manager docker bootstarp script
+
+runBackgroudInit(){
+  sleep 5
+
+  JETHROMNG_RPM_NAME=$(basename $JETHROMNG_RPM_LOACTION)
+  echo "Lunching Jethro Manager using $JETHROMNG_RPM_NAME ..."
+  rpm -Uvh /jethro_install/$JETHROMNG_RPM_NAME
+
+  # if [ -z $DEFAULT_INSTANCE_NAME ]
+  # then
+  #   echo "Default instance name was not set."
+  # else
+  #   echo "Attaching instance: " $DEFAULT_INSTANCE_NAME
+  # fi
+
+  
+echo "Jethro Manager Docker is up! you can start browsing Jethro Manager appliction."
+echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."
+
+}
+
+if [ -z $JETHROMNG_RPM_LOACTION ]
+then
+  echo "Jethro Manager rpm was not found."
+    exit 1
+fi
+
+echo configuring jethro manager docker environment...
+
+runBackgroudInit &
+
+exec /usr/sbin/init 
