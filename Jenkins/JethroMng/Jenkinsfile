@@ -1,0 +1,30 @@
+node('GUI-Builder') {
+
+    stage('Clone sources') {
+        // git branch: '$Branch', credentialsId: '7cf4f71c-34af-4252-be92-2a445e7b0e18', url: 'https://github.com/JethroDataATE/JethroGUIBackend'
+        checkout(
+            [$class: 'GitSCM',
+            branches: [[name: '$Branch']],
+            doGenerateSubmoduleConfigurations: false,
+            extensions: [[$class: 'RelativeTargetDirectory',
+            relativeTargetDir: '$Branch/JethroGUIBackend'], [$class: 'CleanBeforeCheckout']],
+            submoduleCfg: [],
+            userRemoteConfigs: [[credentialsId: '7cf4f71c-34af-4252-be92-2a445e7b0e18',
+            url: 'https://github.com/JethroDataATE/JethroGUIBackend']]]
+        )
+    }
+
+    stage('Build') {
+        sh "sudo chown -R ec2-user \$(pwd)"
+        sh "sudo -u ec2-user chmod a+x $Branch/JethroGUIBackend/resources/scripts/build/make.sh"  
+        sh "sudo -S -u ec2-user -i \$(pwd)/$Branch/JethroGUIBackend/resources/scripts/build/make.sh $Branch \"Default\" \"Jethro_Manager_CI_Pipeline\""  
+    }
+
+    stage('Test') {
+        echo 'testing' 
+    }
+
+    stage('Deploy') {
+        echo 'deploying' 
+    }
+}
