@@ -49,13 +49,9 @@ node('GUI-Builder') {
     }
 
     stage('Build Client') {
-        step('Env Setup') {
+        steps{
             sh "export PATH=/home/ec2-user/.nvm/versions/node/v6.10.1/bin/:$PATH"
-        }
-        step('Install') {
             sh "cd  $Branch/JethroGUI && npm install" 
-        }
-        step('Build') {
             sh "cd  $Branch/JethroGUI && npm run build" 
         }
         // sh "sudo -u ec2-user chmod a+x $Branch/JethroGUIBackend/resources/scripts/build/make.sh"
