@@ -49,13 +49,13 @@ node('GUI-Builder') {
     }
 
     stage('Build Client') {
-        // stage('Env Setup') {
-        //     sh "sudo chown -R ec2-user \$(pwd)"
-        // }
-        stage('Install') {
+        step('Env Setup') {
+            sh "export PATH=/home/ec2-user/.nvm/versions/node/v6.10.1/bin/:$PATH"
+        }
+        step('Install') {
             sh "cd  $Branch/JethroGUI && npm install" 
         }
-        stage('Build') {
+        step('Build') {
             sh "cd  $Branch/JethroGUI && npm run build" 
         }
         // sh "sudo -u ec2-user chmod a+x $Branch/JethroGUIBackend/resources/scripts/build/make.sh"
