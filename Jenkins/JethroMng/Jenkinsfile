@@ -2,30 +2,87 @@ node('GUI-Builder') {
     cleanWs()
 
     stage('Clone sources') {
-        // git branch: '$Branch', credentialsId: '7cf4f71c-34af-4252-be92-2a445e7b0e18', url: 'https://github.com/JethroDataATE/JethroGUIBackend'
-        checkout(
-            [$class: 'GitSCM',
-            branches: [[name: '$Branch']],
-            doGenerateSubmoduleConfigurations: false,
-            extensions: [[$class: 'RelativeTargetDirectory',
-            relativeTargetDir: '$Branch/JethroGUIBackend'], [$class: 'CleanBeforeCheckout']],
-            submoduleCfg: [],
-            userRemoteConfigs: [[credentialsId: '7cf4f71c-34af-4252-be92-2a445e7b0e18',
-            url: 'https://github.com/JethroDataATE/JethroGUIBackend']]]
-        )
+        parallel 
+        JethroGUIBackend: {
+                checkout(
+                    [$class: 'GitSCM',
+                        branches: [
+                            [name: '$Branch']
+                        ],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [
+                            [$class: 'RelativeTargetDirectory',
+                                relativeTargetDir: '$Branch/JethroGUIBackend'
+                            ],
+                            [$class: 'CleanBeforeCheckout']
+                        ],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [
+                            [credentialsId: '7cf4f71c-34af-4252-be92-2a445e7b0e18',
+                                url: 'https://github.com/JethroDataATE/JethroGUIBackend'
+                            ]
+                        ]
+                    ]
+                )
+            }, 
+            JethroGUI: {
+                checkout(
+                    [$class: 'GitSCM',
+                        branches: [
+                            [name: '$Branch']
+                        ],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [
+                            [$class: 'RelativeTargetDirectory',
+                                relativeTargetDir: '$Branch/JethroGUI'
+                            ],
+                            [$class: 'CleanBeforeCheckout']
+                        ],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [
+                            [credentialsId: '7cf4f71c-34af-4252-be92-2a445e7b0e18',
+                                url: 'https://github.com/JethroDataATE/JethroGUI'
+                            ]
+                        ]
+                    ]
+                )
+            },
+            failFast: false
     }
 
-    stage('Build') {
-        sh "sudo chown -R ec2-user \$(pwd)"
-        sh "sudo -u ec2-user chmod a+x $Branch/JethroGUIBackend/resources/scripts/build/make.sh"  
-        sh "sudo -S -u ec2-user -i \$(pwd)/$Branch/JethroGUIBackend/resources/scripts/build/make.sh $Branch \"Default\" \"Jethro_Manager_CI_Pipeline\""  
+    stage('Build Client') {
+        // stage('Env Setup') {
+        //     sh "sudo chown -R ec2-user \$(pwd)"
+        // }
+        stage('Install') {
+            sh "cd  $Branch/JethroGUI && npm install" 
+        }
+        stage('Build') {
+            sh "cd  $Branch/JethroGUI && npm run build" 
+        }
+        // sh "sudo -u ec2-user chmod a+x $Branch/JethroGUIBackend/resources/scripts/build/make.sh"
+        // sh "sudo -S -u ec2-user -i \$(pwd)/$Branch/JethroGUIBackend/resources/scripts/build/make.sh $Branch \"Default\" \"Jethro_Manager_CI_Pipeline\""
+    }
+
+    stage('Build Server') {
+        // sh "sudo chown -R ec2-user \$(pwd)"
+        // sh "sudo -u ec2-user chmod a+x $Branch/JethroGUIBackend/resources/scripts/build/new_make.sh"
+        sh "$Branch/JethroGUIBackend/resources/scripts/build/new_make.sh $Branch $OS \"Jethro_Manager_CI_Pipeline\""
     }
 
     stage('Test') {
-        echo 'testing' 
+        echo 'testing'
     }
 
     stage('Deploy') {
-        echo 'deploying' 
+        echo 'deploying'
+    }
+
+    stage('Build Docker') {
+        echo 'deploying'
+    }
+
+    stage('Deploy Docker') {
+        echo 'deploying'
     }
 }
