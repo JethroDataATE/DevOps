@@ -49,9 +49,8 @@ node('GUI-Builder') {
     }
 
     stage('Build Client') {
-            sh "export PATH=/home/ec2-user/.nvm/versions/node/v6.10.1/bin/:$PATH"
-            sh "cd  $Branch/JethroGUI && npm install" 
-            sh "cd  $Branch/JethroGUI && npm run build" 
+            sh "export PATH=/home/ec2-user/.nvm/versions/node/v6.10.1/bin/:$PATH && cd  $Branch/JethroGUI && npm install" 
+            sh "export PATH=/home/ec2-user/.nvm/versions/node/v6.10.1/bin/:$PATH && cd  $Branch/JethroGUI && npm run build" 
         // sh "sudo -u ec2-user chmod a+x $Branch/JethroGUIBackend/resources/scripts/build/make.sh"
         // sh "sudo -S -u ec2-user -i \$(pwd)/$Branch/JethroGUIBackend/resources/scripts/build/make.sh $Branch \"Default\" \"Jethro_Manager_CI_Pipeline\""
     }
