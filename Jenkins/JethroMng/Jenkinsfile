@@ -58,7 +58,7 @@ node('GUI-Builder') {
     stage('Build Server') {
         // sh "sudo chown -R ec2-user \$(pwd)"
         // sh "sudo -u ec2-user chmod a+x $Branch/JethroGUIBackend/resources/scripts/build/new_make.sh"
-        sh "$Branch/JethroGUIBackend/resources/scripts/build/new_make.sh $Branch $OS \"Jethro_Manager_CI_Pipeline\""
+        sh "$Branch/JethroGUIBackend/resources/scripts/build/make_new.sh $Branch $OS \"Jethro_Manager_CI_Pipeline\""
     }
 
     stage('Test') {
