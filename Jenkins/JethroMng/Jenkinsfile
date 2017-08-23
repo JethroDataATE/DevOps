@@ -2,8 +2,7 @@ node('GUI-Builder') {
     cleanWs()
 
     stage('Clone sources') {
-        parallel 
-        JethroGUIBackend: {
+        parallel JethroGUIBackend: {
                 checkout(
                     [$class: 'GitSCM',
                         branches: [
@@ -24,8 +23,7 @@ node('GUI-Builder') {
                         ]
                     ]
                 )
-            }, 
-            JethroGUI: {
+            }, JethroGUI: {
                 checkout(
                     [$class: 'GitSCM',
                         branches: [
