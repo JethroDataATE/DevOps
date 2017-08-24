@@ -5,28 +5,26 @@
 runBackgroudInit(){
   sleep 5
 
-  JETHROMNG_RPM_NAME=$(basename $JETHROMNG_RPM_LOACTION)
-  echo "Lunching Jethro Manager using $JETHROMNG_RPM_NAME ..."
-  rpm -Uvh /jethro_install/$JETHROMNG_RPM_NAME
+  echo "Lunching Jethro Manager ..."
 
-  # if [ -z $DEFAULT_INSTANCE_NAME ]
-  # then
-  #   echo "Default instance name was not set."
-  # else
-  #   echo "Attaching instance: " $DEFAULT_INSTANCE_NAME
-  # fi
+  JETHROMNG_HOME=/opt/jethro/jethromng
+  NODE_PATH=$JETHROMNG_HOME/node
+  PM2=$JETHROMNG_HOME/node_modules/.bin/pm2
+  export PATH=$NODE_PATH/bin:$PATH
 
-  
-echo "Jethro Manager Docker is up! you can start browsing Jethro Manager appliction."
-echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."
+  service jethromng stop >/dev/null 2>&1
+  $PM2 kill >/dev/null 2>&1
+  pkill PM2 >/dev/null 2>&1
+  chmod -R 777 /opt/jethro/jethromng/pm2/ >/dev/null 2>&1
+  su - jethro -c "service jethromng start >/dev/null 2>&1"
+  service jethromng start
+
+  echo  
+  echo "Jethro Manager Docker is up! you can start browsing Jethro Manager appliction."
+  echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."
 
 }
 
-if [ -z $JETHROMNG_RPM_LOACTION ]
-then
-  echo "Jethro Manager rpm was not found."
-    exit 1
-fi
 
 echo configuring jethro manager docker environment...
 

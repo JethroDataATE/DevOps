@@ -5,10 +5,7 @@ FROM centos:7
 
 # Build-time parameters
 ARG JETHROMNG_RPM_LOACTION
-
-# Environment variables
-ENV DEFAULT_INSTANCE_NAME ""
-ENV JETHROMNG_RPM_LOACTION $JETHROMNG_RPM_LOACTION
+RUN echo "JETHROMNG_RPM_LOACTION is: " $JETHROMNG_RPM_LOACTION
 
 USER root
 
@@ -27,8 +24,9 @@ ENV JAVA_HOME /usr/lib/jvm/jre
 # install ssh
 RUN yum -y install openssh openssh-server openssl openssh-clients
 
-# Download Jethro Manager
+# Install Jethro Manager
 ADD $JETHROMNG_RPM_LOACTION /jethro_install
+RUN rpm -i /jethro_install/$(basename $JETHROMNG_RPM_LOACTION)
 
 # configure volumes
 RUN mkdir /jethro -m 777
