@@ -51,7 +51,7 @@ node('GUI-Builder') {
     stage('Build Client') {
             sh "export PATH=/home/ec2-user/.nvm/versions/node/v6.10.1/bin/:$PATH && cd  $Branch/JethroGUI && npm install" 
             sh "export PATH=/home/ec2-user/.nvm/versions/node/v6.10.1/bin/:$PATH && cd  $Branch/JethroGUI && npm run build" 
-            sh "export PATH=/home/ec2-user/.nvm/versions/node/v6.10.1/bin/:$PATH && cd  $Branch/JethroGUI && npm run test" 
+            // sh "export PATH=/home/ec2-user/.nvm/versions/node/v6.10.1/bin/:$PATH && cd  $Branch/JethroGUI && npm run test" 
     }
 
     stage('Build Server') {
@@ -69,7 +69,8 @@ node('GUI-Builder') {
     }
 
     stage('Build Docker') {
-        echo 'deploying'
+        echo 'Building Docker'
+        sh "deocker build "
     }
 
     stage('Deploy Docker') {
