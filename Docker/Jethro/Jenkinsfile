@@ -27,7 +27,7 @@ node() {
                 echo "RPM_NAME: $RPM_NAME"
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
                 echo "VERSION: $VERSION"
-                sh "aws s3 cp $RPM $RPM_NAME"     
+                sh "aws s3 cp $RPM ."     
                 sh "docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM_NAME Jethro/ -f $Hadoop_Distribution/Dockerfile ."   
             }
 
