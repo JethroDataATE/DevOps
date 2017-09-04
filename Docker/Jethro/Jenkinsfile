@@ -28,7 +28,7 @@ node('GUI-Builder') {
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
                 echo "VERSION: $VERSION"
                 // sh "aws s3 cp $RPM ."     
-                sh "docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM Jethro/ -f $Hadoop_Distribution/Dockerfile ."   
+                sh "docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM -f  $Hadoop_Distribution/Dockerfile ."   
             }
 
             stage('Deploy Docker') {
