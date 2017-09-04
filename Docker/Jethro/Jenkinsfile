@@ -33,7 +33,7 @@ node('GUI-Builder') {
             stage('Deploy Docker') {
                 echo 'deploying tp docker hub'
                 sh "docker login --username=iziko --password=pass@word3"
-                sh "docker tag jethrodata/jethro:latest jethrodata/jethromanager:$VERSION"
+                sh "docker tag jethrodata/jethro:latest jethrodata/jethro:$VERSION"
                 sh "docker push jethrodata/jethro:latest"
                 sh "docker push jethrodata/jethro:$VERSION"
                 echo "Uploading dopcker image to S3"
