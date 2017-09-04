@@ -5,7 +5,6 @@ FROM centos:7
 
 # Build-time parameters
 ARG JETHROMNG_RPM_LOACTION
-RUN echo "JETHROMNG_RPM_LOACTION is: " $JETHROMNG_RPM_LOACTION
 
 USER root
 

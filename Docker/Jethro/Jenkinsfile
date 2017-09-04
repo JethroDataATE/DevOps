@@ -1,0 +1,64 @@
+node() {
+
+    try {
+        
+        cleanWs()
+
+         withEnv(['VERSION='+ env.VERSION, 'RPM_NAME='+ env.RPM_NAME, 'HADDOP_DEST='+ env.HADDOP_DEST, 'HADDOP_DEST_VERSION='+ env.HADDOP_DEST_VERSION, 'JAVA_VERSION='+ env.JAVA_VERSION]) {
+
+            stage('Clone Sources') {
+
+                checkout(
+                    [$class: 'GitSCM', branches: [[name: '*/master']],
+                    browser: [$class: 'GithubWeb', repoUrl: 'https://github.com/JethroDataATE/DevOps'],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [
+                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'Docker/Jethro']]]
+                    ],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[credentialsId: '7cf4f71c-34af-4252-be92-2a445e7b0e18', url: 'https://github.com/JethroDataATE/DevOps']]]
+                )
+                    
+            }
+
+            stage('Build Docker') {
+                echo 'Building Docker' 
+                RPM_NAME = RPM.substring(RPM.lastIndexOf("/"))
+                echo "RPM_NAME: $RPM_NAME"
+                VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x85_6d.rpm"))
+                echo "VERSION: $VERSION"
+                sh "aws s3 cp $RPM $RPM_NAME"     
+                sh "docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM_NAME Jethro/ -f $Hadoop_Distribution/Dockerfile ."   
+            }
+
+            stage('Deploy Docker') {
+                echo 'deploying tp docker hub'
+                sh "docker login --username=iziko --password=pass@word3"
+                sh "docker tag jethrodata/jethro:latest jethrodata/jethromanager:$VERSION"
+                sh "docker push jethrodata/jethro:latest"
+                sh "docker push jethrodata/jethro:$VERSION"
+                echo "Uploading dopcker image to S3"
+                echo "VERSION: $VERSION"
+                def imageFileName = "dockerDeploy/jethro_docker-$VERSION" + ".tar"
+                sh "mkdir dockerDeploy && docker save --output $imageFileName jethrodata/jethro"
+                // sh "$Branch/JethroGUIBackend/resources/build/scripts/deploy_to_s3.sh $Branch/dockerDeploy/ jethro-gui/builds/$Branch/Docker/ updateLatest"
+            }
+        }
+        currentBuild.result = 'SUCCESS'
+    }
+    catch (any) {
+        currentBuild.result = 'FAILURE'
+    }
+    finally {
+            def buildres = currentBuild.result;
+            echo "build res: $buildres"
+            emailext attachLog: true, 
+            body: "See ${env.BUILD_URL}", 
+            compressLog: true,
+            mimeType: 'text/html',
+            recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+            replyTo: 'ui@jethrodata.com',
+            subject: "Jethro docker build has finished with ${currentBuild.result}",
+            to: 'ui@jethrodata.com'
+    }
+        

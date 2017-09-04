@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# jethro docker bootstarp script
+
+runBackgroudInit(){
+  sleep 5
+
+  if [ ! -z $HADDOP_NAME_NODE_ADDRESS ]
+  then
+    # altering the core-site configuration
+    echo configuring name node to: $HADDOP_NAME_NODE_ADDRESS
+    sed s/HADDOP_NAME_NODE_ADDRESS/$HADDOP_NAME_NODE_ADDRESS/ $HADOOP_CONF_DIR/core-site.xml.template > $HADOOP_CONF_DIR/core-site.xml 
+  fi
+
+  echo  
+  echo "Jethro Docker is up!"
+  echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."
+
+}
+
+echo configuring jethro docker environment...
+
+runBackgroudInit &
+
+exec /usr/sbin/init 
