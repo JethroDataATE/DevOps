@@ -26,8 +26,9 @@ node('GUI-Builder') {
                 RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
                 echo "RPM_NAME: $RPM_NAME"
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
+                VERSION = "$Hadoop_Distribution-$VERSION"
                 echo "VERSION: $VERSION" 
-                sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM -f $Hadoop_Distribution/Dockerfile ."   
+                sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
             }
 
             stage('Deploy Docker') {
@@ -48,7 +49,7 @@ node('GUI-Builder') {
                 echo "bucketPath: $bucketPath"
                 def targetPath = "s3://$bucketName$bucketPath"
                 echo "targetPath: $targetPath"
-                sh "aws s3 cp dockerDeploy/ $targetPath --recursive"
+                sh "aws s3 cp dockerDeploy/ $targetPath --recursive --acl public-read"
             }
         }
         currentBuild.result = 'SUCCESS'

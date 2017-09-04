@@ -5,7 +5,7 @@ FROM centos:7
 
 # Build-time parameters
 ARG JETHRO_RPM_LOACTION
-ARG JAVA_VERSION=java-1.8.0-openjdk-devel.x86_64
+ARG JAVA_VERSION=java-1.8.0-openjdk.x86_64
 
 USER root
 

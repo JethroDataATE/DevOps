@@ -5,8 +5,8 @@ FROM centos:7
 
 # Build-time parameters
 ARG JETHRO_RPM_LOACTION
-ARG JAVA_VERSION=java-1.8.0-openjdk-devel.x86_64
-ARG CDH_VERSION=5
+ARG JAVA_VERSION=java-1.8.0-openjdk.x86_64
+ARG HADOOP_DIST_VERSION=5
 # ENV CDH_SRC "http://archive.cloudera.com/cdh$CDH_VERSION/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera"
 # ENV CDH_RPM "http://archive.cloudera.com/cdh$CDH_VERSION/one-click-install/redhat/6/x86_64/cloudera-cdh-$CDH_VERSION-0.x86_64.rpm"
 
@@ -28,14 +28,14 @@ ENV JAVA_HOME /usr/lib/jvm/jre
 RUN yum -y install openssh openssh-server openssl openssh-clients
 
 # install hadoop:
-RUN rpm --quiet --import http://archive.cloudera.com/cdh$CDH_VERSION/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
+RUN rpm --quiet --import http://archive.cloudera.com/cdh$HADOOP_DIST_VERSION/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
 # RUN rpm --quiet --import $CDH_SRC
 # RUN rpm --quiet --import http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
-ADD http://archive.cloudera.com/cdh$CDH_VERSION/one-click-install/redhat/6/x86_64/cloudera-cdh-$CDH_VERSION-0.x86_64.rpm /jethro_install
+ADD http://archive.cloudera.com/cdh$HADOOP_DIST_VERSION/one-click-install/redhat/6/x86_64/cloudera-cdh-$HADOOP_DIST_VERSION-0.x86_64.rpm /jethro_install
 # ADD $CDH_RPM /jethro_install
 # ADD http://archive.cloudera.com/cdh5/one-click-install/redhat/6/x86_64/cloudera-cdh-5-0.x86_64.rpm /jethro_install
 # RUN yum -y localinstall cloudera-cdh-5-0.x86_64.rpm
-RUN yum -y localinstall cloudera-cdh-$CDH_VERSION-0.x86_64.rpm
+RUN yum -y localinstall cloudera-cdh-$HADOOP_DIST_VERSION-0.x86_64.rpm
 
 # hadoop distributed
 ENV HADOOP_PREFIX /etc/hadoop

@@ -5,8 +5,8 @@ FROM centos:7
 
 # Build-time parameters
 ARG JETHRO_RPM_LOACTION
-ARG JAVA_VERSION=java-1.8.0-openjdk-devel.x86_64
-ARG HDP_VERSION=2.4.2
+ARG JAVA_VERSION=java-java-1.8.0-openjdk.x86_64
+ARG HADOOP_DIST_VERSION=2.4.2
 # ARG HDP_SRC=http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.4.2.0/hdp.repo
 
 USER root
@@ -28,7 +28,7 @@ RUN yum -y install openssh openssh-server openssl openssh-clients
 
 # install hadoop (HDP)
 # ADD $HDP_SRC /jethro_install
-ADD http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/$HDP_VERSION.0/hdp.repo /jethro_install
+ADD http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/$HADOOP_DIST_VERSION.0/hdp.repo /jethro_install
 RUN cp /jethro_install/hdp.repo /etc/yum.repos.d/hdp.repo
 RUN yum -y install hadoop-client
 
