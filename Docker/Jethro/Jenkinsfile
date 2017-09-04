@@ -61,4 +61,5 @@ node() {
             subject: "Jethro docker build has finished with ${currentBuild.result}",
             to: 'ui@jethrodata.com'
     }
+}
         
