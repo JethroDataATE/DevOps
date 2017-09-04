@@ -24,11 +24,11 @@ node('GUI-Builder') {
             stage('Build Docker') {
 
                 echo 'Building Docker'
-                echo ''
-                echo 'Cleanup...'
-                sh "docker stop \$(docker ps -a -q)"
-                sh "docker rm \$(docker ps -a -q)"
-                sh "docker rmi \$(docker images -q)" 
+                // echo ''
+                // echo 'Cleanup...'
+                // sh "docker stop \$(docker ps -a -q)"
+                // sh "docker rm \$(docker ps -a -q)"
+                // sh "docker rmi \$(docker images -q) -f" 
                 RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
                 echo "RPM_NAME: $RPM_NAME"
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
@@ -53,7 +53,7 @@ node('GUI-Builder') {
                 echo "Uploading dopcker image to S3"
                 echo "VERSION: $VERSION"
                 def imageFileName = "dockerDeploy/jethro_docker-$VERSION" + ".tar"
-                sh "mkdir dockerDeploy && docker save --output $imageFileName jethrodata/jethro"
+                sh "mkdir dockerDeploy && docker save --output $imageFileName jethrodata/jethro:$VERSION"
                 def deploymentTarget = RPM.substring(8,RPM.lastIndexOf("/"))
                 // echo "deploymentTarget: $deploymentTarget"
                 def bucketName = deploymentTarget.substring(0, deploymentTarget.indexOf("."))
