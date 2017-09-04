@@ -24,11 +24,11 @@ node('GUI-Builder') {
             stage('Build Docker') {
 
                 echo 'Building Docker'
-                // echo ''
-                // echo 'Cleanup...'
-                // sh "docker stop \$(docker ps -a -q)"
-                // sh "docker rm \$(docker ps -a -q)"
-                // sh "docker rmi \$(docker images -q) -f" 
+                echo ''
+                echo 'Cleanup...'
+                sh "docker stop \$(docker ps -a -q)"
+                sh "docker rm \$(docker ps -a -q)"
+                sh "docker rmi \$(docker images -q) -f" 
                 RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
                 echo "RPM_NAME: $RPM_NAME"
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
