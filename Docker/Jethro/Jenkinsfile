@@ -41,7 +41,7 @@ node('GUI-Builder') {
                 def imageFileName = "dockerDeploy/jethro_docker-$VERSION" + ".tar"
                 sh "mkdir dockerDeploy && docker save --output $imageFileName jethrodata/jethro"
                 def deploymentTarget = RPM.substring(8,RPM.lastIndexOf("/"))
-                echo "deploymentTarget: $deploymentTargetVERSION"
+                echo "deploymentTarget: $deploymentTarget"
                 def bucketName = deploymentTarget.substring(0, deploymentTarget.firstIndexOf("."))
                 echo "bucketName: $bucketName"
                 def bucketPath = deploymentTarget.substring(deploymentTarget.firstIndexOf("/"))
