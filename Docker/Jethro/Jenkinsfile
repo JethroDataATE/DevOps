@@ -42,9 +42,9 @@ node('GUI-Builder') {
                 sh "mkdir dockerDeploy && docker save --output $imageFileName jethrodata/jethro"
                 def deploymentTarget = RPM.substring(8,RPM.lastIndexOf("/"))
                 echo "deploymentTarget: $deploymentTarget"
-                def bucketName = deploymentTarget.substring(0, deploymentTarget.firstIndexOf("."))
+                def bucketName = deploymentTarget.substring(0, deploymentTarget.indexOf("."))
                 echo "bucketName: $bucketName"
-                def bucketPath = deploymentTarget.substring(deploymentTarget.firstIndexOf("/"))
+                def bucketPath = deploymentTarget.substring(deploymentTarget.indexOf("/"))
                 echo "bucketPath: $bucketPath"
                 def targetPath = "s3://$bucketName/$bucketPath"
                 echo "targetPath: $targetPath"
