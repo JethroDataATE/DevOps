@@ -12,6 +12,20 @@ runBackgroudInit(){
     sed s/HADDOP_NAME_NODE_ADDRESS/$HADDOP_NAME_NODE_ADDRESS/ $HADOOP_CONF_DIR/core-site.xml.template > $HADOOP_CONF_DIR/core-site.xml 
   fi
 
+  if [ ! -z $AUTO_ATTACH_INSTANCE_NAME ]
+  then
+
+    if [ -z $AUTO_ATTACH_INSTANCE_PATH ]
+    then
+       echo "AUTO_ATTACH_INSTANCE_PATH cannot be empty!"
+       exit 1
+    fi
+    # Attaching to requested instance
+    echo Attaching instance: $AUTO_ATTACH_INSTANCE_NAME
+    su - jethro -c "mkdir /home/jethro/$AUTO_ATTACH_INSTANCE_NAME-cache"
+    su - jethro -c "JethroAdmin attach-instance $AUTO_ATTACH_INSTANCE_NAME -storage-path=$AUTO_ATTACH_INSTANCE_PATH -cache-path=/home/jethro/$AUTO_ATTACH_INSTANCE_NAME-cache -cache-size=10G"
+  fi
+
   echo  
   echo "Jethro Docker is up!"
   echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."

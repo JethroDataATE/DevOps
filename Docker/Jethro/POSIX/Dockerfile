@@ -1,4 +1,4 @@
-# Jethro over Docker
+# Jethro over Docker (for POSIX env)
 
 # based on centos(7):latest image
 FROM centos:7
@@ -11,7 +11,7 @@ USER root
 
 WORKDIR /jethro_install
 
-COPY dockerBootstrap /jethro_install
+COPY Common/dockerBootstrap /jethro_install
 
 # install systemd
 RUN yum -y update; yum clean all
@@ -31,10 +31,11 @@ RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
 # configure volumes
 RUN mkdir /jethro -m 777
 RUN mkdir /jethro/persist -m 777
+RUN mkdir /jethro/instance_storage -m 777
 RUN (test -d /opt/jethro/instances || mkdir /opt/jethro/instances) && (chmod 777 /opt/jethro/instances)
 RUN (test -d /opt/jethro/current/instances || mkdir /opt/jethro/current/instances) && (chmod 777 /opt/jethro/current/instances)
 RUN (test -d /var/log/jethro || mkdir /var/log/jethro) && (chmod 777 /var/log/jethro)
-VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro"]
+VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/instance_storage"]
 
 # start container
 ENTRYPOINT ["sh", "-c", "/jethro_install/dockerBootstrap"]
