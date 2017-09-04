@@ -23,7 +23,7 @@ node() {
 
             stage('Build Docker') {
                 echo 'Building Docker' 
-                RPM_NAME = RPM.substring(RPM.lastIndexOf("/"))
+                RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
                 echo "RPM_NAME: $RPM_NAME"
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x85_6d.rpm"))
                 echo "VERSION: $VERSION"
@@ -47,19 +47,20 @@ node() {
         currentBuild.result = 'SUCCESS'
     }
     catch (any) {
+        echo "Build faild: $any"
         currentBuild.result = 'FAILURE'
     }
-    finally {
-            def buildres = currentBuild.result;
-            echo "build res: $buildres"
-            emailext attachLog: true, 
-            body: "See ${env.BUILD_URL}", 
-            compressLog: true,
-            mimeType: 'text/html',
-            recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-            replyTo: 'ui@jethrodata.com',
-            subject: "Jethro docker build has finished with ${currentBuild.result}",
-            to: 'ui@jethrodata.com'
-    }
+    // finally {
+    //         def buildres = currentBuild.result;
+    //         echo "build res: $buildres"
+    //         emailext attachLog: true, 
+    //         body: "See ${env.BUILD_URL}", 
+    //         compressLog: true,
+    //         mimeType: 'text/html',
+    //         recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+    //         replyTo: 'ui@jethrodata.com',
+    //         subject: "Jethro docker build has finished with ${currentBuild.result}",
+    //         to: 'ui@jethrodata.com'
+    // }
 }
         
