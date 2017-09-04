@@ -46,9 +46,9 @@ node('GUI-Builder') {
                 echo "bucketName: $bucketName"
                 def bucketPath = deploymentTarget.substring(deploymentTarget.indexOf("/"))
                 echo "bucketPath: $bucketPath"
-                def targetPath = "s3://$bucketName/$bucketPath"
+                def targetPath = "s3://$bucketName$bucketPath"
                 echo "targetPath: $targetPath"
-                sh "aws s3 cp dockerDeploy/ $targetPath"
+                sh "aws s3 cp dockerDeploy/ $targetPath --recursive"
             }
         }
         currentBuild.result = 'SUCCESS'
