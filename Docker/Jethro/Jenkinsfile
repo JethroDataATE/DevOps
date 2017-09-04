@@ -26,9 +26,8 @@ node('GUI-Builder') {
                 RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
                 echo "RPM_NAME: $RPM_NAME"
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
-                echo "VERSION: $VERSION"
-                // sh "aws s3 cp $RPM ."     
-                sh "docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM -f Docker/Jethro/$Hadoop_Distribution/Dockerfile ."   
+                echo "VERSION: $VERSION" 
+                sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM -f $Hadoop_Distribution/Dockerfile ."   
             }
 
             stage('Deploy Docker') {
@@ -41,7 +40,15 @@ node('GUI-Builder') {
                 echo "VERSION: $VERSION"
                 def imageFileName = "dockerDeploy/jethro_docker-$VERSION" + ".tar"
                 sh "mkdir dockerDeploy && docker save --output $imageFileName jethrodata/jethro"
-                // sh "$Branch/JethroGUIBackend/resources/build/scripts/deploy_to_s3.sh $Branch/dockerDeploy/ jethro-gui/builds/$Branch/Docker/ updateLatest"
+                def deploymentTarget = RPM.substring(8,RPM.lastIndexOf("/"))
+                echo "deploymentTarget: $deploymentTargetVERSION"
+                def bucketName = deploymentTarget.substring(0, deploymentTarget.firstIndexOf("."))
+                echo "bucketName: $bucketName"
+                def bucketPath = deploymentTarget.substring(deploymentTarget.firstIndexOf("/"))
+                echo "bucketPath: $bucketPath"
+                def targetPath = "s3://$bucketName/$bucketPath"
+                echo "targetPath: $targetPath"
+                sh "aws s3 cp dockerDeploy/ $targetPath"
             }
         }
         currentBuild.result = 'SUCCESS'
