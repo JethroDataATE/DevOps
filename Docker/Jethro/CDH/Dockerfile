@@ -53,8 +53,8 @@ RUN (test -d /var/log/jethro || mkdir /var/log/jethro) && (chmod 777 /var/log/je
 VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/instance_storage"]
 
 # Auto attach instance parameters
-ENV AUTO_ATTACH_INSTANCE_NAME
-ENV AUTO_ATTACH_INSTANCE_PATH
+ENV AUTO_ATTACH_INSTANCE_NAME ""
+ENV AUTO_ATTACH_INSTANCE_PATH ""
 
 # start container
 ENTRYPOINT ["sh", "-c", "/jethro_install/dockerBootstrap"]
