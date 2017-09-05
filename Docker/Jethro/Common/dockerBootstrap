@@ -26,6 +26,10 @@ runBackgroudInit(){
     su - jethro -c "JethroAdmin attach-instance $AUTO_ATTACH_INSTANCE_NAME -storage-path=$AUTO_ATTACH_INSTANCE_PATH -cache-path=/home/jethro/$AUTO_ATTACH_INSTANCE_NAME-cache -cache-size=10G"
   fi
 
+  # Restarting all services
+  service jethro stop >/dev/null 2>&1
+  service jethro start >/dev/null 2>&1
+
   echo  
   echo "Jethro Docker is up!"
   echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."
