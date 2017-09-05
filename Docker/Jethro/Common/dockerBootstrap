@@ -32,9 +32,9 @@ generateSSHKey(){
       if [[ $GENERAT_KEY_IF_NOT_EXIST = "true" ]]
       then
        # Auto generate key on the given path
-        echo "auto regenerating default key..." 
+        echo "auto regenerating key at: $KEY_PATH" 
         cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
-        hadoop fs -copyFromLocal $SSH_KEYS_DIR/id_rsa $KEY_PATH            
+        su - $jethro_install_user_ -c "hadoop fs -copyFromLocal $SSH_KEYS_DIR/id_rsa $KEY_PATH"            
       else
         echo "GENERAT_KEY_IF_NOT_EXIST wasn't set to true - no key will be generated."
         echo "exiting..."
