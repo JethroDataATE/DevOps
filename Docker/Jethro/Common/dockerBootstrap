@@ -29,7 +29,7 @@ generateSSHKey(){
     else
       echo "$KEY_PATH not found on HDFS"
 
-      if [ $GENERAT_KEY_IF_NOT_EXIST -eq "true" ]
+      if [[ $GENERAT_KEY_IF_NOT_EXIST = "true" ]]
       then
        # Auto generate key on the given path
         echo "auto regenerating default key..." 
