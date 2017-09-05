@@ -13,23 +13,24 @@ generateSSHKey(){
   SSH_CONFIG_DIR=${jethro_user_home}/.ssh
   # mkdir -p -m 0700 $SSH_KEYS_DIR
 
-  if [ -z $KEY_PATH ] then
+  if [ -z $KEY_PATH ]
+  then
     # if no path supplied - regenerat key.  
     echo "regenerating default key locally."
     cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
-
   else 
     # if key path supplied, check if it exists
-    if hdfs dfs -test -e; then
+    if hdfs dfs -test -e;
+    then
       echo "$KEY_PATH exists on HDFS"
 
       # copy key file
       hadoop fs -copyToLocal $KEY_PATH $SSH_KEYS_DIR/id_rsa
-
     else
       echo "$KEY_PATH not found on HDFS"
 
-      if [ $GENERAT_KEY_IF_NOT_EXIST -eq "true" ] then
+      if [ $GENERAT_KEY_IF_NOT_EXIST -eq "true" ]
+      then
        # Auto generate key on the given path
         echo "auto regenerating default key..." 
         cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
@@ -39,9 +40,7 @@ generateSSHKey(){
         echo "exiting..."
         exit 1 
       fi
-
     fi
-
   fi
 
   #  Registering public key in authorized_keys* iff we successfully created it a new now
