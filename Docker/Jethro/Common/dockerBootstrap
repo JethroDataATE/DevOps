@@ -2,8 +2,61 @@
 #
 # jethro docker bootstarp script
 
+generateSSHKey(){
+
+  jethro_install_user_=${JETHRO_INSTALL_USER-"jethro"}
+  jethro_install_group_=${JETHRO_INSTALL_GROUP-"jethro"}
+
+  # Create and add security keys for $jethro_install_user
+  jethro_user_home=`eval echo ~${jethro_install_user_}`
+  SSH_KEYS_DIR=${jethro_user_home}/.JethroKeys
+  SSH_CONFIG_DIR=${jethro_user_home}/.ssh
+  # mkdir -p -m 0700 $SSH_KEYS_DIR
+
+  if [ -z $KEY_PATH ] then
+    # if no path supplied - regenerat key.  
+    echo "regenerating default key locally."
+    cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
+
+  else 
+    # if key path supplied, check if it exists
+    if hdfs dfs -test -e; then
+      echo "$KEY_PATH exists on HDFS"
+
+      # copy key file
+      hadoop fs -copyToLocal $KEY_PATH $SSH_KEYS_DIR/id_rsa
+
+    else
+      echo "$KEY_PATH not found on HDFS"
+
+      if [ $GENERAT_KEY_IF_NOT_EXIST -eq "true" ] then
+       # Auto generate key on the given path
+        echo "auto regenerating default key..." 
+        cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
+        hadoop fs -copyFromLocal $SSH_KEYS_DIR/id_rsa $KEY_PATH            
+      else
+        echo "GENERAT_KEY_IF_NOT_EXIST wasn't set to true - no key will be generated."
+        echo "exiting..."
+        exit 1 
+      fi
+
+    fi
+
+  fi
+
+  #  Registering public key in authorized_keys* iff we successfully created it a new now
+  chown ${jethro_install_user_}:${jethro_install_group_} $SSH_KEYS_DIR $SSH_KEYS_DIR/id_rsa  $SSH_KEYS_DIR/id_rsa.pub
+  mkdir -p -m 0700 $SSH_CONFIG_DIR
+  cat $SSH_KEYS_DIR/id_rsa.pub >>$SSH_CONFIG_DIR/authorized_keys
+  cat $SSH_KEYS_DIR/id_rsa.pub >>$SSH_CONFIG_DIR/authorized_keys2
+  chown ${jethro_install_user_}:${jethro_install_group_} $SSH_CONFIG_DIR $SSH_CONFIG_DIR/authorized_keys $SSH_CONFIG_DIR/authorized_keys2
+  chmod 0600 $SSH_CONFIG_DIR/authorized_keys $SSH_CONFIG_DIR/authorized_keys2
+
+  echo "Successfully created security key pair at '$SSH_KEYS_DIR'"
+}
+
+
 runBackgroudInit(){
-  sleep 5
 
   if [ ! -z $HADDOP_NAME_NODE_ADDRESS ]
   then
@@ -11,6 +64,9 @@ runBackgroudInit(){
     echo configuring name node to: $HADDOP_NAME_NODE_ADDRESS
     sed s/HADDOP_NAME_NODE_ADDRESS/$HADDOP_NAME_NODE_ADDRESS/ $HADOOP_CONF_DIR/core-site.xml.template > $HADOOP_CONF_DIR/core-site.xml 
   fi
+
+  # Generating ssh key
+  generateSSHKey
 
   if [ ! -z $AUTO_ATTACH_INSTANCE_NAME ]
   then

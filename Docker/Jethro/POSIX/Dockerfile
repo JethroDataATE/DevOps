@@ -28,6 +28,9 @@ RUN yum -y install openssh openssh-server openssl openssh-clients
 ADD $JETHRO_RPM_LOACTION /jethro_install
 RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
 
+# Clear ssh key
+RUN rm -f /home/jethro/.JethroKeys/id_rsa.pub && rm -f /home/jethro/.JethroKeys/id_rsa
+
 # configure volumes
 RUN mkdir /jethro -m 777
 RUN mkdir /jethro/persist -m 777

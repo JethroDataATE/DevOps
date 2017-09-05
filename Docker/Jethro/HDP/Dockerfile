@@ -43,6 +43,9 @@ RUN yum -y install hive
 ADD $JETHRO_RPM_LOACTION /jethro_install
 RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
 
+# Clear ssh key
+RUN rm -f /home/jethro/.JethroKeys/id_rsa.pub && rm -f /home/jethro/.JethroKeys/id_rsa
+
 # configure volumes
 RUN mkdir /jethro -m 777
 RUN mkdir /jethro/persist -m 777
@@ -55,6 +58,8 @@ VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/
 # Auto attach instance parameters
 ENV AUTO_ATTACH_INSTANCE_NAME ""
 ENV AUTO_ATTACH_INSTANCE_PATH "" 
+ENV KEY_PATH "" 
+ENV GENERAT_KEY_IF_NOT_EXIST "false"
 
 # start container
 RUN chmod a+x /jethro_install/dockerBootstrap
