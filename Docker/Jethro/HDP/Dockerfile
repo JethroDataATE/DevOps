@@ -57,6 +57,7 @@ ENV AUTO_ATTACH_INSTANCE_NAME ""
 ENV AUTO_ATTACH_INSTANCE_PATH "" 
 
 # start container
+RUN chmod a+x /jethro_install/dockerBootstrap
 ENTRYPOINT ["sh", "-c", "/jethro_install/dockerBootstrap"]
 
 # expose needed port numbers

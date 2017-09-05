@@ -34,7 +34,7 @@ RUN (test -d /var/log/jethro || mkdir /var/log/jethro) && (chmod 777 /var/log/je
 VOLUME ["/jethro/persist", "/var/log/jethro"]
 
 # start all services
-RUN chmod 777 /jethro_install/dockerBootstrap
+RUN chmod a+x /jethro_install/dockerBootstrap
 ENTRYPOINT ["sh", "-c", "/jethro_install/dockerBootstrap"]
 
 # expose needed port numbers
