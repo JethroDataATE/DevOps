@@ -27,6 +27,7 @@ generateSSHKey(){
       # copy key file
       echo "Copy key file to local fs."
       hadoop fs -copyToLocal $KEY_PATH $SSH_KEYS_DIR/id_rsa
+      chmod 400 $SSH_KEYS_DIR/id_rsa
       ssh-keygen -f $SSH_KEYS_DIR/id_rsa -y > $SSH_KEYS_DIR/id_rsa.pub
     else
       echo "$KEY_PATH not found on HDFS"
