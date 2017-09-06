@@ -24,6 +24,9 @@ ENV JAVA_HOME /usr/lib/jvm/jre
 # install ssh
 RUN yum -y install openssh openssh-server openssl openssh-clients
 
+# Install witch
+RUN yum install which
+
 # install Jethro
 ADD $JETHRO_RPM_LOACTION /jethro_install
 RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
