@@ -25,6 +25,7 @@ generateSSHKey(){
       echo "$KEY_PATH exists on HDFS"
 
       # copy key file
+      echo "Copy key file to local fs."
       hadoop fs -copyToLocal $KEY_PATH $SSH_KEYS_DIR/id_rsa
     else
       echo "$KEY_PATH not found on HDFS"
@@ -32,11 +33,12 @@ generateSSHKey(){
       if [[ $GENERAT_KEY_IF_NOT_EXIST = "true" ]]
       then
        # Auto generate key on the given path
-        echo "auto regenerating key at: $KEY_PATH" 
+        echo "auto regenerating key: $KEY_PATH" 
         cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
-        # sleep 2
-        chmod 777 $SSH_KEYS_DIR/id_rsa
-        su - $jethro_install_user_ -c "hadoop fs -put $SSH_KEYS_DIR/id_rsa $KEY_PATH"          
+        cp $SSH_KEYS_DIR/id_rsa $SSH_KEYS_DIR/id_rsa.tmp
+        chmod 777 $SSH_KEYS_DIR/id_rsa.tmp
+        su - $jethro_install_user_ -c "hadoop fs -put $SSH_KEYS_DIR/id_rsa.tmp $KEY_PATH"
+        rm -f $SSH_KEYS_DIR/id_rsa.tmp          
       else
         echo "GENERAT_KEY_IF_NOT_EXIST wasn't set to true - no key will be generated."
         echo "exiting..."
