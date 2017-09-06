@@ -35,7 +35,7 @@ generateSSHKey(){
         echo "auto regenerating key at: $KEY_PATH" 
         cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
         # sleep 2
-        # chmod 777 $SSH_KEYS_DIR/id_rsa
+        chmod 777 $SSH_KEYS_DIR/id_rsa
         su - $jethro_install_user_ -c "hadoop fs -put $SSH_KEYS_DIR/id_rsa $KEY_PATH"          
       else
         echo "GENERAT_KEY_IF_NOT_EXIST wasn't set to true - no key will be generated."
