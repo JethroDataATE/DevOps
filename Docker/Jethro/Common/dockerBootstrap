@@ -20,7 +20,7 @@ generateSSHKey(){
     cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
   else 
     # if key path supplied, check if it exists
-    if [[ $KEY_PATH = "hdfs://*" ]] ; then
+    if [[ "$KEY_PATH" == hdfs://* ]] ; then
       echo
       echo "Search for Key path on hdfs..."
 
