@@ -11,7 +11,7 @@ generateSSHKey(){
   jethro_user_home=`eval echo ~${jethro_install_user_}`
   SSH_KEYS_DIR=${jethro_user_home}/.JethroKeys
   SSH_CONFIG_DIR=${jethro_user_home}/.ssh
-  # mkdir -p -m 0700 $SSH_KEYS_DIR
+
 
   if [ -z $KEY_PATH ]
   then
@@ -20,31 +20,65 @@ generateSSHKey(){
     cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
   else 
     # if key path supplied, check if it exists
-    if hdfs dfs -test -e $KEY_PATH;
-    then
-      echo "$KEY_PATH exists on HDFS"
+    if [[ $KEY_PATH = "hdfs://*" ]] ; then
+      echo
+      echo "Search for Key path on hdfs..."
 
-      # copy key file
-      echo "Copy key file to local fs."
-      hadoop fs -copyToLocal $KEY_PATH $SSH_KEYS_DIR/id_rsa
-      chmod 400 $SSH_KEYS_DIR/id_rsa
-      ssh-keygen -f $SSH_KEYS_DIR/id_rsa -y > $SSH_KEYS_DIR/id_rsa.pub
-    else
-      echo "$KEY_PATH not found on HDFS"
-
-      if [[ $GENERAT_KEY_IF_NOT_EXIST = "true" ]]
+      if hdfs dfs -test -e $KEY_PATH;
       then
-       # Auto generate key on the given path
-        echo "auto regenerating key: $KEY_PATH" 
-        cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
-        cp $SSH_KEYS_DIR/id_rsa $SSH_KEYS_DIR/id_rsa.tmp
-        chmod 777 $SSH_KEYS_DIR/id_rsa.tmp
-        su - $jethro_install_user_ -c "hadoop fs -put $SSH_KEYS_DIR/id_rsa.tmp $KEY_PATH"
-        rm -f $SSH_KEYS_DIR/id_rsa.tmp          
+        echo "$KEY_PATH exists!"
+
+        # copy key file
+        echo "Copy key file to local fs."
+        hadoop fs -copyToLocal $KEY_PATH $SSH_KEYS_DIR/id_rsa
+        chmod 400 $SSH_KEYS_DIR/id_rsa
+        ssh-keygen -f $SSH_KEYS_DIR/id_rsa -y > $SSH_KEYS_DIR/id_rsa.pub
       else
-        echo "GENERAT_KEY_IF_NOT_EXIST wasn't set to true - no key will be generated."
-        echo "exiting..."
-        exit 1 
+        echo "$KEY_PATH not found on HDFS"
+
+        if [[ $GENERAT_KEY_IF_NOT_EXIST = "true" ]]
+        then
+          # Auto generate key on the given path
+          echo
+          echo "auto regenerating key: $KEY_PATH" 
+          cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
+          cp $SSH_KEYS_DIR/id_rsa $SSH_KEYS_DIR/id_rsa.tmp
+          chmod 777 $SSH_KEYS_DIR/id_rsa.tmp
+          su - $jethro_install_user_ -c "hadoop fs -put $SSH_KEYS_DIR/id_rsa.tmp $KEY_PATH"
+          rm -f $SSH_KEYS_DIR/id_rsa.tmp          
+        else
+          echo "GENERAT_KEY_IF_NOT_EXIST wasn't set to true - no key will be generated."
+          echo "exiting..."
+          exit 1 
+        fi
+      fi
+    else
+      echo
+      echo "Search for Key path localy..."
+      if [ -e $KEY_PATH ] 
+      then
+        echo "$KEY_PATH exists!"
+
+        # copy key file
+        echo "Copy key file..."
+        cp $KEY_PATH $SSH_KEYS_DIR/id_rsa
+        chmod 400 $SSH_KEYS_DIR/id_rsa
+        ssh-keygen -f $SSH_KEYS_DIR/id_rsa -y > $SSH_KEYS_DIR/id_rsa.pub
+      else
+        echo "$KEY_PATH not found."
+
+        if [[ $GENERAT_KEY_IF_NOT_EXIST = "true" ]]
+        then
+        # Auto generate key on the given path
+          echo
+          echo "auto regenerating key: $KEY_PATH" 
+          cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
+          cp $SSH_KEYS_DIR/id_rsa $KEY_PATH       
+        else
+          echo "GENERAT_KEY_IF_NOT_EXIST wasn't set to true - no key will be generated."
+          echo "exiting..."
+          exit 1 
+        fi
       fi
     fi
   fi
