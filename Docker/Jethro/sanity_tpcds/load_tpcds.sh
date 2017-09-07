@@ -1,11 +1,14 @@
 #!/bin/bash
 
+# exit script on first error.
+set -e
+
 # Create instance directories
 su - jethro -c "mkdir /home/jethro/instances"
 su - jethro -c "mkdir /home/jethro/cache"
 
 # Create instance
-su - jethro -c "JethroAdmin create-instance sanity_tpcds -storage-path=/home/jethro/instances -cache-path=/home/jethro/cache -cache-size=10G -Dstorage.type=POSIX"
+su - jethro -c "JethroAdmin create-instance sanity_tpcds -storage-path=/home/jethro/instances -cache-path=/home/jethro/cache -cache-size=0G -Dstorage.type=POSIX"
 
 # Create tables
 su - jethro -c "JethroClient sanity_tpcds localhost:9111 -p jethro -i /jethro_install/createTables.sql"
@@ -47,8 +50,8 @@ do
    echo "Loading into:  $i"
 
    # fetch load files
-   wget http://jethro-automation.s3.amazonaws.com/data/sanity_tpcds/$i/$i
-   wget http://jethro-automation.s3.amazonaws.com/data/sanity_tpcds/$i/$i.desc
+   wget http://jethro-automation.s3.amazonaws.com/data/sanity_tpcds/$i/$i >/dev/null 2>&1
+   wget http://jethro-automation.s3.amazonaws.com/data/sanity_tpcds/$i/$i.desc >/dev/null 2>&1
    chmod 777 $i
    chmod 777 $i.desc
 
