@@ -11,7 +11,7 @@ USER root
 
 WORKDIR /jethro_install
 
-COPY Common/dockerBootstrap /jethro_install
+COPY sanity_tpcds/dockerBootstrap /jethro_install
 
 # install systemd
 RUN yum -y update; yum clean all

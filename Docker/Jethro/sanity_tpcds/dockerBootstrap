@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# jethro docker bootstarp script
+
+generateSSHKey(){
+
+  jethro_install_user_=${JETHRO_INSTALL_USER-"jethro"}
+  jethro_install_group_=${JETHRO_INSTALL_GROUP-"jethro"}
+
+  # Create and add security keys for $jethro_install_user
+  jethro_user_home=`eval echo ~${jethro_install_user_}`
+  SSH_KEYS_DIR=${jethro_user_home}/.JethroKeys
+  SSH_CONFIG_DIR=${jethro_user_home}/.ssh
+
+
+  # if no path supplied - regenerat key.  
+  echo "regenerating default key locally."
+  cat /dev/null | ssh-keygen -q -t rsa -b 2048 -f $SSH_KEYS_DIR/id_rsa  -N ""
+
+  #  Registering public key in authorized_keys* iff we successfully created it a new now
+  chown ${jethro_install_user_}:${jethro_install_group_} $SSH_KEYS_DIR $SSH_KEYS_DIR/id_rsa  $SSH_KEYS_DIR/id_rsa.pub
+  mkdir -p -m 0700 $SSH_CONFIG_DIR
+  cat $SSH_KEYS_DIR/id_rsa.pub >>$SSH_CONFIG_DIR/authorized_keys
+  cat $SSH_KEYS_DIR/id_rsa.pub >>$SSH_CONFIG_DIR/authorized_keys2
+  chown ${jethro_install_user_}:${jethro_install_group_} $SSH_CONFIG_DIR $SSH_CONFIG_DIR/authorized_keys $SSH_CONFIG_DIR/authorized_keys2
+  chmod 0600 $SSH_CONFIG_DIR/authorized_keys $SSH_CONFIG_DIR/authorized_keys2
+
+  echo "Successfully created security key pair at '$SSH_KEYS_DIR'"
+}
+
+
+runBackgroudInit(){
+
+  # Generating ssh key
+  generateSSHKey
+
+  # Restarting all services
+  service jethro stop >/dev/null 2>&1
+  service jethro start >/dev/null 2>&1
+
+  # Attaching to requested instance
+  echo Attaching instance: sanity_tpcds
+  su - jethro -c "JethroAdmin attach-instance sanity_tpcds -storage-path=/home/jethro/instances -cache-path=/home/jethro/cache -cache-size=0G -Dstorage.type=POSIX" >/dev/null 2>&1
+  su - jethro -c "JethroAdmin attach-instance sanity_tpcds -storage-path=/home/jethro/instances -cache-path=/home/jethro/cache -cache-size=0G -Dstorage.type=POSIX" >/dev/null 2>&1
+  
+  # Restarting all services
+  service jethro stop >/dev/null 2>&1
+  service jethro start >/dev/null 2>&1
+
+  echo  
+  echo "Jethro Docker is up!"
+  echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."
+
+}
+
+echo configuring jethro docker environment...
+
+runBackgroudInit &
+
+exec /usr/sbin/init 
