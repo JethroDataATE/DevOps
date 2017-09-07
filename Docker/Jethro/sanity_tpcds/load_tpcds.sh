@@ -47,7 +47,8 @@ declare -a tables=(
 # loop through the above tables array and create new load for each of them
 for i in "${tables[@]}"
 do
-   echo "Loading into:  $i"
+   echo  
+   echo "Loading into: $i"
 
    # fetch load files
    wget http://jethro-automation.s3.amazonaws.com/data/sanity_tpcds/$i/$i >/dev/null 2>&1
