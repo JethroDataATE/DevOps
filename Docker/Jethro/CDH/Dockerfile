@@ -25,6 +25,9 @@ ENV JAVA_HOME /usr/lib/jvm/jre
 # install ssh
 RUN yum -y install openssh openssh-server openssl openssh-clients
 
+# Install utilities
+RUN yum -y install which wget
+
 # install hadoop:
 RUN rpm --quiet --import http://archive.cloudera.com/cdh$HADOOP_DIST_VERSION/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
 ADD http://archive.cloudera.com/cdh$HADOOP_DIST_VERSION/one-click-install/redhat/6/x86_64/cloudera-cdh-$HADOOP_DIST_VERSION-0.x86_64.rpm /jethro_install
