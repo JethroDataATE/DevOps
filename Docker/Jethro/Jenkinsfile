@@ -37,9 +37,11 @@ node('GUI-Builder') {
                 echo 'Started build...'
                 def isPosix = "$Hadoop_Distribution" == 'POSIX';
                 if (isPosix) {
+                    echo 'Building POSIX docker image...'
                     sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version -f $Hadoop_Distribution/Dockerfile ."   
                 }
                 else {
+                     echo 'Building HDFS docker image...'
                      sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
                 }
             }
