@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>jethromng_config_port</name>
+        <value>9100</value>
+        <description>Jethro Manager port</description>
+        <value-attributes>
+            <type>int</type>
+        </value-attributes>
+        <display-name>Jethro manager port</display-name>
+    </property>
+    <property>
+        <name>jethromng_rpm_name</name>
+        <value>jethromng-1.3.0-57p_cn6.x86_64.rpm</value>
+        <description>Jethro Manager RPM</description>
+        <value-attributes>
+            <type>string</type>
+        </value-attributes>
+        <display-name>Jethro manager RPM</display-name>
+    </property>
+    <property>
+        <name>jethro_rpm_name</name>
+        <value>jethro-3.0.5-16389.x86_64.rpm</value>
+        <description>Jethro RPM</description>
+        <value-attributes>
+            <type>string</type>
+        </value-attributes>
+        <display-name>Jethro RPM</display-name>
+    </property>
+    <property>
+        <name>jethro_user</name>
+        <value>jethro</value>
+        <description>Jethro User Name</description>
+        <value-attributes>
+            <type>string</type>
+        </value-attributes>
+        <display-name>Jethro User Name</display-name>
+    </property>
+</configuration>

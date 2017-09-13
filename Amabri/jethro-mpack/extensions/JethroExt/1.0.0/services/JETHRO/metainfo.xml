@@ -1,0 +1,63 @@
+<metainfo>
+    <schemaVersion>2.0</schemaVersion>
+    <services>
+        <service>
+            <name>JETHRO</name>
+            <displayName>Jethro</displayName>
+            <comment>Jethro - Manage Your Jethro Cluster</comment>
+            <version>3.0.5</version>
+
+            <components>
+                <component>
+                    <name>JETHRO_MNG</name>
+                    <displayName>Jethro Manager</displayName>
+                    <category>MASTER</category>
+                    <cardinality>1+</cardinality>
+                    <commandScript>
+                        <script>scripts/jethromng.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+                </component>
+
+                <component>
+                    <name>JETHRO_SERVER</name>
+                    <displayName>Jethro</displayName>
+                    <category>MASTER</category>
+                    <cardinality>1+</cardinality>
+                    <commandScript>
+                        <script>scripts/jethro.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+                </component>
+            </components>
+
+            <osSpecifics>
+                <osSpecific>
+                    <osFamily>any</osFamily>
+                </osSpecific>
+            </osSpecifics>
+
+            <commandScript>
+                <script>scripts/service_check.py</script>
+                <scriptType>PYTHON</scriptType>
+                <timeout>300</timeout>
+            </commandScript>
+            
+            <configuration-dependencies>
+                <config-type>jethro-config</config-type>
+            </configuration-dependencies>
+
+            <quickLinksConfigurations>
+                <quickLinksConfiguration>
+                    <fileName>quicklinks.json</fileName>
+                    <default>true</default>
+                </quickLinksConfiguration>
+            </quickLinksConfigurations>
+
+            <metricsFileName>metrics.json</metricsFileName>
+
+        </service>
+    </services>
+</metainfo>
