@@ -118,7 +118,7 @@ runBackgroudInit(){
     # Attaching to requested instance
     echo Attaching instance: $AUTO_ATTACH_INSTANCE_NAME
     su - jethro -c "mkdir /home/jethro/$AUTO_ATTACH_INSTANCE_NAME-cache"
-    su - jethro -c "JethroAdmin attach-instance $AUTO_ATTACH_INSTANCE_NAME -storage-path=$AUTO_ATTACH_INSTANCE_PATH -cache-path=/home/jethro/$AUTO_ATTACH_INSTANCE_NAME-cache -cache-size=10G"
+    su - jethro -c "JethroAdmin attach-instance $AUTO_ATTACH_INSTANCE_NAME -storage-path=$AUTO_ATTACH_INSTANCE_PATH -cache-path=/home/jethro/$AUTO_ATTACH_INSTANCE_NAME-cache -cache-size=0G"
   fi
 
   # Restarting all services

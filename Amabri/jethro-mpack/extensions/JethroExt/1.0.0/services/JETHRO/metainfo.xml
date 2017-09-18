@@ -18,19 +18,34 @@
                         <scriptType>PYTHON</scriptType>
                         <timeout>600</timeout>
                     </commandScript>
+                    <configFiles>
+                        <configFile>
+                            <type>xml</type>
+                            <fileName>jethro-config.xml</fileName>
+                            <dictionaryName>jethro-config</dictionaryName>
+                        </configFile>
+                    </configFiles>
                 </component>
 
                 <component>
                     <name>JETHRO_SERVER</name>
-                    <displayName>Jethro</displayName>
+                    <displayName>Jethro Server</displayName>
                     <category>MASTER</category>
                     <cardinality>1+</cardinality>
                     <commandScript>
-                        <script>scripts/jethro.py</script>
+                        <script>scripts/jethro_server.py</script>
                         <scriptType>PYTHON</scriptType>
                         <timeout>600</timeout>
                     </commandScript>
+                    <configFiles>
+                        <configFile>
+                            <type>xml</type>
+                            <fileName>jethro-config.xml</fileName>
+                            <dictionaryName>jethro-config</dictionaryName>
+                        </configFile>
+                    </configFiles>
                 </component>
+
             </components>
 
             <osSpecifics>
@@ -44,7 +59,7 @@
                 <scriptType>PYTHON</scriptType>
                 <timeout>300</timeout>
             </commandScript>
-            
+
             <configuration-dependencies>
                 <config-type>jethro-config</config-type>
             </configuration-dependencies>
@@ -57,7 +72,7 @@
             </quickLinksConfigurations>
 
             <metricsFileName>metrics.json</metricsFileName>
-
+            
         </service>
     </services>
 </metainfo>

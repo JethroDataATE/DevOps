@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
     <property>
-        <name>jethromng_config_port</name>
+        <name>jethromng_port</name>
         <value>9100</value>
         <description>Jethro Manager port</description>
         <value-attributes>
@@ -37,4 +37,45 @@
         </value-attributes>
         <display-name>Jethro User Name</display-name>
     </property>
+
+    <property>
+        <name>jethro_pid_dir</name>
+        <value>/var/run/jethro</value>
+        <description>Jethro PID directory</description>
+        <value-attributes>
+            <type>directory</type>
+        </value-attributes>
+        <display-name>Jethro Server PID directory</display-name>
+    </property>
+
+    <property>
+        <name>jethromng_pid_file</name>
+        <value>/opt/jethro/jethromng/pm2/pids/JethroManager-0.pid</value>
+        <description>Jethro PID directory</description>
+        <value-attributes>
+            <type>file</type>
+        </value-attributes>
+        <display-name>Jethro Manager PID file</display-name>
+    </property>
+
+    <property require-input="true">
+        <name>jethro_instance_name</name>
+        <value></value>
+        <description>Jethro Server instance name</description>
+        <value-attributes>
+            <type>string</type>
+        </value-attributes>
+        <display-name>Jethro Manager Instance Name</display-name>
+    </property>
+
+    <property require-input="true">
+        <name>jethro_instance_storage_path</name>
+        <value></value>
+        <description>Jethro Server instance storge path</description>
+        <value-attributes>
+            <type>string</type>
+        </value-attributes>
+        <display-name>Jethro Manager Instance Storage</display-name>
+    </property>
+
 </configuration>
