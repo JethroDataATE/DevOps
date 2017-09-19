@@ -18,13 +18,6 @@
                         <scriptType>PYTHON</scriptType>
                         <timeout>600</timeout>
                     </commandScript>
-                    <configFiles>
-                        <configFile>
-                            <type>xml</type>
-                            <fileName>jethro-config.xml</fileName>
-                            <dictionaryName>jethro-config</dictionaryName>
-                        </configFile>
-                    </configFiles>
                 </component>
 
                 <component>
@@ -37,14 +30,31 @@
                         <scriptType>PYTHON</scriptType>
                         <timeout>600</timeout>
                     </commandScript>
-                    <configFiles>
-                        <configFile>
-                            <type>xml</type>
-                            <fileName>jethro-config.xml</fileName>
-                            <dictionaryName>jethro-config</dictionaryName>
-                        </configFile>
-                    </configFiles>
                 </component>
+
+                <component>
+                    <name>JETHRO_MAINT</name>
+                    <displayName>Jethro Maint</displayName>
+                    <category>MASTER</category>
+                    <cardinality>1+</cardinality>
+                    <commandScript>
+                        <script>scripts/jethro_maint.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+                </component>
+
+                <component>
+                    <name>JETHRO_LOAD_SCHEDULER</name>
+                    <displayName>Jethro Load Scheduler</displayName>
+                    <category>MASTER</category>
+                    <cardinality>1+</cardinality>
+                    <commandScript>
+                        <script>scripts/jethro_load_scheduler.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+                </component>    
 
             </components>
 
@@ -62,6 +72,7 @@
 
             <configuration-dependencies>
                 <config-type>jethro-config</config-type>
+                <config-type>jethro-env</config-type>
             </configuration-dependencies>
 
             <quickLinksConfigurations>
@@ -72,7 +83,7 @@
             </quickLinksConfigurations>
 
             <metricsFileName>metrics.json</metricsFileName>
-            
+
         </service>
     </services>
 </metainfo>

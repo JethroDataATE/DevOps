@@ -4,51 +4,78 @@ from resource_management import *
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
-
-from service_utils import service_start, service_stop, service_status
+from resource_management.libraries.functions.check_process_status import check_process_status
 
 
 class JethroMaint(Script):
-    JETHRO_SERVICE_NAME = "JethroMaint"
+    JETHRO_SERVICE_NAME = "maint"
 
     def install(self, env):
         import params
         env.set_params(params)
+        self.install_packages(env)
+
+        print("Install Jethro Server")
+
+        # Copy jethro rpm
+        rpm_full_path = format("/tmp/{jethro_rpm_name}")
         File(
-            format("/tmp/{jethro_rpm_name}"),
+            rpm_full_path,
             content=StaticFile(params.jethro_rpm_name)
         )
-        # self.install_packages(env)
-        print(format("Install Jethro service: {self.JETHRO_SERVICE_NAME}"))
-        rpm_full_path = format("/tmp/{jethro_rpm_name}")
+
+        # Copy installation script
+        File(
+            format("/tmp/installJethroService.sh"),
+            content=StaticFile("installJethroService.sh")
+        )
+        script_path = format("/tmp/installJethroService.sh")
         Execute(
-            ("rpm", "-Uvh", rpm_full_path),
+            ("sh",
+             script_path,
+             params.jethro_rpm_name,
+             self.JETHRO_SERVICE_NAME,
+             params.jethro_instance_name,
+             params.jethro_instance_storage_path),
+            tries=3,
+            try_sleep=3,
             sudo=True
         )
-
-    def stop(self, env):
-        import params
-        env.set_params(params)
-        print(format("Stop Jethro service: {self.JETHRO_SERVICE_NAME}"))
-        service_stop(self.JETHRO_SERVICE_NAME)
 
     def start(self, env):
         import params
         env.set_params(params)
-        print(format("Start Jethro service: {self.JETHRO_SERVICE_NAME}"))
-        service_stop(self.JETHRO_SERVICE_NAME)
+        Execute(
+            ("service", "jethro", "start",
+             params.jethro_instance_name, self.JETHRO_SERVICE_NAME),
+            user=params.jethro_user
+        )
+
+        # Set current instance
+        File(
+            "/opt/jethro/cur_inst",
+            content=params.jethro_instance_name
+        )
+
+        self.configure(env)
+
+    def stop(self, env):
+        import params
+        env.set_params(params)
+        Execute(
+            ("service", "jethro", "stop",
+             params.jethro_instance_name,  self.JETHRO_SERVICE_NAME),
+            user=params.jethro_user
+        )
 
     def status(self, env):
-        import params
-        env.set_params(params)
-        print(format("Status of Jethro service: {self.JETHRO_SERVICE_NAME}"))
-        return service_status(params.jethromaint_pid_file)
+        import status_params
+        env.set_params(status_params)
+        return check_process_status(status_params.jethromaint_pid_file)
 
     def configure(self, env):
-        print(format("Configure Jethro service: {self.JETHRO_SERVICE_NAME}"))
         import params
         env.set_params(params)
-        self.configure(env)
 
 
 if __name__ == "__main__":

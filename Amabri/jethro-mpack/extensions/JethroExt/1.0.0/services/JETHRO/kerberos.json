@@ -1,0 +1,56 @@
+{
+    "services": [{
+        "name": "JETHRO",
+        "identities": [{
+            "name": "jethro_identity",
+            "principal": {
+                "configuration": "solr-config-env/solr_spnego_principal_name"
+            }
+        }],
+        "components": [{
+                "name": "JETHRO_SERVER",
+                "identities": [{
+                    "name": "jethro_server_identity",
+                    "principal": {
+                        "value": "jethro/_HOST@${realm}",
+                        "type": "service",
+                        "local_username": "jethro"
+                    }
+                }]
+            },
+            {
+                "name": "JETHRO_MAINT",
+                "identities": [{
+                    "name": "jethro_maint_identity",
+                    "principal": {
+                        "value": "jethro/_HOST@${realm}",
+                        "type": "service",
+                        "local_username": "jethro"
+                    }
+                }]
+            },
+            {
+                "name": "JETHRO_LOAD_SCHEDULER",
+                "identities": [{
+                    "name": "jethro_loadscheduler_identity",
+                    "principal": {
+                        "value": "jethro/_HOST@${realm}",
+                        "type": "service",
+                        "local_username": "jethro"
+                    }
+                }]
+            },
+            {
+                "name": "JETHRO_MNG",
+                "identities": [{
+                    "name": "jethro_manager_identity",
+                    "principal": {
+                        "value": "jethro/_HOST@${realm}",
+                        "type": "service",
+                        "local_username": "jethro"
+                    }
+                }]
+            }
+        ]
+    }]
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>jethro_pid_dir</name>
+        <value>/var/run/jethro</value>
+        <description>Jethro PID directory</description>
+        <value-attributes>
+            <type>directory</type>
+        </value-attributes>
+        <display-name>Jethro Server PID directory</display-name>
+    </property>
+    <property>
+        <name>jethromng_pid_file</name>
+        <value>/opt/jethro/jethromng/pm2/pids/JethroManager-0.pid</value>
+        <description>Jethro PID directory</description>
+        <value-attributes>
+            <type>file</type>
+        </value-attributes>
+        <display-name>Jethro Manager PID file</display-name>
+    </property>
+</configuration>

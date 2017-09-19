@@ -4,64 +4,74 @@ from resource_management import *
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
-
-from service_utils import service_start, service_stop, service_status
+from resource_management.libraries.functions.check_process_status import check_process_status
 
 
 class JethroServer(Script):
-    JETHRO_SERVICE_NAME = "jethro"
+    JETHRO_SERVICE_NAME = "server"
 
     def install(self, env):
         import params
         env.set_params(params)
+        self.install_packages(env)
 
-        # Installing jethro rpm
+        print("Install Jethro Server")
+
+        # Copy jethro rpm
+        rpm_full_path = format("/tmp/{jethro_rpm_name}")
         File(
-            format("/tmp/{jethro_rpm_name}"),
+            rpm_full_path,
             content=StaticFile(params.jethro_rpm_name)
         )
-        self.install_packages(env)
-        print("Install Jethro Server")
-        rpm_full_path = format("/tmp/{jethro_rpm_name}")
-        Execute(
-            ("rpm", "-Uvh", rpm_full_path),
-            sudo=True
-        )
 
-        # Create/Attach instance
+        # Copy installation script
         File(
-            format("/tmp/createAttachInstance.sh"),
-            content=StaticFile("createAttachInstance.sh")
+            format("/tmp/installJethroService.sh"),
+            content=StaticFile("installJethroService.sh")
         )
-        print("Create/Attach Jethro Instance...")
-        script_path = format("/tmp/createAttachInstance.sh")
+        script_path = format("/tmp/installJethroService.sh")
         Execute(
-            ("sh", script_path, params.jethro_instance_name,
+            ("sh",
+             script_path,
+             params.jethro_rpm_name,
+             self.JETHRO_SERVICE_NAME,
+             params.jethro_instance_name,
              params.jethro_instance_storage_path),
+            tries=3,
+            try_sleep=3,
             sudo=True
         )
 
     def start(self, env):
         import params
         env.set_params(params)
-        # print(format("Start Jethro service: {JETHRO_SERVICE_NAME}"))
-        service_start(self.JETHRO_SERVICE_NAME)
+        Execute(
+            ("service", "jethro", "start", params.jethro_instance_name),
+            user=params.jethro_user
+        )
+
+        # Set current instance
+        File(
+            "/opt/jethro/cur_inst",
+            content=params.jethro_instance_name
+        )
+
         self.configure(env)
 
     def stop(self, env):
         import params
         env.set_params(params)
-        # print(format("Stop Jethro service: {JETHRO_SERVICE_NAME}"))
-        service_stop(self.JETHRO_SERVICE_NAME)
+        Execute(
+            ("service", "jethro", "stop", params.jethro_instance_name),
+            user=params.jethro_user
+        )
 
     def status(self, env):
         import status_params
         env.set_params(status_params)
-        # print(format("Status of Jethro service: {JETHRO_SERVICE_NAME}"))
-        return service_status(status_params.jethroserver_pid_file)
+        return check_process_status(status_params.jethroserver_pid_file)
 
     def configure(self, env):
-        # print(format("Configure Jethro service: {JETHRO_SERVICE_NAME}"))
         import params
         env.set_params(params)
 
