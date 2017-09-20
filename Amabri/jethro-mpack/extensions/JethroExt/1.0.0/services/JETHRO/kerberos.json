@@ -5,6 +5,14 @@
             "name": "jethro_identity",
             "principal": {
                 "configuration": "solr-config-env/solr_spnego_principal_name"
+            },
+            "keytab": {
+                "file": "${keytab_dir}/jethro.service.keytab",
+                "owner": {
+                    "name": "jethro/service_user}",
+                    "access": "r"
+                },
+                "configuration": "jethro-site/jethro.keytab.file"
             }
         }],
         "components": [{
@@ -15,6 +23,14 @@
                         "value": "jethro/_HOST@${realm}",
                         "type": "service",
                         "local_username": "jethro"
+                    },
+                    "keytab": {
+                        "file": "${keytab_dir}/jethro_server.service.keytab",
+                        "owner": {
+                            "name": "jethro",
+                            "access": "r"
+                        },
+                        "configuration": "jethro-site/jethro_server.keytab.file"
                     }
                 }]
             },
@@ -26,6 +42,14 @@
                         "value": "jethro/_HOST@${realm}",
                         "type": "service",
                         "local_username": "jethro"
+                    },
+                    "keytab": {
+                        "file": "${keytab_dir}/jethro_maint.service.keytab",
+                        "owner": {
+                            "name": "jethro",
+                            "access": "r"
+                        },
+                        "configuration": "jethro-site/jethro_maint.keytab.file"
                     }
                 }]
             },
@@ -37,6 +61,14 @@
                         "value": "jethro/_HOST@${realm}",
                         "type": "service",
                         "local_username": "jethro"
+                    },
+                    "keytab": {
+                        "file": "${keytab_dir}/jethro_loadscheduler.service.keytab",
+                        "owner": {
+                            "name": "jethro",
+                            "access": "r"
+                        },
+                        "configuration": "jethro-site/jethro_loadscheduler.keytab.file"
                     }
                 }]
             },
@@ -48,6 +80,14 @@
                         "value": "jethro/_HOST@${realm}",
                         "type": "service",
                         "local_username": "jethro"
+                    },
+                    "keytab": {
+                        "file": "${keytab_dir}/jethro_jethromng.service.keytab",
+                        "owner": {
+                            "name": "jethro",
+                            "access": "r"
+                        },
+                        "configuration": "jethro-site/jethro_jethromng.keytab.file"
                     }
                 }]
             }

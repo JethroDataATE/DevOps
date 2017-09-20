@@ -49,7 +49,7 @@
     <property require-input="true">
         <name>jethro_instance_storage_path</name>
         <value></value>
-        <description>Jethro instance storge path</description>
+        <description>Jethro instance storge path on HDFS. The recomended path is: /user/jethro/instances (Note: the path should already be defined).</description>
         <value-attributes>
             <type>string</type>
         </value-attributes>

@@ -4,7 +4,7 @@
         <service>
             <name>JETHRO</name>
             <displayName>Jethro</displayName>
-            <comment>Jethro - Manage Your Jethro Cluster</comment>
+            <comment>Jethro - Business Intelligence on Big Data</comment>
             <version>3.0.5</version>
 
             <components>
