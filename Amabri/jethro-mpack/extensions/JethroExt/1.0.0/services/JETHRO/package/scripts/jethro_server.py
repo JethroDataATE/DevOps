@@ -5,6 +5,7 @@ from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from resource_management.libraries.functions.check_process_status import check_process_status
+from jethro_metrics import JethroMetrics
 
 
 class JethroServer(Script):
@@ -58,9 +59,16 @@ class JethroServer(Script):
 
         self.configure(env)
 
+        # start metrics
+        self.startMetrics()
+
     def stop(self, env):
         import params
         env.set_params(params)
+
+        # stop metrics
+        self.stopMetrics()
+
         Execute(
             ("service", "jethro", "stop", params.jethro_instance_name),
             user=params.jethro_user
@@ -74,6 +82,14 @@ class JethroServer(Script):
     def configure(self, env):
         import params
         env.set_params(params)
+
+    def startMetrics(self):
+        jethro_metrice_collector = JethroMetrics()
+        jethro_metrice_collector.submit_metrics()
+
+        
+    def stopMetrics(self):
+        print("stopping jethro")
 
 
 if __name__ == "__main__":

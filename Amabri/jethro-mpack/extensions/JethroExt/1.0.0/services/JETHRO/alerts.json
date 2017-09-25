@@ -15,36 +15,6 @@
             "type": "NUMERIC",
             "units": "seconds",
             "visibility": "HIDDEN"
-          },
-          {
-            "name": "app.id",
-            "value": "solr-host-app",
-            "type": "STRING",
-            "visibility": "HIDDEN"
-          },
-          {
-            "name": "metric.names",
-            "value": "solr.admin.info.jvm.memory.used,solr.admin.info.jvm.memory.max",
-            "type": "STRING",
-            "visibility": "HIDDEN"
-          },
-          {
-            "name": "metric.solr.memory.warning.threshold",
-            "display_name": "Warning threshold",
-            "type": "PERCENT",
-            "units": "%",
-            "value": 75,
-            "description": "Memory usage is greater than 50%",
-            "threshold": "WARNING"
-          },
-          {
-            "name": "metric.solr.memory.critical.threshold",
-            "display_name": "Critical threshold",
-            "type": "PERCENT",
-            "units": "%",
-            "value": 90,
-            "description": "Memory usage is greater than 75%",
-            "threshold": "CRITICAL"
           }
         ]
       }

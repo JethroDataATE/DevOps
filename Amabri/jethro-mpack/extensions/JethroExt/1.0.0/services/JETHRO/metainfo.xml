@@ -83,6 +83,7 @@
             </quickLinksConfigurations>
 
             <metricsFileName>metrics.json</metricsFileName>
+            <widgetsFileName>widgets.json</widgetsFileName>
 
         </service>
     </services>

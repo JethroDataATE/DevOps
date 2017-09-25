@@ -23,7 +23,7 @@ resetInstanceServicesConfig() {
 }
 
 # Install jethro if not installed (or if the current installed version is different)
-if [ -z $currentJethro ] || [ "$currentJethro*" = $rpmName ]
+if [ -z $currentJethro ] || [ "$currentJethro*" != $rpmName ]
 then
     echo "Installing jethro"
     rpm -Uvh --force "/tmp/$rpmName"

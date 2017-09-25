@@ -4,7 +4,10 @@
         "identities": [{
             "name": "jethro_identity",
             "principal": {
-                "configuration": "solr-config-env/solr_spnego_principal_name"
+                "value": "jethro${principal_suffix}@${realm}",
+                "type": "user",
+                "local_username": "jethro",
+                "configuration": "jethro-env/jethro"
             },
             "keytab": {
                 "file": "${keytab_dir}/jethro.service.keytab",
@@ -12,7 +15,11 @@
                     "name": "jethro/service_user}",
                     "access": "r"
                 },
-                "configuration": "jethro-site/jethro.keytab.file"
+                "group": {
+                    "name": "${cluster-env/user_group}",
+                    "access": ""
+                },
+                "configuration": "jethro-env/jethro.keytab.file"
             }
         }],
         "components": [{
@@ -21,7 +28,7 @@
                     "name": "jethro_server_identity",
                     "principal": {
                         "value": "jethro/_HOST@${realm}",
-                        "type": "service",
+                        "type": "user",
                         "local_username": "jethro"
                     },
                     "keytab": {
@@ -40,7 +47,7 @@
                     "name": "jethro_maint_identity",
                     "principal": {
                         "value": "jethro/_HOST@${realm}",
-                        "type": "service",
+                        "type": "user",
                         "local_username": "jethro"
                     },
                     "keytab": {
@@ -59,7 +66,7 @@
                     "name": "jethro_loadscheduler_identity",
                     "principal": {
                         "value": "jethro/_HOST@${realm}",
-                        "type": "service",
+                        "type": "user",
                         "local_username": "jethro"
                     },
                     "keytab": {
@@ -78,7 +85,7 @@
                     "name": "jethro_manager_identity",
                     "principal": {
                         "value": "jethro/_HOST@${realm}",
-                        "type": "service",
+                        "type": "user",
                         "local_username": "jethro"
                     },
                     "keytab": {

@@ -1,0 +1,35 @@
+{
+    "layouts": [
+        {
+            "layout_name": "default_jethro_dashboard",
+            "display_name": "Jethro Dashboard",
+            "section_name": "JETHRO_SUMMARY",
+            "widgetLayoutInfo": [
+                {
+                    "widget_name": "Instances Utilization",
+                    "description": "Number of running in the cluster.",
+                    "widget_type": "NUMBER",
+                    "is_visible": true,
+                    "metrics": [
+                      {
+                        "name": "num_of_instances",
+                        "metric_path": "metrics/jethro/num_of_instances",
+                        "service_name": "JETHRO",
+                        "component_name": "JETHRO_SERVER"
+                      }
+                    ],
+                    "values": [
+                      {
+                        "name": "Running Instances",
+                        "value": "${num_of_instances}"
+                      }
+                    ],
+                    "properties": {
+                        "warning_threshold": "0",
+                        "error_threshold": "50"
+                    }
+                }
+            ]
+        }
+    ]
+}
