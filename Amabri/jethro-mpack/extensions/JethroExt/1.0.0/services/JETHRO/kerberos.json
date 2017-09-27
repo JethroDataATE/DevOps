@@ -2,102 +2,35 @@
     "services": [{
         "name": "JETHRO",
         "identities": [{
-            "name": "jethro_identity",
-            "principal": {
-                "value": "jethro${principal_suffix}@${realm}",
-                "type": "user",
-                "local_username": "jethro",
-                "configuration": "jethro-env/jethro"
+                "name": "/smokeuser"
             },
-            "keytab": {
-                "file": "${keytab_dir}/jethro.service.keytab",
-                "owner": {
-                    "name": "jethro/service_user}",
-                    "access": "r"
+            {
+                "name": "jethrouser",
+                "principal": {
+                    "value": "jethro@${realm}",
+                    "type": "user",
+                    "local_username": "jethro",
+                    "configuration": "jethro-env/jethro.kerberos.principal"
                 },
-                "group": {
-                    "name": "${cluster-env/user_group}",
-                    "access": ""
-                },
-                "configuration": "jethro-env/jethro.keytab.file"
+                "keytab": {
+                    "file": "${keytab_dir}/jethro.headless.keytab",
+                    "owner": {
+                        "name": "jethro",
+                        "access": "rw"
+                    },
+                    "group": {
+                        "name": "${cluster-env/user_group}",
+                        "access": ""
+                    },
+                    "configuration": "jethro-env/jethro.kerberos.keytab"
+                }
             }
-        }],
-        "components": [{
-                "name": "JETHRO_SERVER",
-                "identities": [{
-                    "name": "jethro_server_identity",
-                    "principal": {
-                        "value": "jethro/_HOST@${realm}",
-                        "type": "user",
-                        "local_username": "jethro"
-                    },
-                    "keytab": {
-                        "file": "${keytab_dir}/jethro_server.service.keytab",
-                        "owner": {
-                            "name": "jethro",
-                            "access": "r"
-                        },
-                        "configuration": "jethro-site/jethro_server.keytab.file"
-                    }
-                }]
-            },
-            {
-                "name": "JETHRO_MAINT",
-                "identities": [{
-                    "name": "jethro_maint_identity",
-                    "principal": {
-                        "value": "jethro/_HOST@${realm}",
-                        "type": "user",
-                        "local_username": "jethro"
-                    },
-                    "keytab": {
-                        "file": "${keytab_dir}/jethro_maint.service.keytab",
-                        "owner": {
-                            "name": "jethro",
-                            "access": "r"
-                        },
-                        "configuration": "jethro-site/jethro_maint.keytab.file"
-                    }
-                }]
-            },
-            {
-                "name": "JETHRO_LOAD_SCHEDULER",
-                "identities": [{
-                    "name": "jethro_loadscheduler_identity",
-                    "principal": {
-                        "value": "jethro/_HOST@${realm}",
-                        "type": "user",
-                        "local_username": "jethro"
-                    },
-                    "keytab": {
-                        "file": "${keytab_dir}/jethro_loadscheduler.service.keytab",
-                        "owner": {
-                            "name": "jethro",
-                            "access": "r"
-                        },
-                        "configuration": "jethro-site/jethro_loadscheduler.keytab.file"
-                    }
-                }]
-            },
-            {
-                "name": "JETHRO_MNG",
-                "identities": [{
-                    "name": "jethro_manager_identity",
-                    "principal": {
-                        "value": "jethro/_HOST@${realm}",
-                        "type": "user",
-                        "local_username": "jethro"
-                    },
-                    "keytab": {
-                        "file": "${keytab_dir}/jethro_jethromng.service.keytab",
-                        "owner": {
-                            "name": "jethro",
-                            "access": "r"
-                        },
-                        "configuration": "jethro-site/jethro_jethromng.keytab.file"
-                    }
-                }]
+        ],
+        "configurations": {
+            "core-site": {
+                "hadoop.proxyuser.jethro.groups": "*",
+                "hadoop.proxyuser.jethro.hosts": "*"
             }
-        ]
+        }
     }]
 }

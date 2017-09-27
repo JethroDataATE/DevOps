@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from resource_management import *
+from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format

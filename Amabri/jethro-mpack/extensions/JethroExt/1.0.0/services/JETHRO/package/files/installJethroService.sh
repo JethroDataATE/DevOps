@@ -5,16 +5,16 @@
 set -e
 
 # Input paramaters
-rpmName=$1
-service=$2
-instanceName=$3
-storagePath=$4
+# rpmName=$1
+service=$1
+instanceName=$2
+storagePath=$3
 
 # local params
 services_ini_path=/opt/jethro/instances/services.ini
 cachePath=/home/jethro/inst_cache
-currentJethro=$(rpm -qa jethro)
 port=""
+# currentJethro=$(rpm -qa jethro)
 
 
 resetInstanceServicesConfig() {
@@ -22,15 +22,15 @@ resetInstanceServicesConfig() {
     sed -i "/$instanceName/c $instanceName:$port:no:no:no" /opt/jethro/instances/services.ini
 }
 
-# Install jethro if not installed (or if the current installed version is different)
-if [ -z $currentJethro ] || [ "$currentJethro*" != $rpmName ]
-then
-    echo "Installing jethro"
-    rpm -Uvh --force "/tmp/$rpmName"
-fi
+# # Install jethro if not installed (or if the current installed version is different)
+# if [ -z $currentJethro ] || [ "$currentJethro*" != $rpmName ]
+# then
+#     echo "Installing jethro"
+#     rpm -Uvh --force "/tmp/$rpmName"
+# fi
 
-# Clean temp file
-rm -f "/tmp/$rpmName"
+# # Clean temp file
+# rm -f "/tmp/$rpmName"
 
 # Create/attach instance
 instances=( $(su - jethro -c "JethroAdmin list-storage-instances -storage-path=$storagePath -Dstorage.type=HDFS" | awk -v instance="$instanceName" '{if ($1==instance) {print $1, $3}}') )
@@ -72,17 +72,17 @@ loadscheduler=$(awk -F  ":" -v instance="$instanceName" '{if ($1==instance) {pri
 
 
 echo "Replacing services.ini content..."
-if [ $service = "server"]
+if [ $service == "server" ]
 then
     sed -i "/$instanceName/c $instanceName:$port:yes:$maint:$loadscheduler" /opt/jethro/instances/services.ini
 fi
 
-if [ $service = "maint"]
+if [ $service == "maint" ]
 then
     sed -i "/$instanceName/c $instanceName:$port:$server:yes:$loadscheduler" /opt/jethro/instances/services.ini
 fi
 
-if [ $service = "loadscheduler"]
+if [ $service == "loadscheduler" ]
 then
     sed -i "/$instanceName/c $instanceName:$port:$server:$maint:yes" /opt/jethro/instances/services.ini
 fi

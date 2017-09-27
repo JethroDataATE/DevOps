@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-from resource_management import *
+from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
+from jethro_service_utils import create_attach_instance
 from resource_management.libraries.functions.check_process_status import check_process_status
 
 
@@ -17,34 +18,35 @@ class JethroLoadScheduler(Script):
 
         print("Install Jethro Load Scheduler")
 
-        # Copy jethro rpm
+        # Install jethro rpm
         rpm_full_path = format("/tmp/{jethro_rpm_name}")
         File(
             rpm_full_path,
             content=StaticFile(params.jethro_rpm_name)
         )
-
-        # Copy installation script
-        File(
-            format("/tmp/installJethroService.sh"),
-            content=StaticFile("installJethroService.sh")
-        )
-        script_path = format("/tmp/installJethroService.sh")
         Execute(
-            ("sh",
-             script_path,
-             params.jethro_rpm_name,
-             self.JETHRO_SERVICE_NAME,
-             params.jethro_instance_name,
-             params.jethro_instance_storage_path),
-            tries=3,
-            try_sleep=3,
+            ("rpm", "-Uvh", "--force", rpm_full_path),
             sudo=True
         )
+
+        if not params.security_enabled:
+            create_attach_instance(
+                self.JETHRO_SERVICE_NAME, params.jethro_instance_name, params.jethro_instance_storage_path)
 
     def start(self, env):
         import params
         env.set_params(params)
+
+        if params.security_enabled:
+            Execute(
+                ("kinit", "-k", "-t",
+                 "/etc/security/keytabs/jethro.headless.keytab", params.jethro_user),
+                user=params.jethro_user
+            )
+
+            create_attach_instance(
+                self.JETHRO_SERVICE_NAME, params.jethro_instance_name, params.jethro_instance_storage_path)
+
         Execute(
             ("service", "jethro", "start",
              params.jethro_instance_name, self.JETHRO_SERVICE_NAME),
@@ -64,7 +66,7 @@ class JethroLoadScheduler(Script):
         env.set_params(params)
         Execute(
             ("service", "jethro", "stop",
-             params.jethro_instance_name,  self.JETHRO_SERVICE_NAME),
+             params.jethro_instance_name, self.JETHRO_SERVICE_NAME),
             user=params.jethro_user
         )
 
