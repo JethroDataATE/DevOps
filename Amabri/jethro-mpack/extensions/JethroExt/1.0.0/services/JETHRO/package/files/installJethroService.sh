@@ -9,6 +9,7 @@ set -e
 service=$1
 instanceName=$2
 storagePath=$3
+jethroUser=$4
 
 # local params
 services_ini_path=/opt/jethro/instances/services.ini
@@ -44,8 +45,8 @@ then
       echo "instance not attached"
       echo "Attaching instance..."
       test -d $cachePath && rm -rf $cachePath
-      su - jethro -c "mkdir -p $cachePath"
-      su - jethro -c "JethroAdmin attach-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=0G"
+      su - $jethroUser -c "mkdir -p $cachePath"
+      su - $jethroUser -c "JethroAdmin attach-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=0G"
       resetInstanceServicesConfig
    else
       echo "instance already attached"
@@ -55,13 +56,10 @@ else
    echo "Instance $instanceName not found."
    echo "Creating instanse..."
    test -d $cachePath && rm -rf $cachePath
-   su - jethro -c "mkdir -p $cachePath"
-   su - jethro -c "JethroAdmin create-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=0G"
+   su - $jethroUser -c "mkdir -p $cachePath"
+   su - $jethroUser -c "JethroAdmin create-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=0G"
    resetInstanceServicesConfig
 fi
-
-# Stopping all running jethro services
-service jethro stop
 
 # Update ini path
 port=$(awk -F  ":" -v instance="$instanceName" '{if ($1==instance) {print $2}}'  /opt/jethro/instances/services.ini)

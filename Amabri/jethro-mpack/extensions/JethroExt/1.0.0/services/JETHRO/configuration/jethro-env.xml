@@ -19,4 +19,21 @@
         </value-attributes>
         <display-name>Jethro Manager PID file</display-name>
     </property>
+    <property>
+        <name>jethro.kerberos.principal</name>
+        <value>none</value>
+        <description>
+            Kerberos principal name for Jethro.
+        </description>
+        <property-type>KERBEROS_PRINCIPAL</property-type>
+        <on-ambari-upgrade add="false"/>
+    </property>
+    <property>
+        <name>jethro.kerberos.keytab</name>
+        <value>none</value>
+        <description>
+            Location of the kerberos keytab file for Jethro.
+        </description>
+        <on-ambari-upgrade add="false"/>
+    </property>
 </configuration>

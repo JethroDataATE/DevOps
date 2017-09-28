@@ -12,7 +12,7 @@ class JethroMetrics():
     ams_collector_port = 6188
     headers = {"Content-type": "application/json"}
     my_hostname = "localhost"
-    time_now =  0
+    time_now = 0
 
     def __init__(self):
         self.time_now = int(time.time() * 1000.0)
@@ -21,12 +21,24 @@ class JethroMetrics():
         self.time_now = int(time.time() * 1000.0)
         self.my_hostname = socket.getfqdn()
 
-        self.metrics.append(self.get_metrics("num_of_instances", self.get_num_of_instances()))
+        self.metrics.append(self.get_metrics("num_of_instances", 2))
         self.metrics_dict["metrics"] = self.metrics
         json_string = json.JSONEncoder().encode(self.metrics_dict)
 
         connection = httplib.HTTPConnection(self.ams_collector_host, self.ams_collector_port, timeout=30)
-        connection.request("POST", "ws/v1/timeline/metrics",json_string, self.headers)
+        connection.request("POST", "ws/v1/timeline/metrics", json_string, self.headers)
+
+        try:
+            response = connection.getresponse()
+            print (response.status, response.reason)
+            print (response.read())
+            if response.status == 200:
+                print ("Successful sending Jethro metric to Ambari Metric Collector.")
+            else:
+                print ("Error sending Jethro metric to Ambari Metric Collector.")
+        except:
+            print ("Unable to get a response from Ambari Metric Collector.")
+        connection.close()
 
     def get_num_of_instances(self):
         return 2

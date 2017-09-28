@@ -4,12 +4,15 @@ from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
-from jethro_service_utils import create_attach_instance
+from jethro_service_utils import create_attach_instance, setup_kerberos
 from resource_management.libraries.functions.check_process_status import check_process_status
 
 
 class JethroLoadScheduler(Script):
+
     JETHRO_SERVICE_NAME = "loadscheduler"
+
+    # ************************ Script Interface methrods ***************************
 
     def install(self, env):
         import params
@@ -30,22 +33,17 @@ class JethroLoadScheduler(Script):
         )
 
         if not params.security_enabled:
-            create_attach_instance(
-                self.JETHRO_SERVICE_NAME, params.jethro_instance_name, params.jethro_instance_storage_path)
+            self.ensure_instance_attached()
 
     def start(self, env):
         import params
         env.set_params(params)
 
         if params.security_enabled:
-            Execute(
-                ("kinit", "-k", "-t",
-                 "/etc/security/keytabs/jethro.headless.keytab", params.jethro_user),
-                user=params.jethro_user
-            )
+            setup_kerberos(params.kinit_path, params.jethro_kerberos_prinicipal,
+                           params.jethro_kerberos_keytab, params.jethro_user)
 
-            create_attach_instance(
-                self.JETHRO_SERVICE_NAME, params.jethro_instance_name, params.jethro_instance_storage_path)
+            self.ensure_instance_attached()
 
         Execute(
             ("service", "jethro", "start",
@@ -78,6 +76,17 @@ class JethroLoadScheduler(Script):
     def configure(self, env):
         import params
         env.set_params(params)
+
+    # ************************ Private methrods ***************************
+
+    def ensure_instance_attached(self):
+        import params
+        create_attach_instance(
+            self.JETHRO_SERVICE_NAME,
+            params.jethro_instance_name,
+            params.jethro_instance_storage_path,
+            params.jethro_user
+        )
 
 
 if __name__ == "__main__":

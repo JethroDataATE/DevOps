@@ -7,16 +7,16 @@
             {
                 "name": "jethrouser",
                 "principal": {
-                    "value": "jethro@${realm}",
+                    "value": "${jethro-config/jethro_user}${principal_suffix}@${realm}",
                     "type": "user",
-                    "local_username": "jethro",
-                    "configuration": "jethro-env/jethro.kerberos.principal"
+                    "configuration": "jethro-env/jethro.kerberos.principal",
+                    "local_username": "${jethro-config/jethro_user}"
                 },
                 "keytab": {
                     "file": "${keytab_dir}/jethro.headless.keytab",
                     "owner": {
-                        "name": "jethro",
-                        "access": "rw"
+                        "name": "${jethro-config/jethro_user}",
+                        "access": "r"
                     },
                     "group": {
                         "name": "${cluster-env/user_group}",
@@ -26,11 +26,17 @@
                 }
             }
         ],
-        "configurations": {
-            "core-site": {
-                "hadoop.proxyuser.jethro.groups": "*",
-                "hadoop.proxyuser.jethro.hosts": "*"
+        "configurations": [{
+                "jethro-env": {
+                    "jethro.kerberos.enabled": "true"
+                }
+            },
+            {
+                "core-site": {
+                    "hadoop.proxyuser.jethro.groups": "*",
+                    "hadoop.proxyuser.jethro.hosts": "*"
+                }
             }
-        }
+        ]
     }]
 }

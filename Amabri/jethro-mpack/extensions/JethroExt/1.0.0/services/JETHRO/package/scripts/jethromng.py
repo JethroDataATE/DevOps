@@ -6,7 +6,10 @@ from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from resource_management.libraries.functions.check_process_status import check_process_status
 
+
 class JethroMng(Script):
+
+    # ************************ Script Interface methrods ***************************
 
     def install(self, env):
         import params
