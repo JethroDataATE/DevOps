@@ -2,22 +2,39 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
     <property>
+        <name>jethro_user</name>
+        <value>jethro</value>
+        <description>Jethro User Name</description>
+        <value-attributes>
+            <type>string</type>
+            <overridable>false</overridable>
+            <editable-only-at-install>true</editable-only-at-install>
+        </value-attributes>
+        <display-name>Jethro User Name</display-name>
+    </property>
+    <property>
         <name>jethro_pid_dir</name>
         <value>/var/run/jethro</value>
         <description>Jethro PID directory</description>
         <value-attributes>
             <type>directory</type>
+             <overridable>false</overridable>
+             <editable-only-at-install>true</editable-only-at-install>
         </value-attributes>
         <display-name>Jethro Server PID directory</display-name>
+        <on-ambari-upgrade add="true"/>
     </property>
     <property>
         <name>jethromng_pid_file</name>
         <value>/opt/jethro/jethromng/pm2/pids/JethroManager-0.pid</value>
-        <description>Jethro PID directory</description>
+        <description>Jethro Manager PID file</description>
         <value-attributes>
             <type>file</type>
+             <overridable>false</overridable>
+             <editable-only-at-install>true</editable-only-at-install>
         </value-attributes>
         <display-name>Jethro Manager PID file</display-name>
+        <on-ambari-upgrade add="true"/>
     </property>
     <property>
         <name>jethro.kerberos.principal</name>

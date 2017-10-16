@@ -14,8 +14,9 @@
         ]
     },
     "artifacts": [{
-        "name": "jethro-stack-definitions",
+        "name": "jethro-extension-definitions",
 		"type": "extension-definitions",
 		"source_dir": "extensions"
-    }]
+    }
+]
 }

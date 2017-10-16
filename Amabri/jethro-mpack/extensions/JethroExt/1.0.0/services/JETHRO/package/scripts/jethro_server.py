@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
+import imp
 from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from resource_management.libraries.functions.check_process_status import check_process_status
-from jethro_service_utils import create_attach_instance, setup_kerberos
-from jethro_metrics import JethroMetrics
+from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets
 
 
 class JethroServer(Script):
@@ -22,16 +22,7 @@ class JethroServer(Script):
 
         print("Install Jethro Server")
 
-        # Install jethro rpm
-        rpm_full_path = format("/tmp/{jethro_rpm_name}")
-        File(
-            rpm_full_path,
-            content=StaticFile(params.jethro_rpm_name)
-        )
-        Execute(
-            ("rpm", "-Uvh", "--force", rpm_full_path),
-            sudo=True
-        )
+        installJethroComponent(params.jethro_rpm_path)
 
         if not params.security_enabled:
             self.ensure_instance_attached()
@@ -40,44 +31,39 @@ class JethroServer(Script):
         import params
         env.set_params(params)
 
-        if params.security_enabled:
+        if params.security_enabled and params.jethro_current_instance_name is None:
             setup_kerberos(params.kinit_path, params.jethro_kerberos_prinicipal,
                            params.jethro_kerberos_keytab, params.jethro_user)
 
             self.ensure_instance_attached()
+            imp.reload(params)
 
         Execute(
-            ("service", "jethro", "start", params.jethro_instance_name),
+            ("service", "jethro", "start", params.jethro_current_instance_name),
             user=params.jethro_user
-        )
-
-        # Set current instance
-        File(
-            "/opt/jethro/cur_inst",
-            content=params.jethro_instance_name
         )
 
         self.configure(env)
 
-        # start metrics
-        self.startMetrics()
 
     def stop(self, env):
         import params
         env.set_params(params)
 
-        # stop metrics
-        self.stopMetrics()
-
         Execute(
-            ("service", "jethro", "stop", params.jethro_instance_name),
+            ("service", "jethro", "stop", params.jethro_current_instance_name),
             user=params.jethro_user
         )
 
     def status(self, env):
         import status_params
         env.set_params(status_params)
-        self.startMetrics()
+
+        import params
+        if params.security_enabled:
+            ensure_kerberos_tickets(params.klist_path, params.kinit_path, params.jethro_kerberos_prinicipal,
+                            params.jethro_kerberos_keytab, params.jethro_user)
+
         return check_process_status(status_params.jethroserver_pid_file)
 
     def configure(self, env):
@@ -90,17 +76,10 @@ class JethroServer(Script):
         import params
         create_attach_instance(
             self.JETHRO_SERVICE_NAME,
-            params.jethro_instance_name,
-            params.jethro_instance_storage_path,
+            params.jethro_default_instance_name,
+            params.jethro_default_instance_storage_path,
             params.jethro_user
         )
-
-    def startMetrics(self):
-        jethro_metrice_collector = JethroMetrics()
-        jethro_metrice_collector.submit_metrics()
-
-    def stopMetrics(self):
-        print("stopping jethro")
 
 
 if __name__ == "__main__":

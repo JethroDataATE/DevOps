@@ -9,50 +9,47 @@
             <type>int</type>
         </value-attributes>
         <display-name>Jethro manager port</display-name>
+        <on-ambari-upgrade add="true"/>
     </property>
     <property>
-        <name>jethromng_rpm_name</name>
-        <value>jethromng-1.3.0-57p_cn6.x86_64.rpm</value>
-        <description>Jethro Manager RPM</description>
+        <name>jethromng_rpm_path</name>
+        <value>http://jethro-gui.s3.amazonaws.com/builds/master/jethromng-1.3.0-57p_cn6.x86_64.rpm</value>
+        <description>Jethro Manager rpm path (can be ither Jethro official download link or an existing HDFS path).</description>
         <value-attributes>
             <type>string</type>
+            <overridable>false</overridable>
+            <editable-only-at-install>true</editable-only-at-install>
         </value-attributes>
         <display-name>Jethro manager RPM</display-name>
+        <on-ambari-upgrade add="true"/>
     </property>
     <property>
-        <name>jethro_rpm_name</name>
-        <value>jethro-3.0.5-16389.x86_64.rpm</value>
-        <description>Jethro RPM</description>
+        <name>jethro_rpm_path</name>
+        <value>http://jethrodownload.s3.amazonaws.com/RC/3.0.0/3.0.5/jethro-3.0.5-16389.x86_64.rpm</value>
+        <description>Jethro rpm path (can be ither Jethro official download link or an existing HDFS path).</description>
         <value-attributes>
             <type>string</type>
+            <overridable>false</overridable>
+            <editable-only-at-install>true</editable-only-at-install>
         </value-attributes>
         <display-name>Jethro RPM</display-name>
     </property>
-    <property>
-        <name>jethro_user</name>
-        <value>jethro</value>
-        <description>Jethro User Name</description>
+    <property require-input="true">
+        <name>jethro_default_instance_name</name>
+        <value></value>
+        <description>Jethro default instance name</description>
         <value-attributes>
             <type>string</type>
         </value-attributes>
-        <display-name>Jethro User Name</display-name>
+        <display-name>Jethro Default Instance Name</display-name>
     </property>
     <property require-input="true">
-        <name>jethro_instance_name</name>
+        <name>jethro_default_instance_storage_path</name>
         <value></value>
-        <description>Jethro instance name</description>
+        <description>Jethro default instance storge path on HDFS. The recomended path is: /user/jethro/instances (Note: the path should already be defined).</description>
         <value-attributes>
             <type>string</type>
         </value-attributes>
-        <display-name>Jethro Instance Name</display-name>
-    </property>
-    <property require-input="true">
-        <name>jethro_instance_storage_path</name>
-        <value></value>
-        <description>Jethro instance storge path on HDFS. The recomended path is: /user/jethro/instances (Note: the path should already be defined).</description>
-        <value-attributes>
-            <type>string</type>
-        </value-attributes>
-        <display-name>Jethro Instance Storage</display-name>
+        <display-name>Jethro Default Instance Storage</display-name>
     </property>
 </configuration>

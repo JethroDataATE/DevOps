@@ -5,6 +5,11 @@ from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from resource_management.libraries.functions.check_process_status import check_process_status
+from jethro_service_utils import installJethroComponent
+import os
+import signal
+import sys
+import subprocess
 
 
 class JethroMng(Script):
@@ -14,17 +19,8 @@ class JethroMng(Script):
     def install(self, env):
         import params
         env.set_params(params)
-        File(
-            format("/tmp/{jethromng_rpm_name}"),
-            content=StaticFile(params.jethromng_rpm_name)
-        )
-        self.install_packages(env)
         print('Install Jethro Manager')
-        rpm_full_path = format("/tmp/{jethromng_rpm_name}")
-        Execute(
-            ("rpm", "-Uvh", "--force", rpm_full_path),
-            sudo=True
-        )
+        installJethroComponent(params.jethromng_rpm_path)
 
     def start(self, env):
         import params
@@ -36,6 +32,9 @@ class JethroMng(Script):
         )
         self.configure(env)
 
+        # start metrics
+        self.startMetrics(params.ams_collector_address)
+        
     def stop(self, env):
         import params
         env.set_params(params)
@@ -45,9 +44,13 @@ class JethroMng(Script):
             user=params.jethro_user
         )
 
+        # stop metrics
+        self.stopMetrics()
+
     def status(self, env):
         import status_params
         env.set_params(status_params)
+
         print('Status of the Jethro Manager')
         return check_process_status(status_params.jethromng_pid_file)
 
@@ -55,6 +58,21 @@ class JethroMng(Script):
         print('Configure the Jethro Manager')
         import params
         env.set_params(params)
+
+    # ************************ Private methrods ***************************
+
+    def startMetrics(self, ams_collector_address):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        script_path = format('{script_dir}/jethro_metrics.py')
+        subprocess.Popen(['python', script_path,ams_collector_address, ' &'])
+
+
+    def stopMetrics(self):
+        print("stopping jethro")
+        for line in os.popen("ps ax | grep jethro_metrics | grep -v grep"):
+            fields = line.split()
+            pid = fields[0]
+            os.kill(int(pid), signal.SIGKILL)
 
 
 if __name__ == "__main__":

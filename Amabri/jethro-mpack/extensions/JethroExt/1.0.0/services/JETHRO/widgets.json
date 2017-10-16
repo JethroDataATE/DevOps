@@ -6,22 +6,22 @@
             "section_name": "JETHRO_SUMMARY",
             "widgetLayoutInfo": [
                 {
-                    "widget_name": "Instances Utilization",
-                    "description": "Number of running in the cluster.",
+                    "widget_name": "Running Instances",
+                    "description": "Number of running in the cluster",
                     "widget_type": "NUMBER",
                     "is_visible": true,
                     "metrics": [
                       {
-                        "name": "num_of_instances",
-                        "metric_path": "metrics/jethro/num_of_instances",
+                        "name": "running_instances",
+                        "metric_path": "metrics/jethro/running_instances",
                         "service_name": "JETHRO",
-                        "component_name": "JETHRO_SERVER"
+                        "component_name": "JETHRO_MNG"
                       }
                     ],
                     "values": [
                       {
                         "name": "Running Instances",
-                        "value": "${num_of_instances}"
+                        "value": "${running_instances}"
                       }
                     ],
                     "properties": {

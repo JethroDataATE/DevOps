@@ -7,15 +7,15 @@
             {
                 "name": "jethrouser",
                 "principal": {
-                    "value": "${jethro-config/jethro_user}${principal_suffix}@${realm}",
+                    "value": "${jethro-env/jethro_user}${principal_suffix}@${realm}",
                     "type": "user",
                     "configuration": "jethro-env/jethro.kerberos.principal",
-                    "local_username": "${jethro-config/jethro_user}"
+                    "local_username": "${jethro-env/jethro_user}"
                 },
                 "keytab": {
                     "file": "${keytab_dir}/jethro.headless.keytab",
                     "owner": {
-                        "name": "${jethro-config/jethro_user}",
+                        "name": "${jethro-env/jethro_user}",
                         "access": "r"
                     },
                     "group": {

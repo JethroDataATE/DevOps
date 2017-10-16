@@ -1,18 +1,16 @@
 {
-    "JETHRO_SERVER": {
-        "Component": [
-            {
-                "type": "ganglia",
-                "metrics": {
-                    "default": {
-                        "metrics/jethro/num_of_instances": {
-                            "metric": "num_of_instances",
-                            "pointInTime": true,
-                            "temporal": true
-                        }
+    "JETHRO_MNG": {
+        "Component": [{
+            "type": "ganglia",
+            "metrics": {
+                "default": {
+                    "metrics/jethro/jethro_mng/running_instances": {
+                        "metric": "running_instances",
+                        "pointInTime": true,
+                        "temporal": true
                     }
                 }
             }
-        ]
+        }]
     }
 }
