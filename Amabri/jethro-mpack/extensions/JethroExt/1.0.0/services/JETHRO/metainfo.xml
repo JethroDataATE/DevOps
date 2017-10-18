@@ -73,6 +73,7 @@
             <configuration-dependencies>
                 <config-type>jethro-config</config-type>
                 <config-type>jethro-env</config-type>
+                <config-type>jethro-global</config-type>
             </configuration-dependencies>
 
             <quickLinksConfigurations>
