@@ -1,14 +1,14 @@
 {
   "JETHRO": {
-    "JETHRO_SERVER": [{
+    "JETHRO_MAINT": [{
       "name": "jethro_maint_is_running",
       "label": "Jethro Main Utilization",
       "description": "Verify main service is running.",
-      "interval": 60,
+      "interval": 5,
       "scope": "ANY",
       "source": {
         "type": "SCRIPT",
-        "path": " /var/lib/ambari-agent/cache/extensions/JethroExt/1.0.0/JETHRO/package/alerts/alert_maint_healthcheck_metrics.py",
+        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.0.0/services/JETHRO/package/alerts/alert_maint_healthcheck_metrics.py",
         "parameters": []
       }
     }]

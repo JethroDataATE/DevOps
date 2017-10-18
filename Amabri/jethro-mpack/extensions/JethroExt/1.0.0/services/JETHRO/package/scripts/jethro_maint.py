@@ -7,6 +7,7 @@ from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets
 from resource_management.libraries.functions.check_process_status import check_process_status
+from jethro_metrics import JethroMetrics
 
 
 class JethroMaint(Script):
@@ -64,13 +65,26 @@ class JethroMaint(Script):
             ensure_kerberos_tickets(params.klist_path, params.kinit_path, params.jethro_kerberos_prinicipal,
                                     params.jethro_kerberos_keytab, params.jethro_user)
 
-        return check_process_status(status_params.jethromaint_pid_file)
+        status = check_process_status(status_params.jethromaint_pid_file)
+
+        self.submitMetrics(params.ams_collector_address, status)
+
+        return status
 
     def configure(self, env):
         import params
         env.set_params(params)
 
     # ************************ Private methrods ***************************
+
+    def submitMetrics(self, ams_collector_address, status):
+        metric_val = 0
+        if status is None:
+            metric_val = 1
+
+        ams = JethroMetrics(ams_collector_address)
+        ams.submit_metrics(
+            "jethro_maint", "running_maint_services", metric_val)
 
     def ensure_instance_attached(self):
         import params

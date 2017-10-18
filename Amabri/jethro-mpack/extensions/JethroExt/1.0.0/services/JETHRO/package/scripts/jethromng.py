@@ -63,13 +63,13 @@ class JethroMng(Script):
 
     def startMetrics(self, ams_collector_address):
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        script_path = format('{script_dir}/jethro_metrics.py')
-        subprocess.Popen(['python', script_path,ams_collector_address, ' &'])
+        script_path = format('{script_dir}/jethromng_metrics.py')
+        subprocess.Popen(['python', script_path, ams_collector_address, ' &'])
 
 
     def stopMetrics(self):
         print("stopping jethro")
-        for line in os.popen("ps ax | grep jethro_metrics | grep -v grep"):
+        for line in os.popen("ps ax | grep jethromng_metrics | grep -v grep"):
             fields = line.split()
             pid = fields[0]
             os.kill(int(pid), signal.SIGKILL)
