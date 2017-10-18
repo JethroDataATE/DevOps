@@ -6,7 +6,7 @@ import socket
 from resource_management.core.resources.system import File
 from resource_management.libraries.functions.format import format
 
-class JethroMetrics():
+class JethroMngMetrics():
 
     metrics = []
     metrics_dict = dict()
@@ -19,11 +19,11 @@ class JethroMetrics():
         self.time_now = int(time.time() * 1000.0)
         self.ams_collector_address = ams_collector_address
 
-    def submit_metrics(self, appid, metric_name, metric_value):
+    def submit_metrics(self):
         self.time_now = int(time.time() * 1000.0)
         self.my_hostname = socket.getfqdn()
 
-        self.metrics.append(self.get_metrics(appid, metric_name, metric_value))
+        self.metrics.append(self.get_metrics("running_instances", self.get_num_of_instances()))
         self.metrics_dict["metrics"] = self.metrics
         json_string = json.JSONEncoder().encode(self.metrics_dict)
 
@@ -38,14 +38,37 @@ class JethroMetrics():
                 print("Successful sending Jethro metric to Ambari Metric Collector.")
             else:
                 print("Error sending Jethro metric to Ambari Metric Collector.")
-        except Exception as e:
-            print("Unable to get a response from Ambari Metric Collector: " + str(e))
+        except:
+            print("Unable to get a response from Ambari Metric Collector.")
         connection.close()
 
-    def get_metrics(self, appid, metric_name, metric_value):
+    def get_num_of_instances(self):
+        running_instances = []
+        connection = httplib.HTTPConnection("localhost", 9100, timeout=30)
+        connection.request("GET", "/api/Nodes/getServices")
+        try:
+            response = connection.getresponse()
+
+            if response.status == 200:
+                res = response.read()
+                print(res)
+                json_data = json.loads(res)
+                print (json_data)
+                instances = json_data["services"]
+                print(instances)
+                running_instances = [a for a in instances if a['status'] == 'running']
+            else:
+                print("Error getting Jethro instances information.")
+        except:
+            e = sys.exc_info()[0]
+            print("Unable to get Jethro instances information.", e)
+        connection.close()
+        return len(running_instances)
+
+    def get_metrics(self, metric_name, metric_value):
         metric = {
             "metricname": metric_name,
-            "appid": appid,
+            "appid": "jethro_mng",
             "hostname": self.my_hostname,
             "timestamp": self.time_now,
             "starttime": self.time_now,
@@ -54,3 +77,11 @@ class JethroMetrics():
             }
         }
         return metric
+
+
+jethromng_metrice_collector = JethroMngMetrics(sys.argv[1])
+
+while True:
+    time.sleep(30)
+    jethromng_metrice_collector.submit_metrics()
+

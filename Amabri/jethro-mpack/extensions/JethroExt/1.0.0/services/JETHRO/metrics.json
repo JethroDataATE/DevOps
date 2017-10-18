@@ -12,5 +12,19 @@
                 }
             }
         }]
+    },
+    "JETHRO_MAINT": {
+        "Component": [{
+            "type": "ganglia",
+            "metrics": {
+                "default": {
+                    "metrics/jethro/jethro_maint/running_maint_services": {
+                        "metric": "running_maint_services",
+                        "pointInTime": true,
+                        "temporal": true
+                    }
+                }
+            }
+        }]
     }
 }
