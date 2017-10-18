@@ -7,7 +7,7 @@
             "widgetLayoutInfo": [
                 {
                     "widget_name": "Running Instances",
-                    "description": "Number of running in the cluster",
+                    "description": "Number of running instances in the cluster",
                     "widget_type": "NUMBER",
                     "is_visible": true,
                     "metrics": [
