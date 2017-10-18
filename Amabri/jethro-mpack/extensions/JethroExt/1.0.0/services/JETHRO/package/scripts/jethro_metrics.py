@@ -60,7 +60,8 @@ class JethroMetrics():
 jethro_metrice_collector = JethroMetrics(sys.argv[1])
 script_dir = os.path.dirname(os.path.abspath(__file__))
 init_path = format('{script_dir}/../ams_host.ini')
-File(init_path, content=sys.argv[1].split(':')[0])
+ams_host = sys.argv[1].split(':')[0]
+os.popen('echo ' + ams_host + ' > ' + init_path)
 
 while True:
     time.sleep(60)
