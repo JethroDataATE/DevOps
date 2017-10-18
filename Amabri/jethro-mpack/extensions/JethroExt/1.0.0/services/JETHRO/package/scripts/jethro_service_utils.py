@@ -6,14 +6,26 @@ from resource_management.core import shell
 
 
 def installJethroComponent(rpm_path):
+
+    script_path = "/tmp/installJethroComponent.sh"
+
     File(
-        "/tmp/installJethroComponent.sh",
+        script_path,
         content=StaticFile("installJethroComponent.sh")
     )
+
     Execute(
         ("sh",
-         "/tmp/installJethroComponent.sh",
+         script_path,
          rpm_path),
+        sudo=True
+    )
+
+    # Cleanup
+    Execute(
+        ("rm",
+         "-f",
+         script_path),
         sudo=True
     )
 
@@ -21,12 +33,13 @@ def installJethroComponent(rpm_path):
 def create_attach_instance(service_name, instance_name, storage_path, jethro_user):
     import params
 
+    script_path = "/tmp/ensureJethroInstance.sh"
+
     # Copy installation script
     File(
-        "/tmp/ensureJethroInstance.sh",
+        script_path,
         content=StaticFile("ensureJethroInstance.sh")
     )
-    script_path = "/tmp/ensureJethroInstance.sh"
 
     # Execute script
     Execute(
@@ -38,6 +51,14 @@ def create_attach_instance(service_name, instance_name, storage_path, jethro_use
          jethro_user),
         tries=3,
         try_sleep=3,
+        sudo=True
+    )
+
+    # Cleanup
+    Execute(
+        ("rm",
+         "-f",
+         script_path),
         sudo=True
     )
 
@@ -55,4 +76,5 @@ def ensure_kerberos_tickets(klist_path, kinit_path, principal_name, keytab_path,
     # If there are no tickets in the cache or they are expired, perform a kinit, else use what is in the cache
     klist_cmd = format("{klist_path} -s")
     if shell.call(klist_cmd, user=local_user_name)[0] != 0:
-        setup_kerberos(kinit_path, principal_name, keytab_path, local_user_name)
+        setup_kerberos(kinit_path, principal_name,
+                       keytab_path, local_user_name)

@@ -5,6 +5,7 @@ import sys
 import socket
 from resource_management.core.resources.system import File
 from resource_management.libraries.functions.format import format
+import os
 
 class JethroMetrics():
 
@@ -54,3 +55,17 @@ class JethroMetrics():
             }
         }
         return metric
+
+
+jethro_metrice_collector = JethroMetrics(sys.argv[1])
+script_dir = os.path.dirname(os.path.abspath(__file__))
+init_path = format('{script_dir}/../ams_host.ini')
+File(init_path, content=sys.argv[1].split(':')[0])
+
+while True:
+    time.sleep(60)
+    val = 0
+    res = os.popen("service jethro status | awk '/JethroMaint/ {print $4}'")
+    for service in res:
+        val += 1
+    jethro_metrice_collector.submit_metrics('jethro_maint', 'running_maint_services', val)

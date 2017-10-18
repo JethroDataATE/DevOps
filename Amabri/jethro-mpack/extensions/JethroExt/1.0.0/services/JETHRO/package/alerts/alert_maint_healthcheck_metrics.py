@@ -7,7 +7,7 @@ from ambari_commons.os_family_impl import OsFamilyFuncImpl, OsFamilyImpl
 from resource_management.libraries.script.script import Script
 from resource_management.libraries.functions.format import format
 import ambari_commons.network as network
-from ambari_commons.aggregate_functions import sum
+from ambari_commons.aggregate_functions import mean
 
 # ambari_server_hostname = config['clusterHostInfo']['ambari_server_host'][0]
 # ambari_server_port = config['clusterHostInfo']['ambari_server_port'][0]
@@ -21,36 +21,39 @@ RESULT_STATE_SKIPPED = 'SKIPPED'
 
 AMS_HTTP_POLICY = '{{ams-site/timeline.metrics.service.http.policy}}'
 METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY = '{{ams-site/timeline.metrics.service.webapp.address}}'
-METRICS_COLLECTOR_WEBAPP_HOST = '{{clusterHostInfo/metrics_collector_hosts}}'
 AMS_METRICS_GET_URL = "/ws/v1/timeline/metrics?%s"
 APP_ID = 'JETHRO_MAINT'
 METRIC_NAME = 'running_maint_services'
 
 
 def get_tokens():
-    return (METRICS_COLLECTOR_WEBAPP_HOST, METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY, AMS_HTTP_POLICY)
+    return (METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY, AMS_HTTP_POLICY)
 
 
-def execute(configurations={}, parameters={}, host_name=None):
+def execute(configurations = {}, parameters = {}, host_name = None):
 
 
-    metric_name = 'running_maint_services'
-    current_time = int(time.time()) * 1000
+    metric_name='running_maint_services'
+    current_time=int(time.time()) * 1000
 
-    ams_monitor_conf_dir = "/etc/ambari-metrics-monitor/conf"
-    metric_truststore_ca_certs = 'ca.pem'
-    ca_certs = os.path.join(ams_monitor_conf_dir,
+    ams_monitor_conf_dir="/etc/ambari-metrics-monitor/conf"
+    metric_truststore_ca_certs='ca.pem'
+    ca_certs=os.path.join(ams_monitor_conf_dir,
                             metric_truststore_ca_certs)
-    metric_collector_https_enabled = str(
+    metric_collector_https_enabled=str(
         configurations[AMS_HTTP_POLICY]) == "HTTPS_ONLY"
 
-    collector_host = configurations[METRICS_COLLECTOR_WEBAPP_HOST]
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    init_path = format('{script_dir}/../ams_host.ini')
+    with open(init_path, 'r') as ams_host:
+        collector_host=ams_host.read().replace('\n', '')
+
     collector_port = int(configurations[METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY].split(':')[1])
 
     get_metrics_parameters = {
         "metricNames": METRIC_NAME,
         "appId": APP_ID,
-        "startTime": current_time - 60 * 60 * 1000,
+        "startTime": current_time - 5 * 60 * 1000,
         "endTime": current_time,
         "grouped": "true",
     }
@@ -77,9 +80,9 @@ def execute(configurations={}, parameters={}, host_name=None):
         metrics += metrics_data["metrics"].values()
     pass
 
-    sum_value = sum(metrics)
+    mean_value = mean(metrics)
 
-    if sum_value > 0:
+    if mean_value > 0:
         return RESULT_STATE_OK, ["Jethro Maint service is up and running."]
     else:
-        return RESULT_STATE_CRITICAL, ["No Jethro Maint service found."]
+        return RESULT_STATE_CRITICAL, ["No Jethro Maint service is running."]

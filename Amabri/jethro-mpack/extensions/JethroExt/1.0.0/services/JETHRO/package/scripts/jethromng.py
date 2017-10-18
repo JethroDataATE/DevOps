@@ -7,7 +7,6 @@ from resource_management.libraries.functions.format import format
 from resource_management.libraries.functions.check_process_status import check_process_status
 from jethro_service_utils import installJethroComponent
 import os
-import signal
 import sys
 import subprocess
 
@@ -68,11 +67,10 @@ class JethroMng(Script):
 
 
     def stopMetrics(self):
-        print("stopping jethro")
-        for line in os.popen("ps ax | grep jethromng_metrics | grep -v grep"):
+        for line in os.popen("COLUMNS=20000 ps ax | grep jethromng_metrics | grep -v grep"):
             fields = line.split()
             pid = fields[0]
-            os.kill(int(pid), signal.SIGKILL)
+            os.kill(int(pid), 15)
 
 
 if __name__ == "__main__":

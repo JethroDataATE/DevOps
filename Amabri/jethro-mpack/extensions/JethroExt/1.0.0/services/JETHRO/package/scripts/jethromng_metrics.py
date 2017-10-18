@@ -2,6 +2,7 @@ import time
 import httplib
 import json
 import sys
+import os
 import socket
 from resource_management.core.resources.system import File
 from resource_management.libraries.functions.format import format
@@ -80,8 +81,11 @@ class JethroMngMetrics():
 
 
 jethromng_metrice_collector = JethroMngMetrics(sys.argv[1])
+script_dir = os.path.dirname(os.path.abspath(__file__))
+init_path = format('{script_dir}/../ams_host.ini')
+File(init_path, content=str(jethromng_metrice_collector).split(':')[0])
 
 while True:
-    time.sleep(30)
+    time.sleep(60)
     jethromng_metrice_collector.submit_metrics()
 
