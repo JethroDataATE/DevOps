@@ -71,7 +71,7 @@ class JethroServer(Script):
 
         print 'configure Jethro server called.'
 
-        File(path="/tmp/jethro_server.foo",
+        File("/tmp/jethro_server.foo",
              content="configure Jethro server called."
             )
 
