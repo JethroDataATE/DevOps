@@ -5,7 +5,7 @@ from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
-from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets
+from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name
 from resource_management.libraries.functions.check_process_status import check_process_status
 
 
@@ -31,7 +31,9 @@ class JethroLoadScheduler(Script):
         import params
         env.set_params(params)
 
-        if params.security_enabled and params.jethro_current_instance_name is None:
+        instance_name = get_current_instance_name()
+
+        if params.security_enabled and instance_name is None:
             setup_kerberos(params.kinit_path, params.jethro_kerberos_prinicipal,
                            params.jethro_kerberos_keytab, params.jethro_user)
 
@@ -40,7 +42,7 @@ class JethroLoadScheduler(Script):
 
         Execute(
             ("service", "jethro", "start",
-             params.jethro_current_instance_name, self.JETHRO_SERVICE_NAME),
+             instance_name, self.JETHRO_SERVICE_NAME),
             user=params.jethro_user
         )
 
@@ -49,9 +51,12 @@ class JethroLoadScheduler(Script):
     def stop(self, env):
         import params
         env.set_params(params)
+
+        instance_name = get_current_instance_name()
+
         Execute(
             ("service", "jethro", "stop",
-             params.jethro_current_instance_name, self.JETHRO_SERVICE_NAME),
+             instance_name, self.JETHRO_SERVICE_NAME),
             user=params.jethro_user
         )
 
@@ -62,7 +67,7 @@ class JethroLoadScheduler(Script):
         import params
         if params.security_enabled:
             ensure_kerberos_tickets(params.klist_path, params.kinit_path, params.jethro_kerberos_prinicipal,
-                            params.jethro_kerberos_keytab, params.jethro_user)
+                                    params.jethro_kerberos_keytab, params.jethro_user)
 
         return check_process_status(status_params.jethroloadschedule_pid_file)
 

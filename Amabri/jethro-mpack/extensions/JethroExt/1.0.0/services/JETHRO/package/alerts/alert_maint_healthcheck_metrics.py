@@ -30,25 +30,37 @@ def get_tokens():
     return (METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY, AMS_HTTP_POLICY)
 
 
-def execute(configurations = {}, parameters = {}, host_name = None):
+def load_src(name, fpath):
+    import os
+    import imp
+    return imp.load_source(name, os.path.join(os.path.dirname(__file__), fpath))
 
 
-    metric_name='running_maint_services'
-    current_time=int(time.time()) * 1000
+def execute(configurations={}, parameters={}, host_name=None):
 
-    ams_monitor_conf_dir="/etc/ambari-metrics-monitor/conf"
-    metric_truststore_ca_certs='ca.pem'
-    ca_certs=os.path.join(ams_monitor_conf_dir,
+    load_src("jethro_service_utils", "../scripts/jethro_service_utils.py")
+    import jethro_service_utils
+    from jethro_service_utils import get_current_instance_name
+
+    instance_name = get_current_instance_name()
+
+    metric_name = 'running_maint_services'
+    current_time = int(time.time()) * 1000
+
+    ams_monitor_conf_dir = "/etc/ambari-metrics-monitor/conf"
+    metric_truststore_ca_certs = 'ca.pem'
+    ca_certs = os.path.join(ams_monitor_conf_dir,
                             metric_truststore_ca_certs)
-    metric_collector_https_enabled=str(
+    metric_collector_https_enabled = str(
         configurations[AMS_HTTP_POLICY]) == "HTTPS_ONLY"
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     init_path = format('{script_dir}/../ams_host.ini')
     with open(init_path, 'r') as ams_host:
-        collector_host=ams_host.read().replace('\n', '')
+        collector_host = ams_host.read().replace('\n', '')
 
-    collector_port = int(configurations[METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY].split(':')[1])
+    collector_port = int(
+        configurations[METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY].split(':')[1])
 
     get_metrics_parameters = {
         "metricNames": METRIC_NAME,
@@ -61,15 +73,17 @@ def execute(configurations = {}, parameters = {}, host_name = None):
     encoded_get_metrics_parameters = urllib.urlencode(get_metrics_parameters)
 
     try:
-        conn = network.get_http_connection(collector_host, int(collector_port), metric_collector_https_enabled, ca_certs)
-        conn.request("GET", AMS_METRICS_GET_URL % encoded_get_metrics_parameters)
+        conn = network.get_http_connection(collector_host, int(
+            collector_port), metric_collector_https_enabled, ca_certs)
+        conn.request("GET", AMS_METRICS_GET_URL %
+                     encoded_get_metrics_parameters)
         response = conn.getresponse()
         data = response.read()
         conn.close()
     except Exception as e:
         print("Unable to retrive Jethro Maint information.", e)
         return RESULT_STATE_UNKNOWN, ["Unable to retrive Jethro Maint information." + str(e)]
-    
+
     if response.status != 200:
         return (RESULT_STATE_UNKNOWN, ["Unable to retrieve metrics from the Ambari Metrics service."])
 
@@ -85,4 +99,4 @@ def execute(configurations = {}, parameters = {}, host_name = None):
     if mean_value > 0:
         return RESULT_STATE_OK, ["Jethro Maint service is up and running."]
     else:
-        return RESULT_STATE_CRITICAL, ["No Jethro Maint service is running."]
+        return RESULT_STATE_CRITICAL, [format('No Jethro Maint service is running for instance: {instance_name}.')]

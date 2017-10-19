@@ -78,3 +78,23 @@ def ensure_kerberos_tickets(klist_path, kinit_path, principal_name, keytab_path,
     if shell.call(klist_cmd, user=local_user_name)[0] != 0:
         setup_kerberos(kinit_path, principal_name,
                        keytab_path, local_user_name)
+
+
+# Read last entry from services.ini and fetch instance name
+def get_current_instance_name():
+    jethro_current_instance_name = None
+    get_current_instance_cmd = "awk -F \":\" '$1 !~ /#/ {x=$1} END{print x}' /opt/jethro/instances/services.ini"
+    code, out = shell.call(get_current_instance_cmd)
+    if code == 0 and out != '':
+        jethro_current_instance_name = out
+    return jethro_current_instance_name
+
+
+# Read last entry from services.ini and fetch instance port
+def get_current_instance_port():
+    jethro_current_instance_port = None
+    get_current_instance_port_cmd = "awk -F \":\" '$1 !~ /#/ {x=$2} END{print x}' /opt/jethro/instances/services.ini"
+    code, out = shell.call(get_current_instance_port_cmd)
+    if code == 0 and out != '':
+        jethro_current_instance_port = out
+    return jethro_current_instance_port

@@ -6,7 +6,7 @@ from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from resource_management.libraries.functions.check_process_status import check_process_status
-from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets
+from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name
 
 
 class JethroServer(Script):
@@ -31,7 +31,9 @@ class JethroServer(Script):
         import params
         env.set_params(params)
 
-        if params.security_enabled and params.jethro_current_instance_name is None:
+        instance_name = get_current_instance_name()
+
+        if params.security_enabled and instance_name is None:
             setup_kerberos(params.kinit_path, params.jethro_kerberos_prinicipal,
                            params.jethro_kerberos_keytab, params.jethro_user)
 
@@ -39,7 +41,7 @@ class JethroServer(Script):
             imp.reload(params)
 
         Execute(
-            ("service", "jethro", "start", params.jethro_current_instance_name),
+            ("service", "jethro", "start", instance_name),
             user=params.jethro_user
         )
 
@@ -50,8 +52,10 @@ class JethroServer(Script):
         import params
         env.set_params(params)
 
+        instance_name = get_current_instance_name()
+
         Execute(
-            ("service", "jethro", "stop", params.jethro_current_instance_name),
+            ("service", "jethro", "stop", instance_name),
             user=params.jethro_user
         )
 

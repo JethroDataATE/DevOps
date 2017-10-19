@@ -5,7 +5,7 @@ from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
-from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets
+from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name
 from resource_management.libraries.functions.check_process_status import check_process_status
 import os
 import subprocess
@@ -33,7 +33,9 @@ class JethroMaint(Script):
         import params
         env.set_params(params)
 
-        if params.security_enabled and params.jethro_current_instance_name is None:
+        instance_name = get_current_instance_name()
+
+        if params.security_enabled and instance_name is None:
             setup_kerberos(params.kinit_path, params.jethro_kerberos_prinicipal,
                            params.jethro_kerberos_keytab, params.jethro_user)
 
@@ -42,7 +44,7 @@ class JethroMaint(Script):
 
         Execute(
             ("service", "jethro", "start",
-             params.jethro_current_instance_name, self.JETHRO_SERVICE_NAME),
+             instance_name, self.JETHRO_SERVICE_NAME),
             user=params.jethro_user
         )
 
@@ -53,9 +55,12 @@ class JethroMaint(Script):
     def stop(self, env):
         import params
         env.set_params(params)
+
+        instance_name = get_current_instance_name()
+
         Execute(
             ("service", "jethro", "stop",
-             params.jethro_current_instance_name, self.JETHRO_SERVICE_NAME),
+             instance_name, self.JETHRO_SERVICE_NAME),
             user=params.jethro_user
         )
 
@@ -82,7 +87,6 @@ class JethroMaint(Script):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         script_path = format('{script_dir}/jethro_metrics.py')
         subprocess.Popen(['python', script_path, ams_collector_address, ' &'])
-
 
     def stopMetrics(self):
         for line in os.popen("COLUMNS=20000 ps ax | grep jethro_metrics | grep -v grep"):
