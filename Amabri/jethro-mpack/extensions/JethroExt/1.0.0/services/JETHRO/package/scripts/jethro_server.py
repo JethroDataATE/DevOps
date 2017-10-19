@@ -45,7 +45,6 @@ class JethroServer(Script):
 
         self.configure(env)
 
-
     def stop(self, env):
         import params
         env.set_params(params)
@@ -62,7 +61,7 @@ class JethroServer(Script):
         import params
         if params.security_enabled:
             ensure_kerberos_tickets(params.klist_path, params.kinit_path, params.jethro_kerberos_prinicipal,
-                            params.jethro_kerberos_keytab, params.jethro_user)
+                                    params.jethro_kerberos_keytab, params.jethro_user)
 
         return check_process_status(status_params.jethroserver_pid_file)
 
@@ -70,7 +69,13 @@ class JethroServer(Script):
         import params
         env.set_params(params)
 
-    # ************************ Private methrods ***************************
+        print 'configure Jethro server called.'
+
+        File(path="/tmp/jethro_server.foo",
+             content="configure Jethro server called."
+            )
+
+    # ************************ Private methods ***************************
 
     def ensure_instance_attached(self):
         import params
