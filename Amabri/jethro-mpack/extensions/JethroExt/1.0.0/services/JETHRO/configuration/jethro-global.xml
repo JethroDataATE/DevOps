@@ -85,7 +85,7 @@
         <on-ambari-upgrade add="true"/>
     </property>
     <property>
-        <name>loader.overwrite.report.location</name>
+        <name require-input="false">loader.overwrite.report.location</name>
         <value></value>
         <description>A custom location to place report files at.</description>
         <value-attributes>
