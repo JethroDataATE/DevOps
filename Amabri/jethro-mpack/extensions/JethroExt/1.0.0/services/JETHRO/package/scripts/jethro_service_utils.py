@@ -54,7 +54,7 @@ def create_attach_instance(service_name, instance_name, storage_path, jethro_use
         try_sleep=3,
         sudo=True
     )
-
+ 
     # Cleanup
     Execute(
         ("rm",
@@ -110,7 +110,9 @@ def set_param_command(config_name, param_name):
     
 def exec_jethro_client_command_file(command_file_path, command_file_output):
     import params
-    jethro_client_cmd = format('JethroClient {get_current_instance_name()} 127.0.0.1:{get_current_instance_port()} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|' > {command_file_output}')
+    inst_name = get_current_instance_name()
+    inst_port = get_current_instance_port()
+    jethro_client_cmd = format("JethroClient {inst_name} 127.0.0.1:{inst_port} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|'" > {command_file_output}")
     code, out = shell.call(jethro_client_cmd)
 
     # code 0 means success, anything else is error.

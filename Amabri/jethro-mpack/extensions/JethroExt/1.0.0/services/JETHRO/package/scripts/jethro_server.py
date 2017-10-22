@@ -76,7 +76,7 @@ class JethroServer(Script):
         print 'configure Jethro server called.'
 
         commands = ""
-        commands += set_param_command("jethro_global", "dynamic.aggregation.auto.generate.enable")
+        commands += set_param_command("jethro-global", "dynamic.aggregation.auto.generate.enable")
 
         File(self.COMMAND_FILE_PATH, content=commands)
 
