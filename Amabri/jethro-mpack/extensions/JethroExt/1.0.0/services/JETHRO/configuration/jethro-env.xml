@@ -13,6 +13,17 @@
         <display-name>Jethro User Name</display-name>
     </property>
     <property>
+        <name>jethro_password</name>
+        <value>jethro</value>
+        <description>Jethro Password</description>
+        <value-attributes>
+            <type>password</type>
+            <overridable>false</overridable>
+            <editable-only-at-install>false</editable-only-at-install>
+        </value-attributes>
+        <display-name>Jethro Password</display-name>
+    </property>
+    <property>
         <name>jethro_pid_dir</name>
         <value>/var/run/jethro</value>
         <description>Jethro PID directory</description>

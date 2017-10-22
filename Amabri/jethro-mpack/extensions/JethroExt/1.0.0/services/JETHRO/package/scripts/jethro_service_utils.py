@@ -3,6 +3,7 @@ from resource_management.core.source import StaticFile
 from resource_management.libraries.functions.format import format
 from resource_management.core.resources.system import File, Execute
 from resource_management.core import shell
+from resource_management.libraries.script.script import Script
 
 
 def installJethroComponent(rpm_path):
@@ -98,3 +99,19 @@ def get_current_instance_port():
     if code == 0 and out != '':
         jethro_current_instance_port = out
     return jethro_current_instance_port
+
+def set_param_command(config_name, param_name):
+    config = Script.get_config()
+    param_value = None
+    config_type = config['configurations'].get(config_name)
+    if config_type is not None:
+        param_value = config_type[param_name]
+    return format('set global {param_name}={param_value};\n')
+    
+def exec_jethro_client_command_file(command_file_path, command_file_output):
+    import params
+    jethro_client_cmd = format('JethroClient {get_current_instance_name()} 127.0.0.1:{get_current_instance_port()} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|' > {command_file_output}')
+    code, out = shell.call(jethro_client_cmd)
+
+    # code 0 means success, anything else is error.
+    return code

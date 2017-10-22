@@ -9,30 +9,35 @@ from ambari_commons.ambari_metrics_helper import select_metric_collector_hosts_f
 config = Script.get_config()
 
 # Global config properties
-java64_home = config['hostLevelParams']['java_home']
-hostname = config['hostname']
-cluster_name = str(config['clusterName']).lower()
+# java64_home = config['hostLevelParams']['java_home']
+HOSTNAME = config['hostname']
+CLUSTER_NAME = str(config['clusterName']).lower()
 # ams_collector_address =  config['configurations']['ams-site']['timeline.metrics.service.webapp.address']
-ams_collector_hosts = ",".join(default("/clusterHostInfo/metrics_collector_hosts", [])) 
+ams_collector_hosts = ",".join(
+    default("/clusterHostInfo/metrics_collector_hosts", []))
 
 if 'cluster-env' in config['configurations'] and \
-    'metrics_collector_external_hosts' in config['configurations']['cluster-env']:
-  ams_collector_hosts = config['configurations']['cluster-env']['metrics_collector_external_hosts']
+        'metrics_collector_external_hosts' in config['configurations']['cluster-env']:
+    ams_collector_hosts = config['configurations']['cluster-env']['metrics_collector_external_hosts']
 else:
-  ams_collector_hosts = ",".join(default("/clusterHostInfo/metrics_collector_hosts", []))
+    ams_collector_hosts = ",".join(
+        default("/clusterHostInfo/metrics_collector_hosts", []))
 
-metric_collector_host = select_metric_collector_hosts_from_hostnames(ams_collector_hosts)
+metric_collector_host = select_metric_collector_hosts_from_hostnames(
+    ams_collector_hosts)
 
 metric_collector_port = '6188'
 if 'cluster-env' in config['configurations'] and \
-    'metrics_collector_external_port' in config['configurations']['cluster-env']:
-  metric_collector_port = config['configurations']['cluster-env']['metrics_collector_external_port']
+        'metrics_collector_external_port' in config['configurations']['cluster-env']:
+    metric_collector_port = config['configurations']['cluster-env']['metrics_collector_external_port']
 else:
-  metric_collector_web_address = default("/configurations/ams-site/timeline.metrics.service.webapp.address", "0.0.0.0:6188")
-  if metric_collector_web_address.find(':') != -1:
-    metric_collector_port = metric_collector_web_address.split(':')[1]
+    metric_collector_web_address = default(
+        "/configurations/ams-site/timeline.metrics.service.webapp.address", "0.0.0.0:6188")
+    if metric_collector_web_address.find(':') != -1:
+        metric_collector_port = metric_collector_web_address.split(':')[1]
 
-ams_collector_address = format('{metric_collector_host}:{metric_collector_port}')
+ams_collector_address = format(
+    '{metric_collector_host}:{metric_collector_port}')
 
 # Security Properties
 security_enabled = config['configurations']['cluster-env']['security_enabled']
@@ -44,11 +49,11 @@ kerberos_realm = default('/configurations/kerberos-env/realm', None)
 jethro_kerberos_prinicipal = config['configurations']['jethro-env']['jethro.kerberos.principal']
 jethro_kerberos_keytab = config['configurations']['jethro-env']['jethro.kerberos.keytab']
 jethro_user = config['configurations']['jethro-env']['jethro_user']
-
+jethro_password = config['configurations']['jethro-env']['jethro_password']
 
 if security_enabled and (jethro_kerberos_prinicipal == 'none'):
     jethro_kerberos_prinicipal = format(
-        '{jethro_user}-{cluster_name}@{kerberos_realm}')
+        '{jethro_user}-{CLUSTER_NAME}@{kerberos_realm}')
     jethro_kerberos_keytab = "/etc/security/keytabs/jethro.headless.keytab"
 
 # Jethro specific properties

@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 
 import imp
-from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from resource_management.libraries.functions.check_process_status import check_process_status
-from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name
-
+from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name, set_param_command, exec_jethro_client_command_file
 
 class JethroServer(Script):
 
     JETHRO_SERVICE_NAME = "server"
+    COMMAND_FILE_PATH = "/tmp/jethro_client_commands.sql"
+    COMMAND_FILE_OUTPUT = "/tmp/jethro_client_commands.out"
 
-    # ************************ Script Interface methrods ***************************
+# ************************ Script Interface methrods ***************************
 
     def install(self, env):
         import params
@@ -75,9 +75,12 @@ class JethroServer(Script):
 
         print 'configure Jethro server called.'
 
-        File("/tmp/jethro_server.foo",
-             content="configure Jethro server called."
-            )
+        commands = ""
+        commands += set_param_command("jethro_global", "dynamic.aggregation.auto.generate.enable")
+
+        File(self.COMMAND_FILE_PATH, content=commands)
+
+        exec_jethro_client_command_file(self.COMMAND_FILE_PATH, self.COMMAND_FILE_OUTPUT)
 
     # ************************ Private methods ***************************
 
