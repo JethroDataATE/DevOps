@@ -1,0 +1,365 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>dynamic.aggregation.auto.generate.enable</name>
+        <display-name>Enable cubes</display-name>
+        <value>false</value>
+        <description>Toggles the cube generation feature.</description>
+        <value-attributes>
+            <type>boolean</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>keys.cache.max.size</name>
+        <value>30</value>
+        <description>The maximum size of the keys cache, in GB.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>GB</unit>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>keys.merger.max.cache.size</name>
+        <value>3</value>
+        <description>The maximum size of the keys merge cache, in GB.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>GB</unit>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>general.show.schema.identifiers.as.uppercase</name>
+        <value>0</value>
+        <description>Specifies schema object casing. 0-lowercase, 1-uppercase.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>
+            <maximum>1</maximum>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>resources.max.memory.factor</name>
+        <value>16</value>
+        <description>The maximal memory factor used for calculating several parameters in ConfigParams.readParams. Value of 0 means unlimited, in which case memory factor is calculated by ResourceManager.getMemoryFactor.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>functionalindex.num.create.index.threads</name>
+        <value>20</value>
+        <description>The number of working threads used for creating functional indexes.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>1</minimum>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>datamodel.datablock.rows.count</name>
+        <value>10000000</value>
+        <description>The number of rows a block will have.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>1</minimum>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+
+    <!-- LOADER -->
+
+    <property>
+        <name>loader.max.concurrent.processed.data.blocks</name>
+        <value>3</value>
+        <description>The maximum number of concurrently processed data blocks.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>1</minimum>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>loader.rejects.file.prefix</name>
+        <value>loader_rejects</value>
+        <description>The string prefix to use for rejection files.</description>
+        <value-attributes>
+            <type>string</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name  require-input="false">loader.overwrite.report.location</name>
+        <value></value>
+        <description>A custom location to place report files at.</description>
+        <value-attributes>
+            <type>string</type>
+            <empty_value_valid>true</empty_value_valid>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>loader.streamer.block.memory.pct.limit</name>
+        <value>25</value>
+        <description>upon crossing this limit of total memory percentage, the loader will write blocks to persistence.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>loader.streamer.block.page.size</name>
+        <value>16</value>
+        <description>The size of streamer block written to persistence.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>MB</unit>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>loader.threads.pool.size</name>
+        <value>0</value>
+        <description>The loader thread pool size, meaning the maximum number of threads executing simultaneously. Zero (0) value means 75% of the cores will be used.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>loader.max.unmerge.blocks</name>
+        <value>10</value>
+        <description>The maximum number of unmerged index blocks left when loader merge stage is complete.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+
+    <!-- QUERY -->
+
+    <property>
+        <!-- description, unit size? -->
+        <name>query.execution.tupleset.max.size</name>  
+        <value>1</value>
+        <description>The maximum size, in Gbytes, of the tuple set processed during query execution from fetch node and up. Final execution tuple set size is also limited by query.tupleset.size parameter.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>GB</unit>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>query.tupleset.size</name>  
+        <value>50000000</value>
+        <description>The the maximum number of tuples in the tuple set processed during query execution from fetch node and up. Final execution tuple set size is also limited by query.execution.tupleset.max.size parameter.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>query.adaptive.read.execution.tupleset.size</name>  
+        <value>1000000</value>
+        <description>The maximum number of tuples in the tuple set processed during reading results from CachedResultsTupleSet.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>query.tupleset.min.size</name>  
+        <value>5000000</value>
+        <description>The minimum number of tuples in the tuple set processed during query execution from fetch node and up. Final execution tuple set size is also limited by query.execution.tupleset.max.size.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <!-- missing desc -->
+        <name>query.execution.queue.size</name>  
+        <value>10</value>
+        <description>The maximum size of the execution queue.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+
+    <!-- QUERY.FETCH -->
+
+    <property>
+        <name>query.fetch.tupleset.max.pool.size</name>  
+        <value>5120</value>
+        <description>The maximum memory, in MB, allocated for fetch tuple set pool.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>MB</unit>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>query.fetch.reader.dcmp.chunk.size</name>  
+        <value>1024</value>
+        <description>The size of the buffer, in MB, filled by each reader thread fetching a chunk of key IDs/sn (decompressed) from column.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>MB</unit>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <!-- review desc -->
+        <name>query.fetch.decomp.threads</name>  
+        <value>0</value>
+        <description>The maximum number of threads used for fetch operation.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <!-- review desc -->
+        <name>query.fetch.read.threads</name>  
+        <value>8</value>
+        <description>The maximum number of read threads.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <!-- review desc -->
+        <name>query.fetch.column.read.gap.threshold</name>  
+        <value>100</value>
+        <description>The read gap threshold, in KB.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>KB</unit>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <!-- review desc -->
+        <name>query.fetch.max.read.pool.base.size</name>  
+        <value>100</value>
+        <description>The maximum read read pool base size, in MB.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>MB</unit>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <!-- review desc -->
+        <name>query.fetch.max.slices.division.per.block</name>  
+        <value>8</value>
+        <description>The maximum slice division per block.</description>
+        <value-attributes>
+            <type>int</type>
+            <minimum>0</minimum>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+
+    <!--  QUERY.OPTIMIZER -->
+
+    <property>
+        <!-- review desc -->
+        <name>query.optimizer.enable.group-by.default.sort</name>  
+        <value>false</value>
+        <description>Enbales group-by default sort.</description>
+        <value-attributes>
+            <type>boolean</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <!-- review desc -->
+        <name>query.optimizer.distinct.container.max.base.size</name>  
+        <value>1024</value>
+        <description>The maximum distinct container base size, in MB.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>MB</unit>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <!-- review desc -->
+        <name>query.dynamic.distinct.csn.container.enable</name>  
+        <value>true</value>
+        <description>Enables multi-bitmap distinct container.</description>
+        <value-attributes>
+            <type>boolean</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>query.optimizer.index.weight</name>  
+        <value>0.975</value>
+        <description>Filtered WHERE index cost weight, used for selecting between index fetch and columns scan for range expressions. Higher value means more likeliness to use indexes for range queries.</description>
+        <value-attributes>
+            <type>float</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>query.optimizer.index.in.threads</name>  
+        <value>7</value>
+        <description>The number of threads for Index WHERE range calculation.</description>
+        <value-attributes>
+            <type>int</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>query.optimizer.nodes.threads</name>  
+        <value>20</value>
+        <description>Set max concurrent thread used during query execution. Affects query parallel execution, performance and memory resources, mainly for wide queries.</description>
+        <value-attributes>
+            <type>int</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>query.optimizer.star.max.dim.size</name>  
+        <value>100000000</value>
+        <description>The threshold for maximum dimension size for enabling star transformation.</description>
+        <value-attributes>
+            <type>int</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>query.optimizer.star.max.dim.results</name>  
+        <value>500</value>
+        <description>The threshold for number of unique values per dimension, for enabling star transformation.</description>
+        <value-attributes>
+            <type>int</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+
+    <!-- REWRITE -->
+</configuration>
