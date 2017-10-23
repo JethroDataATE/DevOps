@@ -25,7 +25,7 @@
     </property>
     <property>
         <name>jethro_rpm_path</name>
-        <value>http://jethrodownload.s3.amazonaws.com/RC/3.0.0/3.0.5/jethro-3.0.5-16389.x86_64.rpm</value>
+        <value>http://jethrodownload.s3.amazonaws.com/RC/3.0.0/3.2.0/jethro-3.2.0-16958.x86_64.rpm</value>
         <description>Jethro RPM path (either Jethro official HTTP download link or an existing HDFS path).</description>
         <value-attributes>
             <type>string</type>

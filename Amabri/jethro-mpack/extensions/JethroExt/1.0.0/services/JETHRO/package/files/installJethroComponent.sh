@@ -49,6 +49,12 @@ fi
 
 
 echo "Installing..."
+
+if  [[ "$jethroUser" != "jethro" ]] ; then
+    export JETHRO_INSTALL_USER=$jethroUser
+    export JETHRO_INSTALL_GROUP=$jethroUser
+fi
+
 rpm -Uvh --force $rpmLocalPath
 
 # Clean temp file

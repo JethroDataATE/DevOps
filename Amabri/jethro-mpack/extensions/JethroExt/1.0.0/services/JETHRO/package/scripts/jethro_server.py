@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-import imp
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
+from jethro_metrics_utils import start_metrics
 from resource_management.libraries.functions.check_process_status import check_process_status
-from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name, set_param_command, exec_jethro_client_command_file
+from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name #, set_param_command, exec_jethro_client_command_file
 
 class JethroServer(Script):
 
@@ -22,7 +22,7 @@ class JethroServer(Script):
 
         print("Install Jethro Server")
 
-        installJethroComponent(params.jethro_rpm_path)
+        installJethroComponent(params.jethro_rpm_path, params.jethro_user)
 
         if not params.security_enabled:
             self.ensure_instance_attached()
@@ -38,7 +38,7 @@ class JethroServer(Script):
                            params.jethro_kerberos_keytab, params.jethro_user)
 
             self.ensure_instance_attached()
-            imp.reload(params)
+            instance_name = get_current_instance_name()
 
         Execute(
             ("service", "jethro", "start", instance_name),
@@ -46,6 +46,8 @@ class JethroServer(Script):
         )
 
         self.configure(env)
+
+        start_metrics(params.ams_collector_address)
 
     def stop(self, env):
         import params
@@ -73,16 +75,17 @@ class JethroServer(Script):
         import params
         env.set_params(params)
 
-        print 'configure Jethro server called.'
+        # print 'configure Jethro server called.'
 
-        commands = ""
-        commands += set_param_command("jethro-global", "dynamic.aggregation.auto.generate.enable")
+        # commands = ""
+        # commands += set_param_command("jethro-global", "dynamic.aggregation.auto.generate.enable")
 
-        File(self.COMMAND_FILE_PATH, content=commands)
+        # File(self.COMMAND_FILE_PATH, content=commands)
 
-        exec_jethro_client_command_file(self.COMMAND_FILE_PATH, self.COMMAND_FILE_OUTPUT)
+        # exec_jethro_client_command_file(self.COMMAND_FILE_PATH, self.COMMAND_FILE_OUTPUT)
 
     # ************************ Private methods ***************************
+
 
     def ensure_instance_attached(self):
         import params

@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
-import imp
 from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
+from jethro_metrics_utils import start_metrics, stop_metrics
 from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name
 from resource_management.libraries.functions.check_process_status import check_process_status
 import os
-import subprocess
 
 
 class JethroMaint(Script):
@@ -24,7 +23,7 @@ class JethroMaint(Script):
 
         print("Install Jethro Server")
 
-        installJethroComponent(params.jethro_rpm_path)
+        installJethroComponent(params.jethro_rpm_path, params.jethro_user)
 
         if not params.security_enabled:
             self.ensure_instance_attached()
@@ -40,7 +39,7 @@ class JethroMaint(Script):
                            params.jethro_kerberos_keytab, params.jethro_user)
 
             self.ensure_instance_attached()
-            imp.reload(params)
+            instance_name = get_current_instance_name()
 
         Execute(
             ("service", "jethro", "start",
@@ -50,7 +49,7 @@ class JethroMaint(Script):
 
         self.configure(env)
 
-        self.startMetrics(params.ams_collector_address)
+        start_metrics(params.ams_collector_address)
 
     def stop(self, env):
         import params
@@ -64,7 +63,7 @@ class JethroMaint(Script):
             user=params.jethro_user
         )
 
-        self.stopMetrics()
+        # self.stopMetrics()
 
     def status(self, env):
         import status_params
@@ -83,16 +82,8 @@ class JethroMaint(Script):
 
     # ************************ Private methrods ***************************
 
-    def startMetrics(self, ams_collector_address):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        script_path = format('{script_dir}/jethro_metrics.py')
-        subprocess.Popen(['python', script_path, ams_collector_address, ' &'])
-
-    def stopMetrics(self):
-        for line in os.popen("COLUMNS=20000 ps ax | grep jethro_metrics | grep -v grep"):
-            fields = line.split()
-            pid = fields[0]
-            os.kill(int(pid), 15)
+    def stop_jethro_metrics(self, env):
+        stop_metrics()
 
     def ensure_instance_attached(self):
         import params

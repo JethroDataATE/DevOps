@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-import imp
 from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
+from jethro_metrics_utils import start_metrics
 from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name
 from resource_management.libraries.functions.check_process_status import check_process_status
 
@@ -22,7 +22,7 @@ class JethroLoadScheduler(Script):
 
         print("Install Jethro Load Scheduler")
 
-        installJethroComponent(params.jethro_rpm_path)
+        installJethroComponent(params.jethro_rpm_path, params.jethro_user)
 
         if not params.security_enabled:
             self.ensure_instance_attached()
@@ -38,7 +38,7 @@ class JethroLoadScheduler(Script):
                            params.jethro_kerberos_keytab, params.jethro_user)
 
             self.ensure_instance_attached()
-            imp.reload(params)
+            instance_name = get_current_instance_name()
 
         Execute(
             ("service", "jethro", "start",
@@ -47,6 +47,8 @@ class JethroLoadScheduler(Script):
         )
 
         self.configure(env)
+
+        start_metrics(params.ams_collector_address)
 
     def stop(self, env):
         import params

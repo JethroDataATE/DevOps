@@ -5,7 +5,6 @@
 set -e
 
 # Input paramaters
-# rpmName=$1
 service=$1
 instanceName=$2
 storagePath=$3
@@ -15,23 +14,12 @@ jethroUser=$4
 services_ini_path=/opt/jethro/instances/services.ini
 cachePath=/home/jethro/inst_cache
 port=""
-# currentJethro=$(rpm -qa jethro)
 
 
 resetInstanceServicesConfig() {
     port=$(awk -F  ":" -v instance="$instanceName" '{if ($1==instance) {print $2}}'  /opt/jethro/instances/services.ini)
     sed -i "/$instanceName/c $instanceName:$port:no:no:no" /opt/jethro/instances/services.ini
 }
-
-# # Install jethro if not installed (or if the current installed version is different)
-# if [ -z $currentJethro ] || [ "$currentJethro*" != $rpmName ]
-# then
-#     echo "Installing jethro"
-#     rpm -Uvh --force "/tmp/$rpmName"
-# fi
-
-# # Clean temp file
-# rm -f "/tmp/$rpmName"
 
 # Create/attach instance
 instances=( $(su - jethro -c "JethroAdmin list-storage-instances -storage-path=$storagePath -Dstorage.type=HDFS" | awk -v instance="$instanceName" '{if ($1==instance) {print $1, $3}}') )
@@ -73,6 +61,8 @@ echo "Replacing services.ini content..."
 if [ $service == "server" ]
 then
     sed -i "/$instanceName/c $instanceName:$port:yes:$maint:$loadscheduler" /opt/jethro/instances/services.ini
+    su - $jethroUser -c "service jethro start $instanceName"
+    su - $jethroUser -c "JethroClient $instanceName localhost:$port -u $jethroUser -p jethro -q 'set global dynamic.aggregation.auto.generate.enable=1;'"
 fi
 
 if [ $service == "maint" ]

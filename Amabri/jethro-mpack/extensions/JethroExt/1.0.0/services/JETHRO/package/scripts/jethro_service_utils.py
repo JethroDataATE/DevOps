@@ -6,7 +6,7 @@ from resource_management.core import shell
 from resource_management.libraries.script.script import Script
 
 
-def installJethroComponent(rpm_path):
+def installJethroComponent(rpm_path, jethro_user):
 
     script_path = "/tmp/installJethroComponent.sh"
 
@@ -18,7 +18,8 @@ def installJethroComponent(rpm_path):
     Execute(
         ("sh",
          script_path,
-         rpm_path),
+         rpm_path,
+         jethro_user),
         sudo=True
     )
 
@@ -108,12 +109,12 @@ def set_param_command(config_name, param_name):
         param_value = config_type[param_name]
     return format('set global {param_name}={param_value};\n')
     
-def exec_jethro_client_command_file(command_file_path, command_file_output):
-    import params
-    inst_name = get_current_instance_name()
-    inst_port = get_current_instance_port()
-    jethro_client_cmd = format("JethroClient {inst_name} 127.0.0.1:{inst_port} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|'" > {command_file_output}")
-    code, out = shell.call(jethro_client_cmd)
+# def exec_jethro_client_command_file(command_file_path, command_file_output):
+#     import params
+#     inst_name = get_current_instance_name()
+#     inst_port = get_current_instance_port()
+#     jethro_client_cmd = format("JethroClient {inst_name} 127.0.0.1:{inst_port} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|'" > {command_file_output}")
+#     code, out = shell.call(jethro_client_cmd)
 
-    # code 0 means success, anything else is error.
-    return code
+#     # code 0 means success, anything else is error.
+#     return code

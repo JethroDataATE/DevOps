@@ -21,7 +21,7 @@
                     "values": [
                       {
                         "name": "Running Instances",
-                        "value": "${running_instances}"
+                        "value": "${running_instances._min}"
                       }
                     ],
                     "properties": {

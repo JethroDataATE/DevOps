@@ -2,13 +2,86 @@
   "JETHRO": {
     "JETHRO_MAINT": [{
       "name": "jethro_maint_is_running",
-      "label": "Jethro Main Utilization",
-      "description": "Verify main service is running.",
+      "label": "Jethro Maint Utilization",
+      "description": "Verify maint service is running.",
       "interval": 5,
       "scope": "ANY",
       "source": {
         "type": "SCRIPT",
-        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.0.0/services/JETHRO/package/alerts/alert_maint_healthcheck_metrics.py",
+        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.0.0/services/JETHRO/package/alerts/alert_service_healthcheck.py",
+        "parameters": [{
+            "name": "metricName",
+            "display_name": "Metrics Name",
+            "value": "running_maint_services",
+            "type": "STRING",
+            "description": "Metrics Name.",
+            "visibility": "HIDDEN"
+          },
+          {
+            "name": "appId",
+            "display_name": "App ID",
+            "value": "jethro_maint",
+            "type": "STRING",
+            "description": "Metric APP ID",
+            "visibility": "HIDDEN"
+          },
+          {
+            "name": "serviceDisplayName",
+            "display_name": "Service Display Name",
+            "value": "Maint",
+            "type": "STRING",
+            "description": "Service Display Name",
+            "visibility": "HIDDEN"
+          }
+        ]
+      }
+    }],
+    "JETHRO_LOAD_SCHEDULER": [{
+      "name": "jethro_loads_scheduler_is_running",
+      "label": "Jethro Load Scheduler Utilization",
+      "description": "Verify loads scheduler service is running.",
+      "interval": 5,
+      "scope": "ANY",
+      "source": {
+        "type": "SCRIPT",
+        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.0.0/services/JETHRO/package/alerts/alert_service_healthcheck.py",
+        "parameters": [{
+            "name": "metricName",
+            "display_name": "Metrics Name",
+            "value": "running_load_scheduler_services",
+            "type": "STRING",
+            "description": "Metrics Name.",
+            "visibility": "HIDDEN"
+          },
+          {
+            "name": "appId",
+            "display_name": "App ID",
+            "value": "jethro_load_scheduler",
+            "type": "STRING",
+            "description": "Metric APP ID",
+            "visibility": "HIDDEN"
+          },
+          {
+            "name": "serviceDisplayName",
+            "display_name": "Service Display Name",
+            "value": "Load Scheduler",
+            "type": "STRING",
+            "description": "Service Display Name",
+            "visibility": "HIDDEN"
+          }
+        ]
+      }
+    }]
+    ,
+    "JETHRO_SERVER": [{
+      "name": "jethro_auto_cube_generation_is_on",
+      "label": "Jethro Auto Cube Generation",
+      "description": "Verify Jethro auto cube generation is on.",
+      "interval": 5,
+      "scope": "ANY",
+      "source": {
+        "type": "SCRIPT",
+        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.0.0/services/JETHRO/package/alerts/alert_cube_generation_off.py",
         "parameters": []
       }
     }]

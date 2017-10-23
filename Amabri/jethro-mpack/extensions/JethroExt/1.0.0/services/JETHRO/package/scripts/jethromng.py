@@ -19,7 +19,7 @@ class JethroMng(Script):
         import params
         env.set_params(params)
         print('Install Jethro Manager')
-        installJethroComponent(params.jethromng_rpm_path)
+        installJethroComponent(params.jethromng_rpm_path, params.jethro_user)
 
     def start(self, env):
         import params
@@ -32,7 +32,7 @@ class JethroMng(Script):
         self.configure(env)
 
         # start metrics
-        self.startMetrics(params.ams_collector_address)
+        # self.startMetrics(params.ams_collector_address)
         
     def stop(self, env):
         import params
@@ -44,7 +44,7 @@ class JethroMng(Script):
         )
 
         # stop metrics
-        self.stopMetrics()
+        # self.stopMetrics()
 
     def status(self, env):
         import status_params
