@@ -5,7 +5,6 @@ from resource_management.core.resources.system import File, Execute
 from resource_management.core import shell
 from resource_management.libraries.script.script import Script
 
-
 def installJethroComponent(rpm_path):
 
     script_path = "/tmp/installJethroComponent.sh"
@@ -54,7 +53,7 @@ def create_attach_instance(service_name, instance_name, storage_path, jethro_use
         try_sleep=3,
         sudo=True
     )
- 
+
     # Cleanup
     Execute(
         ("rm",
@@ -100,19 +99,31 @@ def get_current_instance_port():
         jethro_current_instance_port = out
     return jethro_current_instance_port
 
+
 def set_param_command(config_name, param_name):
     config = Script.get_config()
     param_value = None
     config_type = config['configurations'].get(config_name)
     if config_type is not None:
         param_value = config_type[param_name]
+
+    # change boolean values to 0,1 for Jethro compatibility.
+    if param_value == True:
+        param_value = 1
+
+    if param_value == False:
+        param_value = 0
+    # ----------------------------------------------------
+
     return format('set global {param_name}={param_value};\n')
-    
+
+
 def exec_jethro_client_command_file(command_file_path, command_file_output):
     import params
     inst_name = get_current_instance_name()
     inst_port = get_current_instance_port()
-    jethro_client_cmd = format("JethroClient {inst_name} 127.0.0.1:{inst_port} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|'" > {command_file_output}")
+    jethro_client_cmd = format("JethroClient {inst_name} 127.0.0.1:{inst_port} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|' > {command_file_output}")
+    print jethro_client_cmd
     code, out = shell.call(jethro_client_cmd)
 
     # code 0 means success, anything else is error.

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import imp
+import time
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
@@ -44,6 +45,9 @@ class JethroServer(Script):
             ("service", "jethro", "start", instance_name),
             user=params.jethro_user
         )
+
+        # wait 5 secs for service start before trying to configure.
+        time.sleep(5)
 
         self.configure(env)
 
