@@ -95,16 +95,6 @@
         <on-ambari-upgrade add="true"/>
     </property>
     <property>
-        <name  require-input="false">loader.overwrite.report.location</name>
-        <value></value>
-        <description>A custom location to place report files at.</description>
-        <value-attributes>
-            <type>string</type>
-            <empty_value_valid>true</empty_value_valid>
-        </value-attributes>
-        <on-ambari-upgrade add="true"/>
-    </property>
-    <property>
         <name>loader.streamer.block.memory.pct.limit</name>
         <value>25</value>
         <description>upon crossing this limit of total memory percentage, the loader will write blocks to persistence.</description>
