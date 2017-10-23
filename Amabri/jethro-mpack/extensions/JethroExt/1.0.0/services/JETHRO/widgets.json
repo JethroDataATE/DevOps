@@ -12,8 +12,8 @@
                     "is_visible": true,
                     "metrics": [
                       {
-                        "name": "running_instances",
-                        "metric_path": "metrics/jethro/running_instances",
+                        "name": "running_instances._min",
+                        "metric_path": "metrics/jethro/running_instances._min",
                         "service_name": "JETHRO",
                         "component_name": "JETHRO_MNG"
                       }

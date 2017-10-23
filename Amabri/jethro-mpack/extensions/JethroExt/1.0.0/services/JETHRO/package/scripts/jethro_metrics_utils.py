@@ -25,11 +25,12 @@ def stop_metrics():
 
 def instance_name_to_number(instance_name):
     max_len = int(len(str(sys.maxsize)) / 2)
-    upper_str = instance_name.upper()
+    upper_str = instance_name.replace('\n', '').upper()
     chars = []
     for c in upper_str:
         str_c = str(ord(c))
-        chars.append(str_c)
+        if str_c != 10:
+            chars.append(str_c)
         if (len(chars) - 1) == max_len:
             break
 
@@ -38,7 +39,7 @@ def instance_name_to_number(instance_name):
     return val
 
 def instance_number_to_name(instance_number):
-    instance_str = str(instance_number)
+    instance_str = str(int(instance_number))
     chars = []
     x = 0
     while x < len(instance_str):

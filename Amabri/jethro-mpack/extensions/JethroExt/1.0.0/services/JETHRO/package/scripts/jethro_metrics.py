@@ -73,7 +73,7 @@ os.popen('echo ' + ams_host + ' > ' + init_path)
 def submit_attached_instances_names_metrics():
     res = os.popen("awk -F \":\" '$1 !~ /#/ {x=$1} {if (x != \"\") print x}' /opt/jethro/instances/services.ini")
     for instance_name in res:
-        instance_num = instance_name_to_number(instance_name)
+        instance_num = instance_name_to_number(instance_name.replace('LF', ''))
         jethro_metrice_collector.submit_metrics('jethro_mng', 'attached_instances_names', instance_num)
 
 
