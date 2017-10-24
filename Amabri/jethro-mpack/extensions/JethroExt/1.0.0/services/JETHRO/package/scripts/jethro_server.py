@@ -6,7 +6,10 @@ from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from jethro_metrics_utils import start_metrics
 from resource_management.libraries.functions.check_process_status import check_process_status
-from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name, is_service_installed_for_instance
+from jethro_service_utils import create_attach_instance, setup_kerberos, \
+    installJethroComponent, ensure_kerberos_tickets, get_current_instance_name, \
+    is_service_installed_for_instance, exec_jethro_client_command_file, set_param_command
+
 
 class JethroServer(Script):
 
@@ -81,17 +84,18 @@ class JethroServer(Script):
         import params
         env.set_params(params)
 
-        # print 'configure Jethro server called.'
+        print 'configure Jethro server called.'
 
-        # commands = ""
-        # commands += set_param_command("jethro-global", "dynamic.aggregation.auto.generate.enable")
+        commands = ""
+        commands += set_param_command("jethro-global",
+                                      "dynamic.aggregation.auto.generate.enable")
 
-        # File(self.COMMAND_FILE_PATH, content=commands)
+        File(self.COMMAND_FILE_PATH, content=commands)
 
-        # exec_jethro_client_command_file(self.COMMAND_FILE_PATH, self.COMMAND_FILE_OUTPUT)
+        exec_jethro_client_command_file(
+            self.COMMAND_FILE_PATH, self.COMMAND_FILE_OUTPUT)
 
     # ************************ Private methods ***************************
-
 
     def ensure_instance_attached(self):
         import params

@@ -8,6 +8,16 @@
                         "metric": "running_instances",
                         "pointInTime": true,
                         "temporal": true
+                    },
+                    "metrics/jethro/jethro_mng/running_instances_names": {
+                        "metric": "running_instances_names",
+                        "pointInTime": true,
+                        "temporal": true
+                    },
+                    "metrics/jethro/jethro_mng/attached_instances_names": {
+                        "metric": "attached_instances_names",
+                        "pointInTime": true,
+                        "temporal": true
                     }
                 }
             }
@@ -20,6 +30,20 @@
                 "default": {
                     "metrics/jethro/jethro_maint/running_maint_services": {
                         "metric": "running_maint_services",
+                        "pointInTime": true,
+                        "temporal": true
+                    }
+                }
+            }
+        }]
+    },
+    "JETHRO_LOAD_SCHEDULER": {
+        "Component": [{
+            "type": "ganglia",
+            "metrics": {
+                "default": {
+                    "metrics/jethro/jethro_load_scheduler/running_load_scheduler_services": {
+                        "metric": "running_load_scheduler_services",
                         "pointInTime": true,
                         "temporal": true
                     }

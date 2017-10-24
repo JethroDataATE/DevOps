@@ -13,7 +13,7 @@
                     "metrics": [
                       {
                         "name": "running_instances._min",
-                        "metric_path": "metrics/jethro/running_instances._min",
+                        "metric_path": "metrics/jethro/jethro_mng/running_instances._min",
                         "service_name": "JETHRO",
                         "component_name": "JETHRO_MNG"
                       }
