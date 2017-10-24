@@ -4,6 +4,7 @@ from resource_management.libraries.functions.format import format
 from resource_management.core.resources.system import File, Execute
 from resource_management.core import shell
 from resource_management.libraries.script.script import Script
+import os
 
 
 def installJethroComponent(rpm_path, jethro_user):
@@ -90,6 +91,17 @@ def get_current_instance_name():
     if code == 0 and out != '':
         jethro_current_instance_name = out
     return jethro_current_instance_name
+
+# Read attached instances info from services.ini and fetch instance names
+def get_locally_attached_instances():
+    instances = []
+    get_all_instance_cmd = "awk -F \":\" '$1 !~ /#/ {x=$1} {print x}' /opt/jethro/instances/services.ini"
+    res = os.popen(get_all_instance_cmd)
+    for instance in res:
+        trim_inst = instance.replace('LF','').strip()
+        if trim_inst != '' and trim_inst not in instances:
+            instances.append(trim_inst)
+    return instances
 
 # Read service config from services.ini for specific instance
 def is_service_installed_for_instance(instance_name, service_name):

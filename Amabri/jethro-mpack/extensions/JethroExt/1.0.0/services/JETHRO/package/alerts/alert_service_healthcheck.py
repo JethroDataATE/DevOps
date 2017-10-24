@@ -15,9 +15,6 @@ METRIC_NAME_PARAM_KEY = 'metricName'
 APP_ID_PARAM_KEY = 'appId'
 SERVICE_DISPLAY_NAME_PARAM_KEY = 'serviceDisplayName'
 
-# RUNNING_MAINT_APP_ID = 'jethro_maint'
-# RUNNING_MAINT_METRIC_NAME = 'running_maint_services'
-
 ATTACHED_INSTANCES_APP_ID = 'jethro_mng'
 ATTACHED_INSTANCES_METRIC_NAME = 'attached_instances_names'
 
@@ -25,7 +22,7 @@ ATTACHED_INSTANCES_METRIC_NAME = 'attached_instances_names'
 def get_tokens():
     return (METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY, AMS_HTTP_POLICY)
 
-
+# load modules dynamically form relative path
 def load_src(name, fpath):
     import os
     import imp
@@ -43,9 +40,10 @@ def execute(configurations={}, parameters={}, host_name=None):
     if SERVICE_DISPLAY_NAME_PARAM_KEY in parameters:
         service_name = parameters[SERVICE_DISPLAY_NAME_PARAM_KEY]
 
+    # load jethro_metrics_utils module dynamically 
     load_src("jethro_metrics_utils", "../scripts/jethro_metrics_utils.py")
     import jethro_metrics_utils
-    from jethro_metrics_utils import read_metric_values, instance_number_to_name
+    from jethro_metrics_utils import read_metric_values, instance_number_to_name, instance_name_to_number
 
     ams_monitor_conf_dir = "/etc/ambari-metrics-monitor/conf"
     metric_truststore_ca_certs = 'ca.pem'
@@ -74,17 +72,33 @@ def execute(configurations={}, parameters={}, host_name=None):
 
     running_services_metrics = set(running_services_metrics)
 
-    instances_name_metrics = read_metric_values(
+    attached_instances_metrics = read_metric_values(
         collector_host, collector_port, metric_collector_https_enabled, ATTACHED_INSTANCES_APP_ID, ATTACHED_INSTANCES_METRIC_NAME)
 
-    instances_names = set(instances_name_metrics)
+    attached_instances_numbers = set(attached_instances_metrics)
+
+
+    # load jethro_service_utils module dynamically 
+    load_src("jethro_service_utils", "../scripts/jethro_service_utils.py")
+    import jethro_service_utils
+    from jethro_service_utils import get_locally_attached_instances
+
+    # get locally attached instances
+    instances = get_locally_attached_instances()
+    local_instances_numbers = []
+
+    # cast names to numbers
+    for name in instances:
+        number = instance_name_to_number(name)
+        local_instances_numbers.append(number)
 
     alert_msg = ""
 
-    for instance_number in instances_names:
-        if instance_number not in running_services_metrics:
-            instance_name = instance_number_to_name(instance_number)
-            alert_msg += format('No Jethro {service_name} service is running for instance: {instance_name}.\n')
+    for instance_number in attached_instances_numbers:
+         # if instance is attached to this server - raise the alert
+        if (instance_number not in running_services_metrics) and (instance_number in local_instances_numbers):      
+                instance_name = instance_number_to_name(instance_number)
+                alert_msg += format('No Jethro {service_name} service is running for instance: {instance_name}.\n')
 
     if alert_msg == "":
         return RESULT_STATE_OK, [format('Jethro {service_name} service is up and running.')]
