@@ -5,7 +5,7 @@ from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from jethro_metrics_utils import start_metrics
-from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name
+from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name, is_service_installed_for_instance
 from resource_management.libraries.functions.check_process_status import check_process_status
 
 
@@ -39,6 +39,8 @@ class JethroLoadScheduler(Script):
 
             self.ensure_instance_attached()
             instance_name = get_current_instance_name()
+        elif not is_service_installed_for_instance(instance_name, self.JETHRO_SERVICE_NAME):
+            self.ensure_instance_attached()
 
         Execute(
             ("service", "jethro", "start",

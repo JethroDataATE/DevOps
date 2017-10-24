@@ -59,16 +59,7 @@ class JethroMetrics():
         }
         return metric
 
-#**************** Main Logic *************************
-
-ams_address = sys.argv[1]
-jethro_metrice_collector = JethroMetrics(ams_address)
-script_dir = os.path.dirname(os.path.abspath(__file__))
-init_path = format('{script_dir}/../ams_host.ini')
-ams_host = ams_address.split(':')[0]
-ams_port = int(ams_address.split(':')[1])
-os.popen('echo ' + ams_host + ' > ' + init_path)
-
+#****************  Helpers *************************
 
 def submit_attached_instances_names_metrics():
     res = os.popen("awk -F \":\" '$1 !~ /#/ {x=$1} {if (x != \"\") print x}' /opt/jethro/instances/services.ini")
@@ -117,14 +108,35 @@ def submit_load_scheduler_status_metrics():
         jethro_metrice_collector.submit_metrics('jethro_load_scheduler', 'running_load_scheduler_services', instance_num)
 
 
-while True:
-    time.sleep(60)
+#****************************************************************
 
+
+#**************** Main Logic *************************
+
+METRICS_INTERVAL = 60
+
+ams_address = sys.argv[1]
+jethro_metrice_collector = JethroMetrics(ams_address)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+init_path = format('{script_dir}/../ams_host.ini')
+ams_host = ams_address.split(':')[0]
+ams_port = int(ams_address.split(':')[1])
+
+while True:
     try:
+
+        # Writ ams_host to file, so the alerts using these metrics will be able to query AMS.
+        # I couldn't find any other alternative :-(
+        if not os.path.exists(init_path):
+            os.popen('echo ' + ams_host + ' > ' + init_path)
+       
+        # Submit metrics
         submit_attached_instances_names_metrics()
         submit_maint_status_metrics()
         submit_load_scheduler_status_metrics()
         submit_running_instances_names_metrics()
         submit_running_instances_metrics()
+
+        time.sleep(METRICS_INTERVAL)
     except Exception as e:
         print("Unable to submit Jethro metrics to Ambari Metric Collector: " + str(e))

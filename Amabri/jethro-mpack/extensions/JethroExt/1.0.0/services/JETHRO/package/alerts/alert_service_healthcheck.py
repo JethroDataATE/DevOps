@@ -56,8 +56,12 @@ def execute(configurations={}, parameters={}, host_name=None):
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     init_path = format('{script_dir}/../ams_host.ini')
-    with open(init_path, 'r') as ams_host:
-        collector_host = ams_host.read().replace('\n', '')
+
+    try:
+        with open(init_path, 'r') as ams_host:
+            collector_host = ams_host.read().replace('\n', '')
+    except:
+        return RESULT_STATE_UNKNOWN
 
     collector_port = int(
         configurations[METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY].split(':')[1])

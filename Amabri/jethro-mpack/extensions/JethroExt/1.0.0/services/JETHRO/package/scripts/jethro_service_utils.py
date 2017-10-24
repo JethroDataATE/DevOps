@@ -91,6 +91,23 @@ def get_current_instance_name():
         jethro_current_instance_name = out
     return jethro_current_instance_name
 
+# Read service config from services.ini for specific instance
+def is_service_installed_for_instance(instance_name, service_name):
+    service_installed = False
+
+    # Set service index in services.ini
+    service_index = '3'
+    if service_name == 'maint':
+        service_index = '4'
+    elif service_name == 'loadscheduler':
+        service_index = '5'
+        
+    get_service_config_cmd = "awk -F \":\" '$1 ~ /" + instance_name +"/ {x=$" + service_index + "} END{print x}' /opt/jethro/instances/services.ini"
+    code, out = shell.call(get_service_config_cmd)
+    if code == 0 and out != '':
+        service_installed = (out == 'yes')
+    return service_installed
+
 
 # Read last entry from services.ini and fetch instance port
 def get_current_instance_port():

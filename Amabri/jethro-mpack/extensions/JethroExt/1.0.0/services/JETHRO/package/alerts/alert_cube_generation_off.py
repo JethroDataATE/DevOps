@@ -34,14 +34,15 @@ def execute(configurations={}, parameters={}, host_name=None):
     instance_name = get_current_instance_name()
     instance_port = get_current_instance_port()
 
-    cmd_part1 = format("su - {jethro_user} -c 'JethroClient {instance_name} localhost:{instance_port} -u {jethro_user} -p {jethro_password} -q ")
-    cmd_part2 = "\"show param  dynamic.aggregation.auto.generate.enable;\" | awk -F \"|\" '$4 ~ /dynamic.aggregation.auto.generate.enable/ {x=$5} END{print x}''"
+    cmd_part1 = format("su - {jethro_user} -c \'JethroClient {instance_name} localhost:{instance_port} -u {jethro_user} -p {jethro_password} -q \"show param  dynamic.aggregation.auto.generate.enable;\"'")
+    cmd_part2 = " | awk -F \"|\" '$4 ~ /dynamic.aggregation.auto.generate.enable/ {x=$5} END{print x}'"
     cmd = cmd_part1 + cmd_part2
     code, out=shell.call(cmd)
     if code == 0:
-        if out == '1':
+        res = out.strip()
+        if res == '1':
             return RESULT_STATE_OK, [format('Jethro auto-cube generation is ON for instance: {instance_name}.')]
         else:
             return RESULT_STATE_WARNING, [format('Jethro auto-cube generation is OFF for instance: {instance_name}.')]
     else:
-         return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter.']
+         return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter: ' + out]

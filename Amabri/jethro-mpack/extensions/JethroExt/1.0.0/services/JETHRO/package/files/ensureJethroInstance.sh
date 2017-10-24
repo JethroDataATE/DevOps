@@ -17,6 +17,12 @@ port=""
 
 
 resetInstanceServicesConfig() {
+    # Stop all instance services (will be started from python)
+    service jethro stop $instanceName
+    service jethro stop $instanceName maint
+    service jethro stop $instanceName loadscheduler
+
+    # Reset services.ini
     port=$(awk -F  ":" -v instance="$instanceName" '{if ($1==instance) {print $2}}'  /opt/jethro/instances/services.ini)
     sed -i "/$instanceName/c $instanceName:$port:no:no:no" /opt/jethro/instances/services.ini
 }
@@ -35,6 +41,7 @@ then
       test -d $cachePath && rm -rf $cachePath
       su - $jethroUser -c "mkdir -p $cachePath"
       su - $jethroUser -c "JethroAdmin attach-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=0G"
+      
       resetInstanceServicesConfig
    else
       echo "instance already attached"
@@ -62,6 +69,7 @@ if [ $service == "server" ]
 then
     sed -i "/$instanceName/c $instanceName:$port:yes:$maint:$loadscheduler" /opt/jethro/instances/services.ini
     su - $jethroUser -c "service jethro start $instanceName"
+    sleep 10
     su - $jethroUser -c "JethroClient $instanceName localhost:$port -u $jethroUser -p jethro -q 'set global dynamic.aggregation.auto.generate.enable=1;'"
 fi
 
