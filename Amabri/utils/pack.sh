@@ -9,4 +9,4 @@ ambari-server restart
 
 curl -u admin:admin -H 'X-Requested-By: ambari' -X PUT http://localhost:8080/api/v1/links/
 
-echo "Done!"
+echo "Done!" 
