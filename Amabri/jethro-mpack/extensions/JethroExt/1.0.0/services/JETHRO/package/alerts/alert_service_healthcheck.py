@@ -65,7 +65,7 @@ def execute(configurations={}, parameters={}, host_name=None):
         configurations[METRICS_COLLECTOR_WEBAPP_ADDRESS_KEY].split(':')[1])
 
     running_services_metrics = read_metric_values(collector_host, collector_port, metric_collector_https_enabled,
-                                 app_id, metric_name)
+                                 app_id, metric_name, 5)
 
     if len(running_services_metrics) == 0:
         return RESULT_STATE_CRITICAL, [format('No Jethro {service_name} service is running.')]
