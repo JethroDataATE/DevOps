@@ -56,7 +56,7 @@ else
    resetInstanceServicesConfig
 fi
 
-# Update ini path
+# Update ini path 
 port=$(awk -F  ":" -v instance="$instanceName" '{if ($1==instance) {print $2}}'  /opt/jethro/instances/services.ini)
 echo "instance port: $port"
 server=$(awk -F  ":" -v instance="$instanceName" '{if ($1==instance) {print $3}}'  /opt/jethro/instances/services.ini)
