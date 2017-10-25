@@ -93,17 +93,21 @@ def get_current_instance_name():
     return jethro_current_instance_name
 
 # Read attached instances info from services.ini and fetch instance names
+
+
 def get_locally_attached_instances():
     instances = []
     get_all_instance_cmd = "awk -F \":\" '$1 !~ /#/ {x=$1} {print x}' /opt/jethro/instances/services.ini"
     res = os.popen(get_all_instance_cmd)
     for instance in res:
-        trim_inst = instance.replace('LF','').strip()
+        trim_inst = instance.replace('LF', '').strip()
         if trim_inst != '' and trim_inst not in instances:
             instances.append(trim_inst)
     return instances
 
 # Read service config from services.ini for specific instance
+
+
 def is_service_installed_for_instance(instance_name, service_name):
     service_installed = False
 
@@ -113,8 +117,9 @@ def is_service_installed_for_instance(instance_name, service_name):
         service_index = '4'
     elif service_name == 'loadscheduler':
         service_index = '5'
-        
-    get_service_config_cmd = "awk -F \":\" '$1 ~ /" + instance_name +"/ {x=$" + service_index + "} END{print x}' /opt/jethro/instances/services.ini"
+
+    get_service_config_cmd = "awk -F \":\" '$1 ~ /" + instance_name + \
+        "/ {x=$" + service_index + "} END{print x}' /opt/jethro/instances/services.ini"
     code, out = shell.call(get_service_config_cmd)
     if code == 0 and out != '':
         service_installed = (out == 'yes')
@@ -149,13 +154,24 @@ def set_param_command(config_name, param_name):
     return format('set global {param_name}={param_value};\n')
 
 
-def exec_jethro_client_command_file(command_file_path, command_file_output):
+def exec_jethro_client_command_file(command_file_path):
     import params
     inst_name = get_current_instance_name()
     inst_port = get_current_instance_port()
-    jethro_client_cmd = format("JethroClient {inst_name} 127.0.0.1:{inst_port} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|' > {command_file_output}")
-    print jethro_client_cmd
+    jethro_client_cmd = format("JethroClient {inst_name} 127.0.0.1:{inst_port} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|'")
+    print (format('Set params command: {jethro_client_cmd}'))
+    
+    try:
+        with open(command_file_path, 'r') as cmd_file:
+            cmd_content = cmd_file.read()
+            print (format('Commands: {cmd_content}'))
+    except Exception as e:
+        print (format('Fail to read commands file: {e}'))
+    
     code, out = shell.call(jethro_client_cmd)
+    if code == 0:
+        print (format('Success changing global Jethro paramaters:\n{out}'))
+    else:
+        print (format('Failed changing global Jethro paramaters:\n{out}'))
 
-    # code 0 means success, anything else is error.
-    return code
+    shell.call(format('rm -f {command_file_path}'))

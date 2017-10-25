@@ -61,6 +61,7 @@ class JethroMetrics():
 
 #****************  Helpers *************************
 
+
 def submit_attached_instances_names_metrics():
     res = os.popen("awk -F \":\" '$1 !~ /#/ {x=$1} {if (x != \"\") print x}' /opt/jethro/instances/services.ini")
     for instance_name in res:
@@ -70,6 +71,7 @@ def submit_attached_instances_names_metrics():
 
 def format_instance_name(instance_name):
     return instance_name[9:-7]
+
 
 def submit_running_instances_names_metrics():
     res = os.popen("service jethro status | awk '{print $2}'")
@@ -84,13 +86,15 @@ def submit_running_instances_names_metrics():
     for instance_num in instances:
         jethro_metrice_collector.submit_metrics('jethro_mng', 'running_instances_names', instance_num)
 
+
 def submit_running_instances_metrics():
 
-    metrics = read_metric_values(ams_host, ams_port, False, "jethro_mng", "running_instances_names")
+    metrics = read_metric_values(ams_host, ams_port, False, "jethro_mng", "running_instances_names", 3)
 
     val = len(set(metrics))
 
     jethro_metrice_collector.submit_metrics('jethro_mng', 'running_instances', val)
+
 
 def submit_maint_status_metrics():
     res = os.popen("service jethro status | awk '/JethroMaint/ {print $2}'")
@@ -108,6 +112,16 @@ def submit_load_scheduler_status_metrics():
         jethro_metrice_collector.submit_metrics('jethro_load_scheduler', 'running_load_scheduler_services', instance_num)
 
 
+def submit_instance_storage_metrics(jethro_user):
+    res = os.popen("awk -F \":\" '$1 !~ /#/ {x=$1} {if (x != \"\") print x}' /opt/jethro/instances/services.ini")
+    storage_sum = 0.0
+    for instance_name in res:
+        storage_path = os.popen("awk -F \"=\" '$1 ~ /storage.root.path/ {print $2}' /opt/jethro/instances/" + instance_name.replace('\n', '') + "/local-conf.ini").read()
+        storage_usage = os.popen(format('su - {jethro_user} -c "hadoop fs -du -s -h {storage_path}"') + " | awk '{if ($2 == \"K\") print $1 / 1024 / 1024; if ($2 == \"M\") print $1 / 1024; else print $1}'").read()
+        storage_sum += float(storage_usage)
+
+    jethro_metrice_collector.submit_metrics('jethro_maint', 'instance_storage_size_gb', storage_sum)
+
 #****************************************************************
 
 
@@ -116,6 +130,7 @@ def submit_load_scheduler_status_metrics():
 METRICS_INTERVAL = 60
 
 ams_address = sys.argv[1]
+jethro_user = sys.argv[2]
 jethro_metrice_collector = JethroMetrics(ams_address)
 script_dir = os.path.dirname(os.path.abspath(__file__))
 init_path = format('{script_dir}/../ams_host.ini')
@@ -129,14 +144,16 @@ while True:
         # I couldn't find any other alternative :-(
         if not os.path.exists(init_path):
             os.popen('echo ' + ams_host + ' > ' + init_path)
-       
+
         # Submit metrics
         submit_attached_instances_names_metrics()
         submit_maint_status_metrics()
         submit_load_scheduler_status_metrics()
         submit_running_instances_names_metrics()
         submit_running_instances_metrics()
-
-        time.sleep(METRICS_INTERVAL)
+        submit_instance_storage_metrics(jethro_user)
+        
     except Exception as e:
         print("Unable to submit Jethro metrics to Ambari Metric Collector: " + str(e))
+    finally:
+        time.sleep(METRICS_INTERVAL)

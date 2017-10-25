@@ -1,35 +1,49 @@
 {
-    "layouts": [
-        {
-            "layout_name": "default_jethro_dashboard",
-            "display_name": "Jethro Dashboard",
-            "section_name": "JETHRO_SUMMARY",
-            "widgetLayoutInfo": [
-                {
-                    "widget_name": "Running Instances",
-                    "description": "Number of running instances in the cluster",
-                    "widget_type": "NUMBER",
-                    "is_visible": true,
-                    "metrics": [
-                      {
-                        "name": "running_instances._min",
-                        "metric_path": "metrics/jethro/jethro_mng/running_instances._min",
-                        "service_name": "JETHRO",
-                        "component_name": "JETHRO_MNG"
-                      }
-                    ],
-                    "values": [
-                      {
-                        "name": "Running Instances",
-                        "value": "${running_instances._min}"
-                      }
-                    ],
-                    "properties": {
-                        "warning_threshold": "20",
-                        "error_threshold": "50"
-                    }
-                }
-            ]
+  "layouts": [{
+    "layout_name": "default_jethro_dashboard",
+    "display_name": "Jethro Dashboard",
+    "section_name": "JETHRO_SUMMARY",
+    "widgetLayoutInfo": [{
+        "widget_name": "Running Instances",
+        "description": "Number of running instances in the cluster",
+        "widget_type": "NUMBER",
+        "is_visible": true,
+        "metrics": [{
+          "name": "running_instances._min",
+          "metric_path": "metrics/jethro/jethro_mng/running_instances._min",
+          "service_name": "JETHRO",
+          "component_name": "JETHRO_MNG"
+        }],
+        "values": [{
+          "name": "Running Instances",
+          "value": "${running_instances._min}"
+        }],
+        "properties": {
+          "warning_threshold": "20",
+          "error_threshold": "50"
         }
+      },
+      {
+        "widget_name": "Jethro Storage Utilization",
+        "description": "Jethro Storage size on HDFS",
+        "widget_type": "GRAPH",
+        "is_visible": true,
+        "metrics": [{
+          "name": "instance_storage_size_gb._min",
+          "metric_path": "metrics/jethro/jethro_maint/instance_storage_size_gb._min",
+          "service_name": "JETHRO",
+          "component_name": "JETHRO_MAINT"
+        }],
+        "values": [{
+          "name": "Jethro Storage Utilization",
+          "value": "${instance_storage_size_gb._min}"
+        }],
+        "properties": {
+          "graph_type": "LINE",
+          "time_range": "1",
+          "display_unit": "GB"
+        }
+      }
     ]
+  }]
 }

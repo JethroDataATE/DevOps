@@ -32,6 +32,11 @@
                         "metric": "running_maint_services",
                         "pointInTime": true,
                         "temporal": true
+                    },
+                    "metrics/jethro/jethro_maint/instance_storage_size_gb": {
+                        "metric": "instance_storage_size_gb",
+                        "pointInTime": true,
+                        "temporal": true
                     }
                 }
             }

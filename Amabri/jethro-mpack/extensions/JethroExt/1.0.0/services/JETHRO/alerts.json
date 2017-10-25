@@ -2,7 +2,7 @@
   "JETHRO": {
     "JETHRO_MAINT": [{
       "name": "jethro_maint_is_running",
-      "label": "Jethro Maint Utilization",
+      "label": "Jethro Maint Health",
       "description": "Verify maint service is running.",
       "interval": 5,
       "scope": "ANY",
@@ -38,7 +38,7 @@
     }],
     "JETHRO_LOAD_SCHEDULER": [{
       "name": "jethro_loads_scheduler_is_running",
-      "label": "Jethro Load Scheduler Utilization",
+      "label": "Jethro Load Scheduler Health",
       "description": "Verify loads scheduler service is running.",
       "interval": 5,
       "scope": "ANY",

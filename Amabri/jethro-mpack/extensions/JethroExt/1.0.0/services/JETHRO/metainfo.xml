@@ -41,6 +41,14 @@
                     </commandScript>
                     <customCommands>
                         <customCommand>
+                            <name>START_JETHRO_METRICS</name>
+                            <commandScript>
+                                <script>scripts/jethro_maint.py</script>
+                                <scriptType>PYTHON</scriptType>
+                                <timeout>600</timeout>
+                            </commandScript>
+                        </customCommand>
+                        <customCommand>
                             <name>STOP_JETHRO_METRICS</name>
                             <commandScript>
                                 <script>scripts/jethro_maint.py</script>

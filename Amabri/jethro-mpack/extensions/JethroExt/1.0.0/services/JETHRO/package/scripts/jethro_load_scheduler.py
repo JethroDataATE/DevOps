@@ -50,13 +50,16 @@ class JethroLoadScheduler(Script):
 
         self.configure(env)
 
-        start_metrics(params.ams_collector_address)
+        start_metrics(params.ams_collector_address, params.jethro_user)
 
     def stop(self, env):
         import params
         env.set_params(params)
 
         instance_name = get_current_instance_name()
+
+        if instance_name == '':
+            return
 
         Execute(
             ("service", "jethro", "stop",

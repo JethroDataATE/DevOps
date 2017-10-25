@@ -7,14 +7,16 @@ import sys
 from resource_management.libraries.functions.format import format
 import ambari_commons.network as network
 
-def start_metrics(ams_collector_address):
+def start_metrics(ams_collector_address, jethro_user):
+    
+    # If jethro metrics process is already running on this host - do nothing
     running_metrics = os.popen("COLUMNS=20000 ps ax | grep jethro_metrics | grep -v grep").read()
     if running_metrics != '':
         return
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     script_path = format('{script_dir}/jethro_metrics.py')
-    subprocess.Popen(['python', script_path, ams_collector_address, ' &'])
+    subprocess.Popen(['python', script_path, ams_collector_address, jethro_user, ' &'])
 
 def stop_metrics():
     for line in os.popen("COLUMNS=20000 ps ax | grep jethro_metrics | grep -v grep"):

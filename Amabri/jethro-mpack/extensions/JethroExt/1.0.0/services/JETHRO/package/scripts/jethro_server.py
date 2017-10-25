@@ -15,7 +15,6 @@ class JethroServer(Script):
 
     JETHRO_SERVICE_NAME = "server"
     COMMAND_FILE_PATH = "/tmp/jethro_client_commands.sql"
-    COMMAND_FILE_OUTPUT = "/tmp/jethro_client_commands.out"
 
 # ************************ Script Interface methrods ***************************
 
@@ -56,13 +55,16 @@ class JethroServer(Script):
 
         self.configure(env)
 
-        start_metrics(params.ams_collector_address)
+        start_metrics(params.ams_collector_address, params.jethro_user)
 
     def stop(self, env):
         import params
         env.set_params(params)
 
         instance_name = get_current_instance_name()
+
+        if instance_name == '':
+            return
 
         Execute(
             ("service", "jethro", "stop", instance_name),
@@ -92,8 +94,7 @@ class JethroServer(Script):
 
         File(self.COMMAND_FILE_PATH, content=commands)
 
-        exec_jethro_client_command_file(
-            self.COMMAND_FILE_PATH, self.COMMAND_FILE_OUTPUT)
+        exec_jethro_client_command_file(self.COMMAND_FILE_PATH)
 
     # ************************ Private methods ***************************
 
