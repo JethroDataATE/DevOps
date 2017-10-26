@@ -9,18 +9,18 @@
         "widget_type": "NUMBER",
         "is_visible": true,
         "metrics": [{
-          "name": "running_instances._min",
-          "metric_path": "metrics/jethro/jethro_mng/running_instances._min",
+          "name": "running_instances._max",
+          "metric_path": "metrics/jethro/jethro_mng/running_instances._max",
           "service_name": "JETHRO",
           "component_name": "JETHRO_MNG"
         }],
         "values": [{
           "name": "Running Instances",
-          "value": "${running_instances._min}"
+          "value": "${running_instances._max}"
         }],
         "properties": {
-          "warning_threshold": "20",
-          "error_threshold": "50"
+          "error_threshold": "",
+          "warning_threshold": ""
         }
       },
       {
@@ -29,19 +29,40 @@
         "widget_type": "GRAPH",
         "is_visible": true,
         "metrics": [{
-          "name": "instance_storage_size_gb._min",
-          "metric_path": "metrics/jethro/jethro_maint/instance_storage_size_gb._min",
+          "name": "instance_storage_size_gb",
+          "metric_path": "metrics/jethro/jethro_maint/instance_storage_size_gb",
           "service_name": "JETHRO",
           "component_name": "JETHRO_MAINT"
         }],
         "values": [{
           "name": "Jethro Storage Utilization",
-          "value": "${instance_storage_size_gb._min}"
+          "value": "${instance_storage_size_gb}"
         }],
         "properties": {
           "graph_type": "LINE",
           "time_range": "1",
           "display_unit": "GB"
+        }
+      },
+      {
+        "widget_name": "Jethro Instances Storage",
+        "description": "Jethro Storage size on HDFS",
+        "widget_type": "NUMBER",
+        "is_visible": true,
+        "metrics": [{
+          "name": "instance_storage_size_gb",
+          "metric_path": "metrics/jethro/jethro_maint/instance_storage_size_gb",
+          "service_name": "JETHRO",
+          "component_name": "JETHRO_MAINT"
+        }],
+        "values": [{
+          "name": "Jethro Instances Storage",
+          "value": "${instance_storage_size_gb}"
+        }],
+        "properties": {
+          "display_unit": "GB",
+          "warning_threshold": "2000000000",
+          "error_threshold":"5000000000"
         }
       }
     ]

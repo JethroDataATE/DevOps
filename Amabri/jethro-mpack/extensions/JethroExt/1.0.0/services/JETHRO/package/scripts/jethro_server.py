@@ -63,7 +63,7 @@ class JethroServer(Script):
 
         instance_name = get_current_instance_name()
 
-        if instance_name == '':
+        if instance_name is None:
             return
 
         Execute(
@@ -80,7 +80,11 @@ class JethroServer(Script):
             ensure_kerberos_tickets(params.klist_path, params.kinit_path, params.jethro_kerberos_prinicipal,
                                     params.jethro_kerberos_keytab, params.jethro_user)
 
-        return check_process_status(status_params.jethroserver_pid_file)
+        if status_params.jethroserver_pid_file is not None:
+            return check_process_status(status_params.jethroserver_pid_file)
+        else:
+            return check_process_status('')
+
 
     def configure(self, env):
         import params

@@ -9,6 +9,10 @@ jethro_config = config['configurations']['jethro-env']
 jethromng_pid_file = jethro_config['jethromng_pid_file']
 
 jethro_instance_name = None
+jethroloadschedule_pid_file = None
+jethroserver_pid_file = None
+jethromaint_pid_file = None
+
 jethro_instance_name = get_current_instance_name()
 if jethro_instance_name is not None:   
     jethro_pid_dir = jethro_config['jethro_pid_dir']

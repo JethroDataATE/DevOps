@@ -71,19 +71,31 @@
           }
         ]
       }
-    }]
-    ,
+    }],
     "JETHRO_SERVER": [{
-      "name": "jethro_auto_cube_generation_is_on",
-      "label": "Jethro Auto Cube Generation",
-      "description": "Verify Jethro auto cube generation is on.",
-      "interval": 5,
-      "scope": "ANY",
-      "source": {
-        "type": "SCRIPT",
-        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.0.0/services/JETHRO/package/alerts/alert_cube_generation_off.py",
-        "parameters": []
+        "name": "jethro_auto_cube_generation_is_on",
+        "label": "Jethro Auto Cube Generation",
+        "description": "Verify Jethro auto cube generation is on.",
+        "interval": 5,
+        "scope": "ANY",
+        "source": {
+          "type": "SCRIPT",
+          "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.0.0/services/JETHRO/package/alerts/alert_cube_generation_off.py",
+          "parameters": []
+        }
+      },
+      {
+        "name": "jethro_auto_cube_is_sync",
+        "label": "Jethro Auto Cube Generation Is Sync",
+        "description": "Jethro Auto Cube Generation parameter is synchronized with Ambari configuration.",
+        "interval": 5,
+        "scope": "ANY",
+        "source": {
+          "type": "SCRIPT",
+          "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.0.0/services/JETHRO/package/alerts/alert_jethro_auto_cube_is_sync.py",
+          "parameters": []
+        }
       }
-    }]
+    ]
   }
 }
