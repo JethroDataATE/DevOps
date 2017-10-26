@@ -35,12 +35,12 @@ def execute(configurations={}, parameters={}, host_name=None):
     instance_port = get_current_instance_port()
 
     if instance_name is None:
-        return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro Server is not reachable.']
+        return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter because Jethro Server is unreachable.']
 
     client_code, client_out = shell.call(
         "service jethro status |  awk ' /" + instance_name + ".*JethroServer/ {x=$2} END{if(x != \"\") print x}'")
     if client_code != 0 or client_out.strip() == '':
-        return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro Server is not reachable.']
+        return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter becasue Jethro Server is unreachable.']
 
     cmd_part1 = format(
         "su - {jethro_user} -c \'JethroClient {instance_name} localhost:{instance_port} -u {jethro_user} -p {jethro_password} -q \"show param  dynamic.aggregation.auto.generate.enable;\"'")
@@ -50,8 +50,8 @@ def execute(configurations={}, parameters={}, host_name=None):
     if code == 0:
         res = out.strip()
         if res == '1':
-            return RESULT_STATE_OK, [format('Jethro auto-cube generation is ON for instance: {instance_name}.')]
+            return RESULT_STATE_OK, [format("Jethro auto-cube generation is ON for instance '{instance_name}'.")]
         else:
-            return RESULT_STATE_WARNING, [format('Jethro auto-cube generation is OFF for instance: {instance_name}.')]
+            return RESULT_STATE_WARNING, [format("Jethro auto-cube generation is OFF for instance '{instance_name}'.")]
     else:
         return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter: ' + out]

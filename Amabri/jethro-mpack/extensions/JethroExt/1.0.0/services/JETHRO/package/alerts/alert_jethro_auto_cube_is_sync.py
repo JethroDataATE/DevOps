@@ -55,8 +55,8 @@ def execute(configurations={}, parameters={}, host_name=None):
     if code == 0:
         res = out.strip()
         if res == ambari_jethro_cube_param_value:
-            return RESULT_STATE_OK, [format('Jethro auto-cube generation is sync with global Ambari configuration for instance: {instance_name}.')]
+            return RESULT_STATE_OK, [format("Jethro auto-cube generation parameter value is aligned with Ambari configuration for instance '{instance_name}'.")]
         else:
-            return RESULT_STATE_WARNING, [format('Jethro auto-cube generation is out of sync for instance: {instance_name}.\nAmbari configuration: {ambari_jethro_cube_param_value}.\nActual value: {res}.')]
+            return RESULT_STATE_WARNING, [format("Jethro auto-cube generation parameter value is stale for instance '{instance_name}'.\nAmbari configuration value is: {ambari_jethro_cube_param_value}, while Jethro actual value is {res}.")]
     else:
          return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter: ' + out]

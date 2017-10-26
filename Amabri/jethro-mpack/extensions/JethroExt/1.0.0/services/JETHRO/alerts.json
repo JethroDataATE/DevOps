@@ -86,8 +86,8 @@
       },
       {
         "name": "jethro_auto_cube_is_sync",
-        "label": "Jethro Auto Cube Generation Is Sync",
-        "description": "Jethro Auto Cube Generation parameter is synchronized with Ambari configuration.",
+        "label": "Jethro Auto Cube Generation Is Stale",
+        "description": "Jethro Auto Cube Generation parameter is different than Ambari configuration value.",
         "interval": 5,
         "scope": "ANY",
         "source": {
