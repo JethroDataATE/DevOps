@@ -61,5 +61,5 @@ jethro_config = config['configurations'].get('jethro-config')
 if jethro_config is not None:
     jethromng_rpm_path = jethro_config['jethromng_rpm_path']
     jethro_rpm_path = jethro_config['jethro_rpm_path']
-    jethro_default_instance_name = jethro_config['jethro_default_instance_name']
-    jethro_default_instance_storage_path = jethro_config['jethro_default_instance_storage_path']
+    jethro_instance_name = jethro_config['jethro_instance_name']
+    jethro_instance_storage_path = jethro_config['jethro_instance_storage_path']

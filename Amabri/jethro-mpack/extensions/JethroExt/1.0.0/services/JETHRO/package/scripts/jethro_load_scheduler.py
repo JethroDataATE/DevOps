@@ -92,8 +92,8 @@ class JethroLoadScheduler(Script):
         import params
         create_attach_instance(
             self.JETHRO_SERVICE_NAME,
-            params.jethro_default_instance_name,
-            params.jethro_default_instance_storage_path,
+            params.jethro_instance_name,
+            params.jethro_instance_storage_path,
             params.jethro_user
         )
 

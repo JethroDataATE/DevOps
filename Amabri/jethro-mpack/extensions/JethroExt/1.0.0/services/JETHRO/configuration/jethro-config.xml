@@ -35,21 +35,21 @@
         <display-name>Jethro RPM</display-name>
     </property>
     <property require-input="true">
-        <name>jethro_default_instance_name</name>
+        <name>jethro_instance_name</name>
         <value></value>
-        <description>Jethro default instance name</description>
+        <description>Jethro instance name</description>
         <value-attributes>
             <type>string</type>
         </value-attributes>
         <display-name>Jethro Default Instance Name</display-name>
     </property>
     <property require-input="true">
-        <name>jethro_default_instance_storage_path</name>
+        <name>jethro_instance_storage_path</name>
         <value></value>
-        <description>Jethro default instance storge path on HDFS. The recommended path is: /user/jethro/instances. Note the path should be defined in advance.</description>
+        <description>Jethro instance storge path on HDFS. The recommended path is: /user/jethro/instances. Note the path should be defined in advance.</description>
         <value-attributes>
             <type>string</type>
         </value-attributes>
-        <display-name>Jethro Default Instance Storage</display-name>
+        <display-name>Jethro Instance Storage</display-name>
     </property>
 </configuration>
