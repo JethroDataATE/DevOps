@@ -3,11 +3,21 @@
 <configuration>
     <property>
         <name>dynamic.aggregation.auto.generate.enable</name>
-        <display-name>Enable Cubes</display-name>
+        <display-name>Enable cubes</display-name>
         <value>true</value>
         <description>Toggles the cube generation feature.</description>
         <value-attributes>
             <type>boolean</type>
+        </value-attributes>
+        <on-ambari-upgrade add="true"/>
+    </property>
+    <property>
+        <name>dynamic.aggregation.auto.generate.execution.hosts</name>
+        <display-name>Cube queries server</display-name>
+        <value>auto</value>
+        <description>Specifies the dedicated server for cube queries. The recommended value is 'auto'.</description>
+        <value-attributes>
+            <type>string</type>
         </value-attributes>
         <on-ambari-upgrade add="true"/>
     </property>

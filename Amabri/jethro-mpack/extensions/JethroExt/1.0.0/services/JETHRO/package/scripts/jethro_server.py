@@ -96,6 +96,9 @@ class JethroServer(Script):
         commands += set_param_command("jethro-global",
                                       "dynamic.aggregation.auto.generate.enable")
 
+        commands += set_param_command("jethro-global",
+                                      "dynamic.aggregation.auto.generate.execution.hosts")
+
         File(self.COMMAND_FILE_PATH, content=commands)
 
         exec_jethro_client_command_file(self.COMMAND_FILE_PATH)
