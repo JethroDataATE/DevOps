@@ -6,7 +6,6 @@ from jethro_service_utils import get_current_instance_name
 
 config = Script.get_config()
 jethro_config = config['configurations']['jethro-env']
-jethromng_pid_file = jethro_config['jethromng_pid_file']
 
 jethro_instance_name = None
 jethroloadschedule_pid_file = None

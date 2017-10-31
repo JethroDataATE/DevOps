@@ -42,11 +42,11 @@ class JethroMng(Script):
         )
 
     def status(self, env):
-        import status_params
-        env.set_params(status_params)
+        import mng_status_params
+        env.set_params(mng_status_params)
 
         print('Status of the Jethro Manager')
-        return check_process_status(status_params.jethromng_pid_file)
+        return check_process_status(mng_status_params.jethromng_pid_file)
 
     def configure(self, env):
         print('Configure the Jethro Manager')

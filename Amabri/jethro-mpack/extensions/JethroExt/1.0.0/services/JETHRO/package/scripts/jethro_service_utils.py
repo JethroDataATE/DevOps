@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 from resource_management.core.source import StaticFile
 from resource_management.libraries.functions.format import format
 from resource_management.core.resources.system import File, Execute
@@ -93,8 +94,6 @@ def get_current_instance_name():
     return jethro_current_instance_name
 
 # Read attached instances info from services.ini and fetch instance names
-
-
 def get_locally_attached_instances():
     instances = []
     get_all_instance_cmd = "awk -F \":\" '$1 !~ /#/ {x=$1} {print x}' /opt/jethro/instances/services.ini"
@@ -106,8 +105,6 @@ def get_locally_attached_instances():
     return instances
 
 # Read service config from services.ini for specific instance
-
-
 def is_service_installed_for_instance(instance_name, service_name):
     service_installed = False
 
