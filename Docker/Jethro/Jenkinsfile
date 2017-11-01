@@ -56,7 +56,13 @@ node('GUI-Builder') {
                 echo "VERSION: $VERSION"
                 def imageFileName = "dockerDeploy/jethro_docker-$VERSION" + ".tar"
                 sh "mkdir dockerDeploy && docker save --output $imageFileName jethrodata/jethro:$VERSION"
-                def deploymentTarget = RPM.substring(7,RPM.lastIndexOf("/"))
+                def deploymentTarget
+                if (RPM.indexOf("https://") > -1) {
+                    deploymentTarget = RPM.substring(8,RPM.lastIndexOf("/"))
+                }
+                else {
+                    deploymentTarget = RPM.substring(7,RPM.lastIndexOf("/"))
+                } 
                 // echo "deploymentTarget: $deploymentTarget"
                 def bucketName = deploymentTarget.substring(0, deploymentTarget.indexOf("."))
                 // echo "bucketName: $bucketName"
