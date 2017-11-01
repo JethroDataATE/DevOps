@@ -8,8 +8,6 @@ ARG JETHRO_RPM_LOACTION
 ARG JAVA_VERSION=java-1.8.0-openjdk.x86_64
 ARG HADOOP_DIST_VERSION=5
 
-USER root
-
 WORKDIR /jethro_install
 
 COPY Common/dockerBootstrap /jethro_install
@@ -46,6 +44,15 @@ RUN yum -y install hive-jdbc
 ADD $JETHRO_RPM_LOACTION /jethro_install
 RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
 
+# User mode parameters
+ENV USER_ID 501 
+ENV GROUP_ID 501
+
+# change jethro user mode
+RUN usermod -u $USER_ID jethro
+RUN usermod -g $GROUP_ID jethro
+
+
 # configure volumes
 RUN mkdir /jethro -m 777
 RUN mkdir /jethro/persist -m 777
@@ -58,6 +65,10 @@ VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/
 # Auto attach instance parameters
 ENV AUTO_ATTACH_INSTANCE_NAME ""
 ENV AUTO_ATTACH_INSTANCE_PATH ""
+
+# SSH key generation parameters
+ENV KEY_PATH "" 
+ENV GENERAT_KEY_IF_NOT_EXIST "false"
 
 # start container
 RUN chmod a+x /jethro_install/dockerBootstrap
