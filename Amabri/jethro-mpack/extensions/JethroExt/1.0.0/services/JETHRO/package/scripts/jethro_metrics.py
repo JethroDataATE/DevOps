@@ -117,7 +117,7 @@ def submit_instance_storage_metrics(jethro_user):
     storage_sum = 0.0
     for instance_name in res:
         storage_path = os.popen("awk -F \"=\" '$1 ~ /storage.root.path/ {print $2}' /opt/jethro/instances/" + instance_name.replace('\n', '') + "/local-conf.ini").read()
-        storage_usage = os.popen(format('su - {jethro_user} -c "hadoop fs -du -s -h {storage_path}"') + " | awk '{if ($2 == \"K\") print $1 / 1000 / 1000; if ($2 == \"M\") print $1 / 1000; else print $1}'").read()
+        storage_usage = os.popen(format('su - {jethro_user} -c "hadoop fs -du -s -h {storage_path}"') + " | awk '{if ($2 == \"K\") print $1 / 1000 / 1000; else if ($2 == \"M\") print $1 / 1000; else print $1}'").read()
         storage_sum += float(storage_usage)
 
     jethro_metrice_collector.submit_metrics('jethro_maint', 'instance_storage_size_gb', storage_sum)
