@@ -51,6 +51,7 @@ ENV GROUP_ID 501
 # change jethro user/group mode
 RUN usermod -u $USER_ID jethro
 RUN groupmod -g $GROUP_ID jethro
+RUN chown -R jethro /opt/jethro/current/bin
 
 
 # configure volumes
