@@ -1,3 +1,6 @@
+
+build job: 'Start_GUI-Builder_Node', parameters: [string(name: 'Storage', value: 'Posix'), [$class: 'NodeParameterValue', name: 'GUI-Builder', labels: ['GUI-Builder'], nodeEligibility: [$class: 'AllNodeEligibility']], string(name: 'Image_type', value: 'GUI_BUILDER')]
+
 node('GUI-Builder') {
 
     try {
