@@ -127,7 +127,7 @@ runBackgroudInit(){
 
   echo  
   echo "Jethro Docker is up!"
-  echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."
+  echo "In order to ssh the container - use the predefined ssh port (see docker inpect command to see all mapped ports)."
 
 }
 
