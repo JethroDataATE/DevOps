@@ -48,9 +48,9 @@ RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
 ENV USER_ID 501 
 ENV GROUP_ID 501
 
-# change jethro user mode
+# change jethro user/group mode
 RUN usermod -u $USER_ID jethro
-RUN usermod -g $GROUP_ID jethro
+RUN groupmod -g $GROUP_ID jethro
 
 
 # configure volumes
