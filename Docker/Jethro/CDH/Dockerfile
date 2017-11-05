@@ -53,7 +53,6 @@ RUN usermod -u $USER_ID jethro
 RUN groupmod -g $GROUP_ID jethro
 RUN chown -R jethro /opt/jethro/current/bin
 
-
 # configure volumes
 RUN mkdir /jethro -m 777
 RUN mkdir /jethro/persist -m 777

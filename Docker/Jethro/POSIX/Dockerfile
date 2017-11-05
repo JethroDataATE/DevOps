@@ -7,8 +7,6 @@ FROM centos:7
 ARG JETHRO_RPM_LOACTION
 ARG JAVA_VERSION=java-1.8.0-openjdk.x86_64
 
-USER root
-
 WORKDIR /jethro_install
 
 COPY Common/dockerBootstrap /jethro_install
@@ -31,8 +29,21 @@ RUN yum -y install which wget
 ADD $JETHRO_RPM_LOACTION /jethro_install
 RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
 
+# User mode parameters
+ENV USER_ID 501 
+ENV GROUP_ID 501
+
+# change jethro user/group mode
+RUN usermod -u $USER_ID jethro
+RUN groupmod -g $GROUP_ID jethro
+RUN chown -R jethro /opt/jethro/current/bin
+
 # Clear ssh key
 RUN rm -f /home/jethro/.JethroKeys/id_rsa.pub && rm -f /home/jethro/.JethroKeys/id_rsa
+
+# SSH key generation parameters
+ENV KEY_PATH "" 
+ENV GENERAT_KEY_IF_NOT_EXIST "false"
 
 # configure volumes
 RUN mkdir /jethro -m 777
