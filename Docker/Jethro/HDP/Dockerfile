@@ -40,15 +40,21 @@ COPY Common/core-site.xml.template $HADOOP_CONF_DIR/core-site.xml.template
 # install hive
 RUN yum -y install hive
 
-# install Jethro
-ADD $JETHRO_RPM_LOACTION /jethro_install
-RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
-
 # User mode parameters
 ENV USER_ID 501 
 ENV GROUP_ID 501
 
-# # change jethro user/group mode
+# change jethro user/group mode
+RUN groupadd jethro --gid $GROUP_ID
+RUN adduser jethro --uid $USER_ID --gid $GROUP_ID
+ENV JETHRO_INSTALL_USER=jethro
+ENV JETHRO_INSTALL_GROUP=jethro
+
+# install Jethro
+ADD $JETHRO_RPM_LOACTION /jethro_install
+RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
+
+# change jethro user/group mode
 # RUN groupmod -g $GROUP_ID jethro
 # RUN usermod -u $USER_ID jethro
 # RUN chown -R jethro:jethro /opt/jethro/current/bin
