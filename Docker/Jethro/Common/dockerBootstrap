@@ -104,6 +104,12 @@ runBackgroudInit(){
     sed s/HADDOP_NAME_NODE_ADDRESS/$HADDOP_NAME_NODE_ADDRESS/ $HADOOP_CONF_DIR/core-site.xml.template > $HADOOP_CONF_DIR/core-site.xml 
   fi
 
+  # set jethro user/group ids
+  groupmod -g $GROUP_ID jethro
+  usermod -u $USER_ID jethro
+  chown -R jethro:jethro /opt/jethro/current/bin
+  chown -R jethro:jethro /home/jethro
+
   # Generating ssh key
   generateSSHKey
 

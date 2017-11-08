@@ -48,11 +48,11 @@ RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
 ENV USER_ID 501 
 ENV GROUP_ID 501
 
-# change jethro user/group mode
-RUN groupmod -g $GROUP_ID jethro
-RUN usermod -u $USER_ID jethro
-RUN chown -R jethro:jethro /opt/jethro/current/bin
-RUN chown -R jethro:jethro /home/jethro
+# # change jethro user/group mode
+# RUN groupmod -g $GROUP_ID jethro
+# RUN usermod -u $USER_ID jethro
+# RUN chown -R jethro:jethro /opt/jethro/current/bin
+# RUN chown -R jethro:jethro /home/jethro
 
 # Clear ssh key
 RUN rm -f /home/jethro/.JethroKeys/id_rsa.pub && rm -f /home/jethro/.JethroKeys/id_rsa
