@@ -40,19 +40,27 @@ COPY Common/core-site.xml.template $HADOOP_CONF_DIR/core-site.xml.template
 # install hive
 RUN yum -y install hive-jdbc
 
-# install Jethro
-ADD $JETHRO_RPM_LOACTION /jethro_install
-RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
-
 # User mode parameters
 ENV USER_ID 501 
 ENV GROUP_ID 501
 
 # change jethro user/group mode
-RUN groupmod -g $GROUP_ID jethro
-RUN usermod -u $USER_ID jethro
-RUN chown -R jethro:jethro /opt/jethro/current/bin
-RUN chown -R jethro:jethro /home/jethro
+RUN groupadd jethro --gid $GROUP_ID
+RUN adduser jethro --uid $USER_ID --gid $GROUP_ID
+RUN echo jethro | passwd jethro --stdin
+ENV JETHRO_INSTALL_USER=jethro
+ENV JETHRO_INSTALL_GROUP=jethro
+
+# install Jethro
+ADD $JETHRO_RPM_LOACTION /jethro_install
+RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
+
+# Clear ssh key
+RUN rm -f /home/jethro/.JethroKeys/id_rsa.pub && rm -f /home/jethro/.JethroKeys/id_rsa
+
+# SSH key generation parameters
+ENV KEY_PATH "" 
+ENV GENERAT_KEY_IF_NOT_EXIST "false"
 
 # configure volumes
 RUN mkdir /jethro -m 777
@@ -66,10 +74,6 @@ VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/
 # Auto attach instance parameters
 ENV AUTO_ATTACH_INSTANCE_NAME ""
 ENV AUTO_ATTACH_INSTANCE_PATH ""
-
-# SSH key generation parameters
-ENV KEY_PATH "" 
-ENV GENERAT_KEY_IF_NOT_EXIST "false"
 
 # start container
 RUN chmod a+x /jethro_install/dockerBootstrap
