@@ -47,6 +47,7 @@ ENV GROUP_ID 501
 # change jethro user/group mode
 RUN groupadd jethro --gid $GROUP_ID
 RUN adduser jethro --uid $USER_ID --gid $GROUP_ID
+RUN echo jethro | passwd jethro --stdin
 ENV JETHRO_INSTALL_USER=jethro
 ENV JETHRO_INSTALL_GROUP=jethro
 
