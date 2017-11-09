@@ -79,7 +79,7 @@ def setup_kerberos(kinit_path, principal_name, keytab_path, local_user_name):
 def ensure_kerberos_tickets(klist_path, kinit_path, principal_name, keytab_path, local_user_name):
     # If there are no tickets in the cache or they are expired, perform a kinit, else use what is in the cache
     klist_cmd = format("{klist_path} -s")
-    if shell.call(klist_cmd, user=local_user_name)[0] != 0:
+    if shell.call(klist_cmd, user=local_user_name, timeout=20)[0] != 0:
         setup_kerberos(kinit_path, principal_name,
                        keytab_path, local_user_name)
 
@@ -88,7 +88,7 @@ def ensure_kerberos_tickets(klist_path, kinit_path, principal_name, keytab_path,
 def get_current_instance_name():
     jethro_current_instance_name = None
     get_current_instance_cmd = "awk -F \":\" '$1 !~ /#/ {x=$1} END{print x}' /opt/jethro/instances/services.ini"
-    code, out = shell.call(get_current_instance_cmd)
+    code, out = shell.call(get_current_instance_cmd, timeout=20)
     if code == 0 and out != '':
         jethro_current_instance_name = out
     return jethro_current_instance_name
@@ -117,7 +117,7 @@ def is_service_installed_for_instance(instance_name, service_name):
 
     get_service_config_cmd = "awk -F \":\" '$1 ~ /" + instance_name + \
         "/ {x=$" + service_index + "} END{print x}' /opt/jethro/instances/services.ini"
-    code, out = shell.call(get_service_config_cmd)
+    code, out = shell.call(get_service_config_cmd, timeout=20)
     if code == 0 and out != '':
         service_installed = (out == 'yes')
     return service_installed
@@ -127,7 +127,7 @@ def is_service_installed_for_instance(instance_name, service_name):
 def get_current_instance_port():
     jethro_current_instance_port = None
     get_current_instance_port_cmd = "awk -F \":\" '$1 !~ /#/ {x=$2} END{print x}' /opt/jethro/instances/services.ini"
-    code, out = shell.call(get_current_instance_port_cmd)
+    code, out = shell.call(get_current_instance_port_cmd, timeout=20)
     if code == 0 and out != '':
         jethro_current_instance_port = out
     return jethro_current_instance_port
@@ -165,10 +165,10 @@ def exec_jethro_client_command_file(command_file_path):
     except Exception as e:
         print (format('Fail to read commands file: {e}'))
     
-    code, out = shell.call(jethro_client_cmd)
+    code, out = shell.call(jethro_client_cmd, timeout=60)
     if code == 0:
         print (format('Success changing global Jethro paramaters:\n{out}'))
     else:
         print (format('Failed changing global Jethro paramaters:\n{out}'))
 
-    shell.call(format('rm -f {command_file_path}'))
+    shell.call(format('rm -f {command_file_path}'), timeout=20)

@@ -36,8 +36,7 @@ else:
     if metric_collector_web_address.find(':') != -1:
         metric_collector_port = metric_collector_web_address.split(':')[1]
 
-ams_collector_address = format(
-    '{metric_collector_host}:{metric_collector_port}')
+ams_collector_address = format('{metric_collector_host}:{metric_collector_port}')
 
 # Security Properties
 security_enabled = config['configurations']['cluster-env']['security_enabled']
@@ -52,8 +51,7 @@ jethro_user = config['configurations']['jethro-env']['jethro_user']
 jethro_password = config['configurations']['jethro-env']['jethro_password']
 
 if security_enabled and (jethro_kerberos_prinicipal == 'none'):
-    jethro_kerberos_prinicipal = format(
-        '{jethro_user}-{CLUSTER_NAME}@{kerberos_realm}')
+    jethro_kerberos_prinicipal = format('{jethro_user}-{CLUSTER_NAME}@{kerberos_realm}')
     jethro_kerberos_keytab = "/etc/security/keytabs/jethro.headless.keytab"
 
 # Jethro specific properties

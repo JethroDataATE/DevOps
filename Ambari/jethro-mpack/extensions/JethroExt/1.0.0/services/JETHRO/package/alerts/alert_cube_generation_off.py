@@ -10,11 +10,10 @@ RESULT_STATE_SKIPPED = 'SKIPPED'
 
 JETHRO_USER_KEY = '{{jethro-env/jethro_user}}'
 JETHRO_PASS_KEY = '{{jethro-env/jethro_password}}'
-CUBE_GENERATION_FLAG = '{{jethro-global/dynamic.aggregation.auto.generate.enable}}'
 
 
 def get_tokens():
-    return (JETHRO_USER_KEY, JETHRO_PASS_KEY, CUBE_GENERATION_FLAG)
+    return (JETHRO_USER_KEY, JETHRO_PASS_KEY)
 
 
 def load_src(name, fpath):
@@ -33,32 +32,28 @@ def execute(configurations={}, parameters={}, host_name=None):
         jethro_user = configurations[JETHRO_USER_KEY]
         jethro_password = configurations[JETHRO_PASS_KEY]
 
-        ambari_jethro_cube_param_bool_value = str(configurations[CUBE_GENERATION_FLAG])
-        if ambari_jethro_cube_param_bool_value == 'true':
-            ambari_jethro_cube_param_value = '1'
-        else:
-            ambari_jethro_cube_param_value = '0'
-
         instance_name = get_current_instance_name()
         instance_port = get_current_instance_port()
 
         if instance_name is None:
-            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro Server is not reachable.']
+            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter because Jethro Server is unreachable.']
 
-        client_code, client_out = shell.call("service jethro status |  awk ' /" + instance_name + ".*JethroServer/ {x=$2} END{if(x != \"\") print x}'")
+        client_code, client_out = shell.call(
+            "service jethro status |  awk ' /" + instance_name + ".*JethroServer/ {x=$2} END{if(x != \"\") print x}'", timeout=60)
         if client_code != 0 or client_out.strip() == '':
-            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro Server is not reachable.']
+            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter becasue Jethro Server is unreachable.']
 
-        cmd_part1 = format("su - {jethro_user} -c \'JethroClient {instance_name} localhost:{instance_port} -u {jethro_user} -p {jethro_password} -q \"show param  dynamic.aggregation.auto.generate.enable;\"'")
+        cmd_part1 = format(
+            "su - {jethro_user} -c \'JethroClient {instance_name} localhost:{instance_port} -u {jethro_user} -p {jethro_password} -q \"show param  dynamic.aggregation.auto.generate.enable;\"'")
         cmd_part2 = " | awk -F \"|\" '$4 ~ /dynamic.aggregation.auto.generate.enable/ {x=$5} END{print x}'"
         cmd = cmd_part1 + cmd_part2
-        code, out=shell.call(cmd)
+        code, out = shell.call(cmd, timeout=60)
         if code == 0:
             res = out.strip()
-            if res == ambari_jethro_cube_param_value:
-                return RESULT_STATE_OK, [format("Jethro auto-cube generation parameter value is aligned with Ambari configuration for instance '{instance_name}'.")]
+            if res == '1':
+                return RESULT_STATE_OK, [format("Jethro auto-cube generation is ON for instance '{instance_name}'.")]
             else:
-                return RESULT_STATE_WARNING, [format("Jethro auto-cube generation parameter value is stale for instance '{instance_name}'.\nAmbari configuration value is: {ambari_jethro_cube_param_value}, while Jethro actual value is {res}.")]
+                return RESULT_STATE_WARNING, [format("Jethro auto-cube generation is OFF for instance '{instance_name}'.")]
         else:
             return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter: ' + out]
     except Exception as e:
