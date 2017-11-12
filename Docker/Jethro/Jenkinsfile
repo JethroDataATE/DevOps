@@ -66,11 +66,14 @@ node('GUI-Builder') {
                 else {
                     deploymentTarget = RPM.substring(7,RPM.lastIndexOf("/"))
                 } 
-                // echo "deploymentTarget: $deploymentTarget"
+                echo "deploymentTarget: $deploymentTarget"
                 def bucketName = deploymentTarget.substring(0, deploymentTarget.indexOf("."))
-                // echo "bucketName: $bucketName"
-                def bucketPath = deploymentTarget.substring(deploymentTarget.indexOf("/"))
-                // echo "bucketPath: $bucketPath"
+                echo "bucketName: $bucketName"
+                def bucketPath = ""
+                if (deploymentTarget.indexOf("/") > -1) {
+                    bucketPath = deploymentTarget.substring(deploymentTarget.indexOf("/"))
+                }
+                echo "bucketPath: $bucketPath"
                 def targetPath = "s3://$bucketName$bucketPath"
                 echo "targetPath: $targetPath"
                 sh "aws s3 cp dockerDeploy/ $targetPath --recursive --acl public-read"
