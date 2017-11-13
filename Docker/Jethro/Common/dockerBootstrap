@@ -131,6 +131,11 @@ runBackgroudInit(){
   service jethro stop >/dev/null 2>&1
   service jethro start >/dev/null 2>&1
 
+  # Restarting Jethro Manager
+  service jethromng stop >/dev/null 2>&1
+  pkill PM2 >/dev/null 2>&1
+  su - jethro -c "service jethromng start" >/dev/null 2>&1
+
   echo  
   echo "Jethro Docker is up!"
   echo "In order to ssh the container - use the predefined ssh port (see docker inpect command to see all mapped ports)."
