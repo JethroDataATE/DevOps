@@ -5,6 +5,7 @@ FROM centos:7
 
 # Build-time parameters
 ARG JETHRO_RPM_LOACTION
+ARG JETHROMNG_RPM_LOACTION 
 ARG JAVA_VERSION=java-1.8.0-openjdk.x86_64
 ARG HADOOP_DIST_VERSION=2.4.3
 
@@ -54,6 +55,9 @@ ENV JETHRO_INSTALL_GROUP=jethro
 # install Jethro
 ADD $JETHRO_RPM_LOACTION /jethro_install
 RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
+
+# Install Jethro Manager is asked
+RUN if [ ! -z $JETHROMNG_RPM_LOACTION ]; then wget $JETHROMNG_RPM_LOACTION && rpm -i $(basename $JETHROMNG_RPM_LOACTION) && rm -f $(basename $JETHROMNG_RPM_LOACTION); fi
 
 # Clear ssh key
 RUN rm -f /home/jethro/.JethroKeys/id_rsa.pub && rm -f /home/jethro/.JethroKeys/id_rsa
