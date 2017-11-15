@@ -34,7 +34,7 @@ RUN yum -y localinstall cloudera-cdh-$HADOOP_DIST_VERSION-0.x86_64.rpm
 
 # hadoop distributed
 ENV HADOOP_PREFIX /etc/hadoop
-ENV HADDOP_NAME_NODE_ADDRESS localhost:8080
+ENV HADOOP_NAME_NODE_ADDRESS localhost:8080
 ENV HADOOP_CONF_DIR $HADOOP_PREFIX/conf
 COPY Common/core-site.xml.template $HADOOP_CONF_DIR/core-site.xml.template
 

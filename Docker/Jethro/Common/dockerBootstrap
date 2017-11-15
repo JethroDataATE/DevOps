@@ -97,11 +97,11 @@ generateSSHKey(){
 
 runBackgroudInit(){
 
-  if [ ! -z $HADDOP_NAME_NODE_ADDRESS ]
+  if [ ! -z $HADOOP_NAME_NODE_ADDRESS ]
   then
     # altering the core-site configuration
-    echo configuring name node to: $HADDOP_NAME_NODE_ADDRESS
-    sed s/HADDOP_NAME_NODE_ADDRESS/$HADDOP_NAME_NODE_ADDRESS/ $HADOOP_CONF_DIR/core-site.xml.template > $HADOOP_CONF_DIR/core-site.xml 
+    echo configuring name node to: $HADOOP_NAME_NODE_ADDRESS
+    sed s/HADOOP_NAME_NODE_ADDRESS/$HADOOP_NAME_NODE_ADDRESS/ $HADOOP_CONF_DIR/core-site.xml.template > $HADOOP_CONF_DIR/core-site.xml 
   fi
 
   # # set jethro user/group ids

@@ -7,7 +7,7 @@ node('GUI-Builder') {
         
         cleanWs()
 
-         withEnv(['VERSION='+ env.VERSION, 'RPM_NAME='+ env.RPM_NAME, 'HADDOP_DEST='+ env.HADDOP_DEST, 'HADDOP_DEST_VERSION='+ env.HADDOP_DEST_VERSION, 'JAVA_VERSION='+ env.JAVA_VERSION]) {
+         withEnv(['VERSION='+ env.VERSION, 'RPM_NAME='+ env.RPM_NAME, 'HADOOP_DEST='+ env.HADOOP_DEST, 'HADOOP_DEST_VERSION='+ env.HADOOP_DEST_VERSION, 'JAVA_VERSION='+ env.JAVA_VERSION]) {
 
             stage('Clone Sources') {
 

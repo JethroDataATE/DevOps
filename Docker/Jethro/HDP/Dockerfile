@@ -34,7 +34,7 @@ RUN yum -y install hadoop-client
 
 # hadoop distributed
 ENV HADOOP_PREFIX /etc/hadoop
-ENV HADDOP_NAME_NODE_ADDRESS localhost:8080
+ENV HADOOP_NAME_NODE_ADDRESS localhost:8080
 ENV HADOOP_CONF_DIR $HADOOP_PREFIX/conf
 COPY Common/core-site.xml.template $HADOOP_CONF_DIR/core-site.xml.template
 
