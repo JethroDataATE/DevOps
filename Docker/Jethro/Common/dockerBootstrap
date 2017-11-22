@@ -94,6 +94,51 @@ generateSSHKey(){
   echo "Successfully created security key pair at '$SSH_KEYS_DIR'"
 }
 
+createAttachInstance(){
+  
+  if [ ! -z $INSTANCE_NAME ]
+  then
+
+    if [ -z $INSTANCE_STORAGE_PATH ]
+    then
+       echo "INSTANCE_STORAGE_PATH cannot be empty!"
+       exit 1
+    fi
+
+    DstorageType="HDFS"
+    if [ -z $HADOOP_NAME_NODE_ADDRESS ]
+    then
+      DstorageType="POSIX"
+    fi
+
+    # Create/attach instance
+    instances=( $(su - jethro -c "JethroAdmin list-storage-instances -storage-path=$INSTANCE_STORAGE_PATH -Dstorage.type=$DstorageType" | awk -v instance="$INSTANCE_NAME" '{if ($1==instance) {print $1, $3}}') )
+    if ! [ -z ${instances[0]} ]
+    then
+      echo
+      echo "Instance found"
+      echo "checking if already attached..."
+      if [ -z ${instances[1]} ] || [ ${instances[1]} = "Not" ]
+      then
+          echo "instance not attached"
+          echo "Attaching instance..."
+          test -d $INSTANCE_CACHE_PATH && rm -rf $INSTANCE_CACHE_PATH
+          su - jethro -c "mkdir -p $INSTANCE_CACHE_PATH"
+          su - jethro -c "JethroAdmin attach-instance $INSTANCE_NAME -storage-path=$INSTANCE_STORAGE_PATH -cache-path=$INSTANCE_CACHE_PATH -cache-size=$INSTANCE_CACHE_SIZE -Dstorage.type=$DstorageType"
+      else
+          echo "instance already attached"
+      fi
+
+    else
+      echo "Instance $INSTANCE_NAME not found."
+      echo "Creating instanse..."
+      test -d $INSTANCE_CACHE_PATH && rm -rf $INSTANCE_CACHE_PATH
+      su - jethro -c "mkdir -p $INSTANCE_CACHE_PATH"
+      su - jethro -c "JethroAdmin create-instance $INSTANCE_NAME -storage-path=$INSTANCE_STORAGE_PATH -cache-path=$INSTANCE_CACHE_PATH -cache-size=$INSTANCE_CACHE_SIZE -Dstorage.type=$DstorageType"
+    fi
+  fi
+}
+
 
 runBackgroudInit(){
 
@@ -104,37 +149,26 @@ runBackgroudInit(){
     sed s/HADOOP_NAME_NODE_ADDRESS/$HADOOP_NAME_NODE_ADDRESS/ $HADOOP_CONF_DIR/core-site.xml.template > $HADOOP_CONF_DIR/core-site.xml 
   fi
 
-  # # set jethro user/group ids
-  # groupmod -g $GROUP_ID jethro
-  # usermod -u $USER_ID jethro
-  # chown -R jethro:jethro /opt/jethro/current/bin
-  # chown -R jethro:jethro /home/jethro
-
   # Generating ssh key
   generateSSHKey
 
-  if [ ! -z $AUTO_ATTACH_INSTANCE_NAME ]
-  then
-
-    if [ -z $AUTO_ATTACH_INSTANCE_PATH ]
-    then
-       echo "AUTO_ATTACH_INSTANCE_PATH cannot be empty!"
-       exit 1
-    fi
-    # Attaching to requested instance
-    echo Attaching instance: $AUTO_ATTACH_INSTANCE_NAME
-    su - jethro -c "mkdir /home/jethro/$AUTO_ATTACH_INSTANCE_NAME-cache"
-    su - jethro -c "JethroAdmin attach-instance $AUTO_ATTACH_INSTANCE_NAME -storage-path=$AUTO_ATTACH_INSTANCE_PATH -cache-path=/home/jethro/$AUTO_ATTACH_INSTANCE_NAME-cache -cache-size=0G"
-  fi
+ # Create/attach instance
+  createAttachInstance
 
   # Restarting all services
   service jethro stop >/dev/null 2>&1
   service jethro start >/dev/null 2>&1
 
   # Restarting Jethro Manager
-  service jethromng stop >/dev/null 2>&1
-  pkill PM2 >/dev/null 2>&1
-  su - jethro -c "service jethromng start" >/dev/null 2>&1
+  if [ ! -z $JETHROMNG_RPM_LOACTION ] && [ ! -z $RUN_JETHRO_MANAGER ]
+  then
+    service jethromng stop >/dev/null 2>&1
+    pkill PM2 >/dev/null 2>&1
+    chown -R jethro.jethro /opt/jethro/jethromng/pm2
+    chmod 777 /opt/jethro/jethromng/jethromng.out
+    chown jethro.jethro /opt/jethro/jethromng/jethromng.config
+    su - jethro -c "service jethromng start" >/dev/null 2>&1
+  fi
 
   echo  
   echo "Jethro Docker is up!"

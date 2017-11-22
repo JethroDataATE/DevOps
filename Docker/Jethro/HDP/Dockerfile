@@ -69,15 +69,18 @@ ENV GENERAT_KEY_IF_NOT_EXIST "false"
 # configure volumes
 RUN mkdir /jethro -m 777
 RUN mkdir /jethro/persist -m 777
-RUN mkdir /jethro/instance_storage -m 777
+RUN mkdir /jethro/instance_cache -m 777
 RUN (test -d /opt/jethro/instances || mkdir /opt/jethro/instances) && (chmod 777 /opt/jethro/instances)
 RUN (test -d /opt/jethro/current/instances || mkdir /opt/jethro/current/instances) && (chmod 777 /opt/jethro/current/instances)
 RUN (test -d /var/log/jethro || mkdir /var/log/jethro) && (chmod 777 /var/log/jethro)
-VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/instance_storage"]
+VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/instance_cache"]
 
-# Auto attach instance parameters
-ENV AUTO_ATTACH_INSTANCE_NAME ""
-ENV AUTO_ATTACH_INSTANCE_PATH "" 
+# Docker run options
+ENV INSTANCE_NAME ""
+ENV INSTANCE_STORAGE_PATH ""
+ENV INSTANCE_CACHE_PATH "/home/jethro/instances_cache"
+ENV INSTANCE_CACHE_SIZE "0G"
+ENV RUN_JETHRO_MANAGER ""
 
 # start container
 RUN chmod a+x /jethro_install/dockerBootstrap
