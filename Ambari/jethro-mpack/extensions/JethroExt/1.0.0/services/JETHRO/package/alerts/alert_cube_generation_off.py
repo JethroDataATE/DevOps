@@ -1,5 +1,6 @@
 import os
 from resource_management.core import shell
+from resource_management.core.logger import Logger
 from resource_management.libraries.functions.format import format
 
 RESULT_STATE_OK = 'OK'
@@ -55,6 +56,8 @@ def execute(configurations={}, parameters={}, host_name=None):
             else:
                 return RESULT_STATE_WARNING, [format("Jethro auto-cube generation is OFF for instance '{instance_name}'.")]
         else:
+            Logger.error("Unable to read Jethro auto-cube generation parameter: {0}".format(out))
             return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter: ' + out]
     except Exception as e:
-        return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter: ' + str(e)]
+        Logger.error("Failed to read Jethro auto-cube generation parameter: {0}".format(str(e)))
+        return RESULT_STATE_UNKNOWN, ['Failed to read Jethro auto-cube generation parameter: ' + str(e)]

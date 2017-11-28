@@ -3,6 +3,7 @@
 from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
+from resource_management.core.logger import Logger
 from resource_management.libraries.functions.format import format
 from jethro_metrics_utils import start_metrics
 from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, ensure_kerberos_tickets, get_current_instance_name, is_service_installed_for_instance
@@ -20,7 +21,7 @@ class JethroLoadScheduler(Script):
         env.set_params(params)
         self.install_packages(env)
 
-        print("Install Jethro Load Scheduler")
+        Logger.info("Install Jethro Load Scheduler")
 
         installJethroComponent(params.jethro_rpm_path, params.jethro_user)
 

@@ -2,6 +2,7 @@
 
 from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
+from resource_management.core.logger import Logger
 from resource_management.core.resources.system import File, Execute
 from resource_management.libraries.functions.format import format
 from resource_management.libraries.functions.check_process_status import check_process_status
@@ -14,13 +15,13 @@ class JethroMng(Script):
     def install(self, env):
         import params
         env.set_params(params)
-        print('Install Jethro Manager')
+        Logger.info('Install Jethro Manager')
         installJethroComponent(params.jethromng_rpm_path, params.jethro_user)
 
     def start(self, env):
         import params
         env.set_params(params)
-        print('Start the Jethro Manager')
+        Logger.info('Start Jethro Manager')
         Execute(
             ("service", "jethromng", "start"),
             user=params.jethro_user
@@ -31,7 +32,7 @@ class JethroMng(Script):
     def stop(self, env):
         import params
         env.set_params(params)
-        print('Stop the Jethro Manager')
+        Logger.info('Stop Jethro Manager')
         Execute(
             ("service", "jethromng", "stop"),
             user=params.jethro_user
@@ -41,11 +42,9 @@ class JethroMng(Script):
         import mng_status_params
         env.set_params(mng_status_params)
 
-        print('Status of the Jethro Manager')
         return check_process_status(mng_status_params.jethromng_pid_file)
 
     def configure(self, env):
-        print('Configure the Jethro Manager')
         import params
         env.set_params(params)
 

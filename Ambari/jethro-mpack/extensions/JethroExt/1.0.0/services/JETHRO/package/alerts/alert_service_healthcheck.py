@@ -102,4 +102,5 @@ def execute(configurations={}, parameters={}, host_name=None):
         else:
             return RESULT_STATE_CRITICAL, [alert_msg]
     except Exception as e:
-        return RESULT_STATE_UNKNOWN
+        strErr = str(e)
+        return RESULT_STATE_UNKNOWN, [format('Unable to determine whethe Jethro {service_name} service is running: {strErr}.')]

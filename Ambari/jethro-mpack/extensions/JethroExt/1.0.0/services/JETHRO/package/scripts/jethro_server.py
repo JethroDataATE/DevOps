@@ -3,6 +3,7 @@
 import time
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
+from resource_management.core.logger import Logger
 from resource_management.libraries.functions.format import format
 from jethro_metrics_utils import start_metrics
 from resource_management.libraries.functions.check_process_status import check_process_status
@@ -23,7 +24,7 @@ class JethroServer(Script):
         env.set_params(params)
         self.install_packages(env)
 
-        print("Install Jethro Server")
+        Logger.info("Install Jethro Server")
 
         installJethroComponent(params.jethro_rpm_path, params.jethro_user)
 
@@ -89,9 +90,6 @@ class JethroServer(Script):
     def configure(self, env):
         import params
         env.set_params(params)
-
-        print 'configure Jethro server called.'
-
         commands = ""
         commands += set_param_command("jethro-global",
                                       "dynamic.aggregation.auto.generate.enable")
