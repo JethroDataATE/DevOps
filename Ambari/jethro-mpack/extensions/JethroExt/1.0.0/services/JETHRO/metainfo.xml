@@ -5,7 +5,7 @@
             <name>JETHRO</name>
             <displayName>Jethro</displayName>
             <comment>Jethro - Business Intelligence on Big Data</comment>
-            <version>1.0.0</version>
+            <version>3.3.1</version>
             <components>
                 <component>
                     <name>JETHRO_MNG</name>
