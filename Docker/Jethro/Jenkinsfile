@@ -34,7 +34,7 @@ node('GUI-Builder') {
                 sh "docker rmi \$(docker images -q) -f || echo " 
                 RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
                 echo "RPM_NAME: $RPM_NAME"
-                def buildJethroMng = ("$JETHRO_MANAGER_RPM" != null && "$JETHRO_MANAGER_RPM" != "")
+                def buildJethroMng = (binding.hasVariable("JETHRO_MANAGER_RPM") && "$JETHRO_MANAGER_RPM" != "")
                 if (buildJethroMng)
                     echo "JETHRO_MANAGER_RPM: $JETHRO_MANAGER_RPM"
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
