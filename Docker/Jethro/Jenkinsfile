@@ -7,7 +7,7 @@ node('GUI-Builder') {
         
         cleanWs()
 
-         withEnv(['VERSION='+ env.VERSION, 'RPM_NAME='+ env.RPM_NAME, 'HADOOP_DEST='+ env.HADOOP_DEST, 'HADOOP_DEST_VERSION='+ env.HADOOP_DEST_VERSION, 'JAVA_VERSION='+ env.JAVA_VERSION, 'JETHRO_MANAGER_RPM='+env.JETHRO_MANAGER_RPM ]) {
+         withEnv(['VERSION='+ env.VERSION, 'RPM_NAME='+ env.RPM_NAME, 'HADOOP_DEST='+ env.HADOOP_DEST, 'HADOOP_DEST_VERSION='+ env.HADOOP_DEST_VERSION, 'JAVA_VERSION='+ env.JAVA_VERSION ]) {
 
             stage('Clone Sources') {
 
@@ -34,7 +34,7 @@ node('GUI-Builder') {
                 sh "docker rmi \$(docker images -q) -f || echo " 
                 RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
                 echo "RPM_NAME: $RPM_NAME"
-                def buildJethroMng = (binding.hasVariable("JETHRO_MANAGER_RPM") && "$JETHRO_MANAGER_RPM" != "")
+                def buildJethroMng = (JETHRO_MANAGER_RPM != null && JETHRO_MANAGER_RPM != "")
                 if (buildJethroMng)
                     echo "JETHRO_MANAGER_RPM: $JETHRO_MANAGER_RPM"
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
