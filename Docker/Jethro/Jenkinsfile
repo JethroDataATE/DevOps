@@ -46,7 +46,7 @@ node('GUI-Builder') {
                 }
                 else {
                      echo 'Building HDFS docker image...'
-                     sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
+                     sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM  --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
                 }
             }
 
