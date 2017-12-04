@@ -34,7 +34,9 @@ node('GUI-Builder') {
                 sh "docker rmi \$(docker images -q) -f || echo " 
                 RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
                 echo "RPM_NAME: $RPM_NAME"
-                echo "JETHRO_MANAGER_RPM: $JETHRO_MANAGER_RPM"
+                def buildJethroMng = ("$JETHRO_MANAGER_RPM" != null && "$JETHRO_MANAGER_RPM" != "")
+                if (buildJethroMng)
+                    echo "JETHRO_MANAGER_RPM: $JETHRO_MANAGER_RPM"
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
                 VERSION = "$Hadoop_Distribution-$VERSION"
                 echo "VERSION: $VERSION" 
@@ -42,11 +44,17 @@ node('GUI-Builder') {
                 def isPosix = ("$Hadoop_Distribution" == 'POSIX') || ("$Hadoop_Distribution" == 'sanity_tpcds');
                 if (isPosix) {
                     echo 'Building POSIX docker image...'
-                    sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM -f $Hadoop_Distribution/Dockerfile ."   
+                    if (buildJethroMng)
+                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM -f $Hadoop_Distribution/Dockerfile ."  
+                    else
+                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version -f $Hadoop_Distribution/Dockerfile ."   
                 }
                 else {
                      echo 'Building HDFS docker image...'
-                     sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM  --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
+                     if (buildJethroMng)
+                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM  --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
+                    else
+                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
                 }
             }
 
