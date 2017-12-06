@@ -61,3 +61,5 @@ if jethro_config is not None:
     jethro_rpm_path = jethro_config['jethro_rpm_path']
     jethro_instance_name = jethro_config['jethro_instance_name']
     jethro_instance_storage_path = jethro_config['jethro_instance_storage_path']
+    jethro_instance_cache_path = jethro_config['jethro_instance_cache_path']
+    jethro_instance_cache_size = jethro_config['jethro_instance_cache_size']

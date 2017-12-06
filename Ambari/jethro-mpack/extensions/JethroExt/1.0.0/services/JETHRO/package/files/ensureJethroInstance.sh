@@ -8,13 +8,16 @@ set -e
 service=$1
 instanceName=$2
 storagePath=$3
-jethroUser=$4
+cachePath=$4
+cacheSizeNumber=$5
+jethroUser=$6
 
 # local params
 services_ini_path=/opt/jethro/instances/services.ini
-cachePath=/home/jethro/inst_cache
+cacheSizeUnits=G
 port=""
 
+cacheSize=$cacheSizeNumber$cacheSizeUnits
 
 resetInstanceServicesConfig() {
     # Stop all instance services (will be started from python)
@@ -38,9 +41,8 @@ then
    then
       echo "instance not attached"
       echo "Attaching instance..."
-      test -d $cachePath && rm -rf $cachePath
-      su - $jethroUser -c "mkdir -p $cachePath"
-      su - $jethroUser -c "JethroAdmin attach-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=0G"
+      test -d $cachePath || su - $jethroUser -c "mkdir -p $cachePath"
+      su - $jethroUser -c "JethroAdmin attach-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=$cacheSize"
       
       resetInstanceServicesConfig
    else
@@ -50,9 +52,8 @@ then
 else
    echo "Instance $instanceName not found."
    echo "Creating instanse..."
-   test -d $cachePath && rm -rf $cachePath
-   su - $jethroUser -c "mkdir -p $cachePath"
-   su - $jethroUser -c "JethroAdmin create-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=0G"
+   test -d $cachePath || su - $jethroUser -c "mkdir -p $cachePath"
+   su - $jethroUser -c "JethroAdmin create-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=$cacheSize"
    resetInstanceServicesConfig
 fi
 

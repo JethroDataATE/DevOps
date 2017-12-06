@@ -28,8 +28,8 @@ class JethroServer(Script):
 
         installJethroComponent(params.jethro_rpm_path, params.jethro_user)
 
-        if not params.security_enabled:
-            self.ensure_instance_attached()
+        # if not params.security_enabled:
+        #     self.ensure_instance_attached()
 
     def start(self, env):
         import params
@@ -37,10 +37,11 @@ class JethroServer(Script):
 
         instance_name = get_current_instance_name()
 
-        if params.security_enabled and instance_name is None:
+        if params.security_enabled:
             setup_kerberos(params.kinit_path, params.jethro_kerberos_prinicipal,
                            params.jethro_kerberos_keytab, params.jethro_user)
 
+        if instance_name is None:
             self.ensure_instance_attached()
             instance_name = get_current_instance_name()
         elif not is_service_installed_for_instance(instance_name, self.JETHRO_SERVICE_NAME):
@@ -109,6 +110,8 @@ class JethroServer(Script):
             self.JETHRO_SERVICE_NAME,
             params.jethro_instance_name,
             params.jethro_instance_storage_path,
+            params.jethro_instance_cache_path,
+            params.jethro_instance_cache_size,
             params.jethro_user
         )
 

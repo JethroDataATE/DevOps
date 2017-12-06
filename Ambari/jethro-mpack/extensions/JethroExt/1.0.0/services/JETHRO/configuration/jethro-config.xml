@@ -52,4 +52,23 @@
         </value-attributes>
         <display-name>Jethro Instance Storage</display-name>
     </property>
+    <property require-input="true">
+        <name>jethro_instance_cache_path</name>
+        <value>/home/jethro/instances_cache</value>
+        <description>Jethro instance local cashe directory path.</description>
+        <value-attributes>
+            <type>string</type>
+        </value-attributes>
+        <display-name>Jethro Instance Cache Path</display-name>
+    </property>
+    <property require-input="true">
+        <name>jethro_instance_cache_size</name>
+        <value>10</value>
+        <description>Jethro instance local cashe directory size.</description>
+        <value-attributes>
+            <type>int</type>
+            <unit>GB</unit>
+        </value-attributes>
+        <display-name>Jethro Instance Cache Size</display-name>
+    </property>
 </configuration>

@@ -38,7 +38,7 @@ def installJethroComponent(rpm_path, jethro_user):
     )
 
 
-def create_attach_instance(service_name, instance_name, storage_path, jethro_user):
+def create_attach_instance(service_name, instance_name, storage_path, cache_path, cache_size, jethro_user):
     import params
 
     script_path = "/tmp/ensureJethroInstance.sh"
@@ -56,6 +56,8 @@ def create_attach_instance(service_name, instance_name, storage_path, jethro_use
          service_name,
          instance_name,
          storage_path,
+         cache_path,
+         cache_size,
          jethro_user),
         tries=3,
         try_sleep=3,
