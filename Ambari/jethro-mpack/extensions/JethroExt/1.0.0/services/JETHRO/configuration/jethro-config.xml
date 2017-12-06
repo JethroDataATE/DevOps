@@ -13,7 +13,7 @@
     </property>
     <property>
         <name>jethromng_rpm_path</name>
-        <value>http://jethro-gui.s3.amazonaws.com/builds/master/latest/jethromng-1.4.1-143p_cn6.x86_64.rpm</value>
+        <value>http://jethro.io/latest-jethro-manager</value>
         <description>Jethro Manager RPM path (either Jethro official HTTP download link or an existing HDFS path).</description>
         <value-attributes>
             <type>string</type>
@@ -25,7 +25,7 @@
     </property>
     <property>
         <name>jethro_rpm_path</name>
-        <value>http://jethrodownload.s3.amazonaws.com/RC/3.0.0/3.3.1/jethro-3.3.1-17658.x86_64.rpm</value>
+        <value>http://jethro.io/latest-rpm</value>
         <description>Jethro RPM path (either Jethro official HTTP download link or an existing HDFS path).</description>
         <value-attributes>
             <type>string</type>
