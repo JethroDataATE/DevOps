@@ -41,7 +41,7 @@
         <value-attributes>
             <type>string</type>
         </value-attributes>
-        <display-name>Jethro Default Instance Name</display-name>
+        <display-name>Jethro Instance Name</display-name>
     </property>
     <property require-input="true">
         <name>jethro_instance_storage_path</name>
