@@ -122,8 +122,8 @@ createAttachInstance(){
       then
           echo "instance not attached"
           echo "Attaching instance..."
-          test -d $INSTANCE_CACHE_PATH && rm -rf $INSTANCE_CACHE_PATH
-          su - jethro -c "mkdir -p $INSTANCE_CACHE_PATH"
+          test -d $INSTANCE_CACHE_PATH || su - jethro -c "mkdir -p $INSTANCE_CACHE_PATH"
+         
           su - jethro -c "JethroAdmin attach-instance $INSTANCE_NAME -storage-path=$INSTANCE_STORAGE_PATH -cache-path=$INSTANCE_CACHE_PATH -cache-size=$INSTANCE_CACHE_SIZE -Dstorage.type=$DstorageType"
       else
           echo "instance already attached"
@@ -132,8 +132,7 @@ createAttachInstance(){
     else
       echo "Instance $INSTANCE_NAME not found."
       echo "Creating instanse..."
-      test -d $INSTANCE_CACHE_PATH && rm -rf $INSTANCE_CACHE_PATH
-      su - jethro -c "mkdir -p $INSTANCE_CACHE_PATH"
+      test -d $INSTANCE_CACHE_PATH || su - jethro -c "mkdir -p $INSTANCE_CACHE_PATH"
       su - jethro -c "JethroAdmin create-instance $INSTANCE_NAME -storage-path=$INSTANCE_STORAGE_PATH -cache-path=$INSTANCE_CACHE_PATH -cache-size=$INSTANCE_CACHE_SIZE -Dstorage.type=$DstorageType"
     fi
   fi
