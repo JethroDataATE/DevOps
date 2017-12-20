@@ -1,56 +1,25 @@
 # Jethro over Docker (for Cloudera HADOOP distribution) 
 
-# based on centos(7):latest image
-FROM centos:7
+# based on jethrodata/jethro:HADOOP_BASE image
+FROM jethrodata/jethro:HADOOP_BASE
 
 # Build-time parameters
-ARG JETHRO_RPM_LOACTION
-ARG JETHROMNG_RPM_LOACTION 
+ARG JETHRO_RPM_LOACTION=http://jethro.io/latest-rpm
+ARG JETHROMNG_RPM_LOACTION=http://jethro.io/latest-jethro-manager
 ARG JAVA_VERSION=java-1.8.0-openjdk.x86_64
 ARG HADOOP_DIST_VERSION=5
-
-WORKDIR /jethro_install
-
-COPY Common/dockerBootstrap /jethro_install
-
-# install systemd
-RUN yum -y update; yum clean all
-RUN yum -y install systemd initscripts
 
 # install java
 RUN yum -y install $JAVA_VERSION
 ENV JAVA_HOME /usr/lib/jvm/jre
-
-# install ssh
-RUN yum -y install openssh openssh-server openssl openssh-clients
-
-# Install utilities
-RUN yum -y install which wget
 
 # install hadoop:
 RUN rpm --quiet --import http://archive.cloudera.com/cdh$HADOOP_DIST_VERSION/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
 ADD http://archive.cloudera.com/cdh$HADOOP_DIST_VERSION/one-click-install/redhat/6/x86_64/cloudera-cdh-$HADOOP_DIST_VERSION-0.x86_64.rpm /jethro_install
 RUN yum -y localinstall cloudera-cdh-$HADOOP_DIST_VERSION-0.x86_64.rpm
 
-# hadoop distributed
-ENV HADOOP_PREFIX /etc/hadoop
-ENV HADOOP_NAME_NODE_ADDRESS localhost:8080
-ENV HADOOP_CONF_DIR $HADOOP_PREFIX/conf
-COPY Common/core-site.xml.template $HADOOP_CONF_DIR/core-site.xml.template
-
 # install hive
-RUN yum -y install hive-jdbc
-
-# User mode parameters
-ENV USER_ID 501 
-ENV GROUP_ID 501
-
-# change jethro user/group mode
-RUN groupadd jethro --gid $GROUP_ID
-RUN adduser jethro --uid $USER_ID --gid $GROUP_ID
-RUN echo jethro | passwd jethro --stdin
-ENV JETHRO_INSTALL_USER=jethro
-ENV JETHRO_INSTALL_GROUP=jethro
+RUN yum -y install hive
 
 # install Jethro
 ADD $JETHRO_RPM_LOACTION /jethro_install
@@ -61,30 +30,3 @@ RUN if [ ! -z $JETHROMNG_RPM_LOACTION ]; then wget $JETHROMNG_RPM_LOACTION && rp
 
 # Clear ssh key
 RUN rm -f /home/jethro/.JethroKeys/id_rsa.pub && rm -f /home/jethro/.JethroKeys/id_rsa
-
-# SSH key generation parameters
-ENV KEY_PATH "" 
-ENV GENERAT_KEY_IF_NOT_EXIST "false"
-
-# configure volumes
-RUN mkdir /jethro -m 777
-RUN mkdir /jethro/persist -m 777
-RUN mkdir /jethro/instance_cache -m 777
-RUN (test -d /opt/jethro/instances || mkdir /opt/jethro/instances) && (chmod 777 /opt/jethro/instances)
-RUN (test -d /opt/jethro/current/instances || mkdir /opt/jethro/current/instances) && (chmod 777 /opt/jethro/current/instances)
-RUN (test -d /var/log/jethro || mkdir /var/log/jethro) && (chmod 777 /var/log/jethro)
-VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/instance_cache"]
-
-# Docker run options
-ENV INSTANCE_NAME ""
-ENV INSTANCE_STORAGE_PATH ""
-ENV INSTANCE_CACHE_PATH "/home/jethro/instances_cache"
-ENV INSTANCE_CACHE_SIZE "0G"
-ENV RUN_JETHRO_MANAGER ""
-
-# start container
-RUN chmod a+x /jethro_install/dockerBootstrap
-ENTRYPOINT ["sh", "-c", "/jethro_install/dockerBootstrap"]
-
-# expose needed port numbers
-EXPOSE 9100-9200 22

@@ -1,0 +1,44 @@
+  <configuration>
+      <property>
+          <name>fs.defaultFS</name>
+          <value>hdfs://HADOOP_NAME_NODE_ADDRESS</value>
+      </property>
+
+    <property>
+      <name>hadoop.security.auth_to_local</name>
+      <value>
+		RULE:[1:$1@$0](ambari-qa-kerberos_hdp@KERBEROS_DEFAULT_RLM)s/.*/ambari-qa/
+		RULE:[1:$1@$0](hdfs-kerberos_hdp@KERBEROS_DEFAULT_RLM)s/.*/hdfs/
+		RULE:[1:$1@$0](jethro-kerberos_hdp@KERBEROS_DEFAULT_RLM)s/.*/jethro/
+		RULE:[1:$1@$0](spark-kerberos_hdp@KERBEROS_DEFAULT_RLM)s/.*/spark/
+		RULE:[1:$1@$0](.*@KERBEROS_DEFAULT_RLM)s/@.*//
+		RULE:[2:$1@$0](activity_analyzer@KERBEROS_DEFAULT_RLM)s/.*/activity_analyzer/
+		RULE:[2:$1@$0](activity_explorer@KERBEROS_DEFAULT_RLM)s/.*/activity_explorer/
+		RULE:[2:$1@$0](amshbase@KERBEROS_DEFAULT_RLM)s/.*/ams/
+		RULE:[2:$1@$0](amszk@KERBEROS_DEFAULT_RLM)s/.*/ams/
+		RULE:[2:$1@$0](dn@KERBEROS_DEFAULT_RLM)s/.*/hdfs/
+		RULE:[2:$1@$0](hive@KERBEROS_DEFAULT_RLM)s/.*/hive/
+		RULE:[2:$1@$0](jhs@KERBEROS_DEFAULT_RLM)s/.*/mapred/
+		RULE:[2:$1@$0](jn@KERBEROS_DEFAULT_RLM)s/.*/hdfs/
+		RULE:[2:$1@$0](livy@KERBEROS_DEFAULT_RLM)s/.*/livy/
+		RULE:[2:$1@$0](nfs@KERBEROS_DEFAULT_RLM)s/.*/hdfs/
+		RULE:[2:$1@$0](nm@KERBEROS_DEFAULT_RLM)s/.*/yarn/
+		RULE:[2:$1@$0](nn@KERBEROS_DEFAULT_RLM)s/.*/hdfs/
+		RULE:[2:$1@$0](oozie@KERBEROS_DEFAULT_RLM)s/.*/oozie/
+		RULE:[2:$1@$0](rm@KERBEROS_DEFAULT_RLM)s/.*/yarn/
+		RULE:[2:$1@$0](yarn@KERBEROS_DEFAULT_RLM)s/.*/yarn/
+		DEFAULT
+	  </value>
+    </property>
+
+    <property>
+      <name>hadoop.security.authentication</name>
+      <value>kerberos</value>
+    </property>
+
+    <property>
+      <name>hadoop.security.authorization</name>
+      <value>true</value>
+    </property>
+
+  </configuration>

@@ -2,6 +2,7 @@ import os
 import imp
 import traceback
 import re
+from resource_management.core.logger import Logger
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 STACKS_DIR = os.path.join(SCRIPT_DIR, '../../../../../stacks')
@@ -32,12 +33,81 @@ class JethroExt100JETHROServiceAdvisor(service_advisor.ServiceAdvisor):
                         and {"name": "JETHRO_MNG"} in hostComponents:
                     hostsComponentsMap[hostName].remove({"name": "JETHRO_MNG"})
 
+        # colocate JC with NAMENODE , if hosts have been allocated for Jethro maint
+        jc = [component for component in serviceComponents if component["StackServiceComponents"]
+              ["component_name"] == "JETHRO_MAINT"][0]
+        foundJethro = False
+        if not self.isComponentHostsPopulated(jc):
+            for hostName in hostsComponentsMap.keys():
+                if ({"name": "NAMENODE"} in hostComponents) \
+                        and {"name": "JETHRO_MAINT"} in hostComponents:
+                    Logger.debug(
+                        'Removing JETHRO_MAINT from host: ' + hostName)
+                    hostsComponentsMap[hostName].remove(
+                        {"name": "JETHRO_MAINT"})
+                if foundJethro:
+                    continue
+                hostComponents = hostsComponentsMap[hostName]
+                if ({"name": "DATANODE"} in hostComponents) \
+                        and {"name": "JETHRO_MAINT"} not in hostComponents:
+                    Logger.debug('Adding JETHRO_MAINT to host: ' + hostName)
+                    hostsComponentsMap[hostName].append(
+                        {"name": "JETHRO_MAINT"})
+                    foundJethro = True
+
+        # colocate JC with NAMENODE , if hosts have been allocated for Jethro server
+        foundJethro = False
+        jc = [component for component in serviceComponents if component["StackServiceComponents"]
+              ["component_name"] == "JETHRO_SERVER"][0]
+        if not self.isComponentHostsPopulated(jc):
+            for hostName in hostsComponentsMap.keys():
+                if ({"name": "NAMENODE"} in hostComponents) \
+                        and {"name": "JETHRO_SERVER"} in hostComponents:
+                    Logger.debug(
+                        'Removing JETHRO_SERVER from host: ' + hostName)
+                    hostsComponentsMap[hostName].remove(
+                        {"name": "JETHRO_SERVER"})
+                if foundJethro:
+                    continue
+                hostComponents = hostsComponentsMap[hostName]
+                if ({"name": "DATANODE"} in hostComponents) \
+                        and {"name": "JETHRO_SERVER"} not in hostComponents:
+                    Logger.debug('Adding JETHRO_SERVER to host: ' + hostName)
+                    hostsComponentsMap[hostName].append(
+                        {"name": "JETHRO_SERVER"})
+                    foundJethro = True
+
+        # colocate JC with NAMENODE , if hosts have been allocated for Jethro load schedular
+        foundJethro = False
+        jc = [component for component in serviceComponents if component["StackServiceComponents"]
+              ["component_name"] == "JETHRO_LOAD_SCHEDULER"][0]
+        if not self.isComponentHostsPopulated(jc):
+            for hostName in hostsComponentsMap.keys():
+                if ({"name": "NAMENODE"} in hostComponents) \
+                        and {"name": "JETHRO_LOAD_SCHEDULER"} in hostComponents:
+                    Logger.debug(
+                        'Removing JETHRO_LOAD_SCHEDULER from host: ' + hostName)
+                    hostsComponentsMap[hostName].remove(
+                        {"name": "JETHRO_LOAD_SCHEDULER"})
+                if foundJethro:
+                    continue
+                hostComponents = hostsComponentsMap[hostName]
+                if ({"name": "DATANODE"} in hostComponents) \
+                        and {"name": "JETHRO_LOAD_SCHEDULER"} not in hostComponents:
+                    Logger.debug(
+                        'Adding JETHRO_LOAD_SCHEDULER to host: ' + hostName)
+                    hostsComponentsMap[hostName].append(
+                        {"name": "JETHRO_LOAD_SCHEDULER"})
+                    foundJethro = True
+
     def getServiceConfigurationRecommendations(self, configurations, clusterSummary, services, hosts):
         pass
 
     def getServiceComponentLayoutValidations(self, services, hosts):
-        componentsListList = [service["components"] for service in services["services"]]
-        componentsList = [item["StackServiceComponents"] for sublist in componentsListList for item in sublist]
+        componentsListList = [service["components"]
+                              for service in services["services"]]
+        componentsList = [item["StackServiceComponents"]
+                          for sublist in componentsListList for item in sublist]
 
         jmHosts = self.getHosts(componentsList, "JETHRO_MNG")
         expectedJmHosts = set(self.getHosts(componentsList, "NAMENODE"))

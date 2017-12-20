@@ -135,17 +135,48 @@ createAttachInstance(){
       test -d $INSTANCE_CACHE_PATH || su - jethro -c "mkdir -p $INSTANCE_CACHE_PATH"
       su - jethro -c "JethroAdmin create-instance $INSTANCE_NAME -storage-path=$INSTANCE_STORAGE_PATH -cache-path=$INSTANCE_CACHE_PATH -cache-size=$INSTANCE_CACHE_SIZE -Dstorage.type=$DstorageType"
     fi
+
+    service jethro start
   fi
 }
 
+ensureKerberos(){
+  # altering the krb5.conf configuration
+  echo configuring kerberos server to: $KERBEROS_SERVER, default rlm to: $KERBEROS_DEFAULT_RLM
+
+  sed -e "s/HADOOP_NAME_NODE_ADDRESS/$HADOOP_NAME_NODE_ADDRESS/" -e "s/KERBEROS_DEFAULT_RLM/$KERBEROS_DEFAULT_RLM/" $HADOOP_CONF_DIR/conf-site.kerberos.xml.template > $HADOOP_CONF_DIR/core-site.xml 
+  sed -e "s/KERBEROS_SERVER/$KERBEROS_SERVER/" -e "s/KERBEROS_DEFAULT_RLM/$KERBEROS_DEFAULT_RLM/" /etc/krb5.conf.template > /etc/krb5.conf 
+
+  if [ ! -z $KERBEROS_PRINCIPAL ] && [ ! -z $KERBEROS_KEYTAB_PATH ]
+  then
+    su - jethro -c "sh /jethro_install/ensureKerberos.sh $KERBEROS_PRINCIPAL $KERBEROS_KEYTAB_PATH"
+
+    echo "Lunching renual cron job..."
+    su - jethro -c "(crontab -l; echo '* * * * * /jethro_install/ensureKerberos.sh $KERBEROS_PRINCIPAL $KERBEROS_KEYTAB_PATH >> /var/log/jethro/kerberos.log 2>&1' ) | crontab  -"
+  fi
+}
+
+fixDirectoriesPermissiosn() {
+  (test -d /opt/jethro/instances || mkdir /opt/jethro/instances) && (chown -R jethro:jethro /opt/jethro/instances)
+  (test -d /opt/jethro/current/instances || mkdir /opt/jethro/current/instances) && (chown -R jethro:jethro /opt/jethro/current/instances)
+  (test -d /var/log/jethro || mkdir /var/log/jethro) && (chown -R jethro:jethro /var/log/jethro)
+}
 
 runBackgroudInit(){
+
+  fixDirectoriesPermissiosn
 
   if [ ! -z $HADOOP_NAME_NODE_ADDRESS ]
   then
     # altering the core-site configuration
     echo configuring name node to: $HADOOP_NAME_NODE_ADDRESS
     sed s/HADOOP_NAME_NODE_ADDRESS/$HADOOP_NAME_NODE_ADDRESS/ $HADOOP_CONF_DIR/core-site.xml.template > $HADOOP_CONF_DIR/core-site.xml 
+  fi
+
+  # set kerberos environment
+  if [ ! -z $KERBEROS_SERVER ] && [ ! -z $KERBEROS_DEFAULT_RLM ]
+  then
+    ensureKerberos
   fi
 
   # Generating ssh key
@@ -174,6 +205,10 @@ runBackgroudInit(){
   echo "In order to ssh the container - use the predefined ssh port (see docker inpect command to see all mapped ports)."
 
 }
+
+###############################
+# MAIN SCRIPT STARTS HERE
+###############################
 
 echo configuring jethro docker environment...
 
