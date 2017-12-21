@@ -21,6 +21,9 @@ RUN yum -y localinstall cloudera-cdh-$HADOOP_DIST_VERSION-0.x86_64.rpm
 # install hive
 RUN yum -y install hive
 
+# install impala-shell
+RUN yum -y install impala-shell
+
 # install Jethro
 ADD $JETHRO_RPM_LOACTION /jethro_install
 RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
