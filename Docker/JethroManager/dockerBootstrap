@@ -5,7 +5,7 @@
 runBackgroudInit(){
   sleep 5
 
-  echo "Lunching Jethro Manager ..."
+  echo "Launching Jethro Manager ..."
 
   JETHROMNG_HOME=/opt/jethro/jethromng
   NODE_PATH=$JETHROMNG_HOME/node
@@ -20,8 +20,8 @@ runBackgroudInit(){
   service jethromng start
 
   echo  
-  echo "Jethro Manager Docker is up! you can start browsing Jethro Manager appliction."
-  echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."
+  echo "Jethro Manager Docker is up! you can start browsing Jethro Manager application."
+  echo "In order to ssh the container - use the predefined ssh port (see docker inspect command to see all mapped ports)."
 
 }
 
