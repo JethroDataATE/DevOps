@@ -27,6 +27,7 @@ node('GUI-Builder') {
             stage('Build Docker') {
 
                 echo 'Building Docker'
+                sh "docker login --username=iziko --password=pass@word3"
                 echo ''
                 echo 'Cleanup...'
                 sh "docker stop \$(docker ps -a -q) || echo "
@@ -60,7 +61,6 @@ node('GUI-Builder') {
 
             stage('Deploy Docker') {
                 echo 'deploying to docker hub'
-                sh "docker login --username=iziko --password=pass@word3"
                 sh "docker tag jethrodata/jethro:latest jethrodata/jethro:$VERSION"
                 sh "docker push jethrodata/jethro:latest"
                 sh "docker push jethrodata/jethro:$VERSION"
