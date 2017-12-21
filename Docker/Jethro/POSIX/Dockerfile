@@ -4,8 +4,8 @@
 FROM centos:7
 
 # Build-time parameters
-ARG JETHRO_RPM_LOACTION
-ARG JETHROMNG_RPM_LOACTION 
+ARG JETHRO_RPM_LOACTION=http://jethro.io/latest-rpm
+ARG JETHROMNG_RPM_LOACTION=http://jethro.io/latest-jethro-manager
 ARG JAVA_VERSION=java-1.8.0-openjdk.x86_64
 
 WORKDIR /jethro_install
