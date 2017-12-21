@@ -5,11 +5,15 @@
 # locate the last rpm found (just inc ase there is more than 1 in the folder)
 echo "In docker bootsrap"
 
-RPM_NAME=$(basename $(ls /jethro_volume/*.rpm | sort -V | tail -n 1))
+echo "web getting RPM: ${RPM_URL}"
+wget ${RPM_URL}
+
+RPM_NAME=$(basename $(ls ./*.rpm))
+#RPM_NAME=$(basename $(ls /jethro_volume/*.rpm | sort -V | tail -n 1))
 echo "RPM found: ${RPM_NAME}"
 
-echo "Copying RPM to workdir ..."
-cp -v /jethro_volume/${RPM_NAME} .
+# echo "Copying RPM from mounted jethro_volume to workdir ..."
+# cp -v /jethro_volume/${RPM_NAME} .
 
 echo "Running rpm2deb ..."
 ./rpm2deb.sh ${RPM_NAME}
