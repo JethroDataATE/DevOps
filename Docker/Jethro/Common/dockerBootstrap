@@ -215,14 +215,19 @@ runBackgroudInit(){
   service jethro stop >/dev/null 2>&1
   service jethro start >/dev/null 2>&1
 
-  # Restarting Jethro Manager
-  if [ ! -z $JETHROMNG_RPM_LOACTION ] && [ ! -z $RUN_JETHRO_MANAGER ]
+  # Fix jethro manager permissions and stop the service
+  sleep 5
+  service jethromng stop >/dev/null 2>&1
+  pkill PM2 >/dev/null 2>&1
+  chown -R jethro:jethro /opt/jethro/jethromng/pm2
+  chown -R jethro:jethro /opt/jethro/jethromng/resources
+  chmod 777 /opt/jethro/jethromng/jethromng.out
+  chown jethro.jethro /opt/jethro/jethromng/jethromng.config
+  
+  # Restarting Jethro Manager as jethro
+  if [ ! -z $RUN_JETHRO_MANAGER ]
   then
-    service jethromng stop >/dev/null 2>&1
-    pkill PM2 >/dev/null 2>&1
-    chown -R jethro.jethro /opt/jethro/jethromng/pm2
-    chmod 777 /opt/jethro/jethromng/jethromng.out
-    chown jethro.jethro /opt/jethro/jethromng/jethromng.config
+    echo "Launching Jethro Manager ..."
     su - jethro -c "service jethromng start" >/dev/null 2>&1
   fi
 
