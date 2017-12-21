@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+# Jethro Manager for ubuntu - docker bootstarp script
+
+# locate the last rpm found (just inc ase there is more than 1 in the folder)
+echo "In docker bootsrap"
+
+RPM_NAME=$(basename $(ls /jethro_volume/*.rpm | sort -V | tail -n 1))
+echo "RPM found: ${RPM_NAME}"
+
+echo "Copying RPM to workdir ..."
+cp -v /jethro_volume/${RPM_NAME} .
+
+echo "Running rpm2deb ..."
+./rpm2deb.sh ${RPM_NAME}
+
+echo "Copying DEBIAN to jethro_volume ..."
+cp -v ./*.deb /jethro_volume
+
+
+# runBackgroudInit(){
+#   sleep 5
+
+#   echo "Launching Jethro Manager ..."
+
+#   JETHROMNG_HOME=/opt/jethro/jethromng
+#   NODE_PATH=$JETHROMNG_HOME/node
+#   PM2=$JETHROMNG_HOME/node_modules/.bin/pm2
+#   export PATH=$NODE_PATH/bin:$PATH
+
+#   service jethromng stop >/dev/null 2>&1
+#   $PM2 kill >/dev/null 2>&1
+#   pkill PM2 >/dev/null 2>&1
+#   chmod -R 777 /opt/jethro/jethromng/pm2/ >/dev/null 2>&1
+#   su - jethro -c "service jethromng start >/dev/null 2>&1"
+#   service jethromng start
+
+#   echo  
+#   echo "Jethro Manager Docker is up! you can start browsing Jethro Manager appliction."
+#   echo "In order to ssh the container - use the predefined ssh port (see docker inpect commnad to see all mapped ports)."
+
+# }
+
+
+# echo configuring jethro manager docker environment...
+
+# runBackgroudInit &
+
+# exec /usr/sbin/init 
