@@ -178,7 +178,8 @@ configureHadoopEnv(){
   if [ ! -z $HIVE_SERVER ] && [ ! -z $HIVE_META_STORE_URI ]
   then
     echo "Configuring hive server to: $HIVE_SERVER"
-    sed -e "s/HIVE_SERVER/$HIVE_SERVER/" -e "s/HIVE_META_STORE_URI/$HIVE_META_STORE_URI/" $CONF_DIR/hdfs/hive-site.template.xml > $HIVE_CONF_DIR/hive-site.xml
+    PARSED_HIVE_META_STORE_URI="${HIVE_META_STORE_URI//\//\\/}"
+    sed -e "s/HIVE_SERVER/$HIVE_SERVER/" -e "s/HIVE_META_STORE_URI/$PARSED_HIVE_META_STORE_URI/" $CONF_DIR/hdfs/hive-site.template.xml > $HIVE_CONF_DIR/hive-site.xml
   fi 
 }
 
