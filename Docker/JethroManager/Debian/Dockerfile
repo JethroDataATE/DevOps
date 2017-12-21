@@ -17,7 +17,10 @@ RUN chmod a+x /jethro_workdir/dockerBootstrap
 RUN sudo apt-get -y update
 RUN sudo apt-get -y install alien
 
-ENV RPM_NAME=""
+# install wget
+RUN sudo apt-get install wget
+
+ENV RPM_URL=""
 
 # create mount point
 RUN mkdir /jethro_volume -m 777
