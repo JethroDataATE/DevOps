@@ -1,0 +1,8 @@
+  <configuration>
+    
+    <property>
+      <name>yarn.resourcemanager.principal</name>
+      <value>rm/_HOST@JETHRO.COM</value>
+    </property>
+    
+  </configuration>

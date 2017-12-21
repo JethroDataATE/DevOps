@@ -2,6 +2,10 @@
 #
 # jethro docker bootstarp script
 
+WORK_DIR=/jethro_install
+CONF_DIR="$WORK_DIR/config"
+SCRIPT_DIR="$WORK_DIR/scripts"
+
 generateSSHKey(){
 
   jethro_install_user_=${JETHRO_INSTALL_USER-"jethro"}
@@ -140,20 +144,42 @@ createAttachInstance(){
   fi
 }
 
-ensureKerberos(){
+configureKerberisedHadoopEnv(){
   # altering the krb5.conf configuration
   echo configuring kerberos server to: $KERBEROS_SERVER, default rlm to: $KERBEROS_DEFAULT_RLM
 
-  sed -e "s/HADOOP_NAME_NODE_ADDRESS/$HADOOP_NAME_NODE_ADDRESS/" -e "s/KERBEROS_DEFAULT_RLM/$KERBEROS_DEFAULT_RLM/" $HADOOP_CONF_DIR/conf-site.kerberos.xml.template > $HADOOP_CONF_DIR/core-site.xml 
+  sed -e "s/HADOOP_NAME_NODE_ADDRESS/$HADOOP_NAME_NODE_ADDRESS/" -e "s/KERBEROS_DEFAULT_RLM/$KERBEROS_DEFAULT_RLM/" $CONF_DIR/kerberos/conf-site.template.xml > $HADOOP_CONF_DIR/core-site.xml 
   sed -e "s/KERBEROS_SERVER/$KERBEROS_SERVER/" -e "s/KERBEROS_DEFAULT_RLM/$KERBEROS_DEFAULT_RLM/" /etc/krb5.conf.template > /etc/krb5.conf 
+  cp $CONF_DIR/kerberos/yarn-site.xml $HADOOP_CONF_DIR
 
+  # Lounching renual cron job
   if [ ! -z $KERBEROS_PRINCIPAL ] && [ ! -z $KERBEROS_KEYTAB_PATH ]
   then
-    su - jethro -c "sh /jethro_install/ensureKerberos.sh $KERBEROS_PRINCIPAL $KERBEROS_KEYTAB_PATH"
+    su - jethro -c "sh $SCRIPT_DIR/ensureKerberos.sh $KERBEROS_PRINCIPAL $KERBEROS_KEYTAB_PATH"
 
     echo "Lunching renual cron job..."
-    su - jethro -c "(crontab -l; echo '* * * * * /jethro_install/ensureKerberos.sh $KERBEROS_PRINCIPAL $KERBEROS_KEYTAB_PATH >> /var/log/jethro/kerberos.log 2>&1' ) | crontab  -"
+    su - jethro -c "(crontab -l; echo '* * * * * $SCRIPT_DIR/ensureKerberos.sh $KERBEROS_PRINCIPAL $KERBEROS_KEYTAB_PATH >> /var/log/jethro/kerberos.log 2>&1' ) | crontab  -"
   fi
+
+  # Set hive configuration
+  if [ ! -z $HIVE_SERVER ] && [ ! -z $HIVE_META_STORE_URI ]
+  then
+    echo "Configuring hive server to: $HIVE_SERVER"
+    PARSED_HIVE_META_STORE_URI="${HIVE_META_STORE_URI//\//\\/}"
+    sed -e "s/HIVE_SERVER/$HIVE_SERVER/" -e "s/HIVE_META_STORE_URI/$PARSED_HIVE_META_STORE_URI/" -e "s/KERBEROS_DEFAULT_RLM/$KERBEROS_DEFAULT_RLM/" $CONF_DIR/kerberos/hive-site.template.xml > $HIVE_CONF_DIR/hive-site.xml
+  fi 
+}
+
+configureHadoopEnv(){
+  # altering the core-site configuration
+  sed s/HADOOP_NAME_NODE_ADDRESS/$HADOOP_NAME_NODE_ADDRESS/ $CONF_DIR/hdfs/core-site.template.xml > $HADOOP_CONF_DIR/core-site.xml 
+
+ # Set hive configuration
+  if [ ! -z $HIVE_SERVER ] && [ ! -z $HIVE_META_STORE_URI ]
+  then
+    echo "Configuring hive server to: $HIVE_SERVER"
+    sed -e "s/HIVE_SERVER/$HIVE_SERVER/" -e "s/HIVE_META_STORE_URI/$HIVE_META_STORE_URI/" $CONF_DIR/hdfs/hive-site.template.xml > $HIVE_CONF_DIR/hive-site.xml
+  fi 
 }
 
 fixDirectoriesPermissiosn() {
@@ -168,15 +194,14 @@ runBackgroudInit(){
 
   if [ ! -z $HADOOP_NAME_NODE_ADDRESS ]
   then
-    # altering the core-site configuration
     echo configuring name node to: $HADOOP_NAME_NODE_ADDRESS
-    sed s/HADOOP_NAME_NODE_ADDRESS/$HADOOP_NAME_NODE_ADDRESS/ $HADOOP_CONF_DIR/core-site.xml.template > $HADOOP_CONF_DIR/core-site.xml 
-  fi
-
-  # set kerberos environment
-  if [ ! -z $KERBEROS_SERVER ] && [ ! -z $KERBEROS_DEFAULT_RLM ]
-  then
-    ensureKerberos
+    
+    if [ ! -z $KERBEROS_SERVER ] && [ ! -z $KERBEROS_DEFAULT_RLM ]
+    then
+      configureKerberisedHadoopEnv
+    else
+      configureHadoopEnv
+    fi
   fi
 
   # Generating ssh key

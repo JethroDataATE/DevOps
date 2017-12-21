@@ -1,0 +1,35 @@
+ <configuration>
+
+    <property>
+      <name>hive.metastore.uris</name>
+      <value>HIVE_META_STORE_URI</value>
+    </property>
+  
+  	<property>
+  		 <name>hive.metastore.kerberos.principal</name>
+  		 <value>hive/HIVE_SERVER@KERBEROS_DEFAULT_RLM</value>
+  	</property>
+ 
+    <property>
+       <name>hive.metastore.sasl.enabled</name>
+       <value>true</value>
+       <description>If true, the metastore thrift interface will be secured with SASL.
+       Clients must authenticate with Kerberos.</description>
+    </property>
+
+    <property>
+      <name>javax.jdo.option.ConnectionDriverName</name>
+      <value>com.mysql.jdbc.Driver</value>
+    </property>
+
+    <property>
+      <name>javax.jdo.option.ConnectionURL</name>
+      <value>jdbc:mysql://HIVE_SERVER/HIVE_USER?createDatabaseIfNotExist=true</value>
+    </property>
+
+    <property>
+      <name>javax.jdo.option.ConnectionUserName</name>
+      <value>HIVE_USER</value>
+    </property>
+
+  </configuration>

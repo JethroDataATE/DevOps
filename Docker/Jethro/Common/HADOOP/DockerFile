@@ -4,8 +4,11 @@
 FROM centos:7
 
 WORKDIR /jethro_install
+RUN mkdir /jethro_install/scripts
+RUN mkdir /jethro_install/config
 
-COPY Common/dockerBootstrap /jethro_install
+COPY Common/dockerBootstrap /jethro_install/scripts
+RUN chmod a+x /jethro_install/scripts/dockerBootstrap
 
 # install systemd
 RUN yum -y update; yum clean all
@@ -18,18 +21,21 @@ RUN yum -y install openssh openssh-server openssl openssh-clients
 RUN yum -y install which wget vim crontabs
 
 # hadoop distributed
-ENV HADOOP_PREFIX /etc/hadoop
 ENV HADOOP_NAME_NODE_ADDRESS localhost:8080
-ENV HADOOP_CONF_DIR $HADOOP_PREFIX/conf
+ENV HIVE_SERVER ""
+ENV HIVE_META_STORE_URI ""
+ENV HIVE_USER "hive"
+ENV HADOOP_CONF_DIR /etc/hadoop/conf
+ENV HIVE_CONF_DIR /etc/hive/conf
 RUN test -d $HADOOP_CONF_DIR || mkdir -p $HADOOP_CONF_DIR
-COPY Common/HADOOP/core-site.xml.template $HADOOP_CONF_DIR/core-site.xml.template
-COPY Common/HADOOP/conf-site.kerberos.xml.template $HADOOP_CONF_DIR/conf-site.kerberos.xml.template
+COPY Common/HADOOP/conf /jethro_install/config/hdfs
+COPY Common/HADOOP/conf_kerberos /jethro_install/config/kerberos
 
 # install Kerberos client
 RUN yum -y install krb5-workstation krb5-libs krb5-auth-dialog
-COPY Common/HADOOP/krb5.conf.template /etc/krb5.conf.template
-ADD Common/HADOOP/ensureKerberos.sh /jethro_install
-RUN chmod +x /jethro_install/ensureKerberos.sh
+COPY Common/HADOOP/conf_kerberos/krb5.conf.template /etc/krb5.conf.template
+ADD Common/HADOOP/ensureKerberos.sh /jethro_install/scripts
+RUN chmod +x /jethro_install/scripts/ensureKerberos.sh
 
 # Kerberos variables
 ENV KERBEROS_DEFAULT_RLM ""
@@ -67,8 +73,7 @@ ENV INSTANCE_CACHE_SIZE "0G"
 ENV RUN_JETHRO_MANAGER ""
 
 # start container
-RUN chmod a+x /jethro_install/dockerBootstrap
-ENTRYPOINT ["sh", "-c", "/jethro_install/dockerBootstrap"]
+ENTRYPOINT ["sh", "-c", "/jethro_install/scripts/dockerBootstrap"]
 
 # expose needed port numbers
 EXPOSE 9100-9200 22
