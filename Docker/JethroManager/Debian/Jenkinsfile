@@ -7,7 +7,7 @@ node('GUI-Builder') {
         
         cleanWs()
 
-         withEnv([]) {
+        //  withEnv([]) {
 
             stage('Get Sources') {
 
@@ -83,7 +83,7 @@ node('GUI-Builder') {
                 echo "targetPath: $targetPath"
                 sh "aws s3 cp deb_folder/ $targetPath --recursive --acl public-read"
             }
-        }
+        // }
         currentBuild.result = 'SUCCESS'
     }
     catch (any) {
