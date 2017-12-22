@@ -221,6 +221,7 @@ runBackgroudInit(){
   pkill PM2 >/dev/null 2>&1
   chown -R jethro:jethro /opt/jethro/jethromng/pm2
   chown -R jethro:jethro /opt/jethro/jethromng/resources
+  chown -R jethro:jethro /var/log/jethro/jethromng
   chmod 777 /opt/jethro/jethromng/jethromng.out
   chown jethro.jethro /opt/jethro/jethromng/jethromng.config
   
