@@ -1,5 +1,5 @@
 
-build job: 'JethroManager-Builder_Debian', parameters: [string(name: 'RPM_URL', value: 'https://jethro.io/latest-jethro-manager')]
+build job: 'Jethro-Manager-Build-Debian', parameters: [string(name: 'RPM_URL', value: 'https://jethro.io/latest-jethro-manager'), string(name: 'Storage', value: 'Posix'), [$class: 'NodeParameterValue', name: 'GUI-Builder', labels: ['GUI-Builder'], nodeEligibility: [$class: 'AllNodeEligibility']], string(name: 'Image_type', value: 'GUI_BUILDER')]
 
 node('GUI-Builder') {
 
