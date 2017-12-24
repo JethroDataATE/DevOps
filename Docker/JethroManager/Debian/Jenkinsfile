@@ -58,7 +58,7 @@ node('GUI-Builder') {
                 def targetPath = "s3://$bucketName$bucketPath"
                 echo "targetPath: $targetPath"
                 
-                sh "aws s3 cp deb_folder/ $targetPath --recursive --acl public-read"
+                sh "aws s3 cp /deb_folder $targetPath --recursive --acl public-read"
             }
         }
 
