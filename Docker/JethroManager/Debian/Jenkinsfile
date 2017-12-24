@@ -26,7 +26,12 @@ node('GUI-Builder') {
             }
 
             stage('Build Debian') {
-
+                
+                echo 'Cleanup previous dockers...'
+                sh "docker stop \$(docker ps -a -q) || echo "
+                sh "docker rm \$(docker ps -a -q) || echo "
+                sh "docker rmi \$(docker images -q) -f || echo "
+                
                 echo 'Getting Ubuntu Docker and converting RPM to DEB'
                 sh "docker login --username=iziko --password=pass@word3"
                 echo ''
