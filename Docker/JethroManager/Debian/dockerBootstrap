@@ -2,8 +2,13 @@
 #
 # Jethro Manager for ubuntu - docker bootstarp script
 
+# exit on error:
+set -e
+
 # locate the last rpm found (just inc ase there is more than 1 in the folder)
 echo "In docker bootsrap"
+
+echo ${RPM_URL}
 
 echo "web getting RPM: ${RPM_URL}"
 wget ${RPM_URL}
