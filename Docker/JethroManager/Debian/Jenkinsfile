@@ -8,7 +8,7 @@ node('GUI-Builder') {
         
         cleanWs()
 
-        withEnv(['RPM_URL='+ env.RPM_URL]) {
+        withEnv([]) {
 
             stage('Get Sources') {
 
@@ -31,18 +31,18 @@ node('GUI-Builder') {
                 sh "docker login --username=iziko --password=pass@word3"
                 echo ''
                 sh "mkdir deb_folder -m 777"
-                sh "cd Docker/Jethro/ && docker run -e RPM_URL=$RPM_URL -v deb_folder:/jethro_volume jethrodata/jethromng-build:ubunto14.04"   
+                sh "cd Docker/Jethro/ && docker run -e RPM_URL=$RPM_URL -v /deb_folder:/jethro_volume jethrodata/jethromng-build:ubunto14.04"   
             }
 
             stage('Deploy Debian') {
                 echo 'deploying debian to s3'
 
                 def deploymentTarget
-                if ($RPM_URL.indexOf("https://") > -1) {
-                    deploymentTarget = $RPM_URL.substring(8,$RPM_URL.lastIndexOf("/"))
+                if (RPM_URL.indexOf("https://") > -1) {
+                    deploymentTarget = RPM_URL.substring(8,RPM_URL.lastIndexOf("/"))
                 }
                 else {
-                    deploymentTarget = $RPM_URL.substring(7,$RPM_URL.lastIndexOf("/"))
+                    deploymentTarget = RPM_URL.substring(7,RPM_URL.lastIndexOf("/"))
                 } 
                 echo "deploymentTarget: $deploymentTarget"
                 
@@ -58,7 +58,7 @@ node('GUI-Builder') {
                 def targetPath = "s3://$bucketName$bucketPath"
                 echo "targetPath: $targetPath"
                 
-                sh "aws s3 cp deb_folder/ $targetPath --recursive --acl public-read"
+                sh "aws s3 cp /deb_folder $targetPath --recursive --acl public-read"
             }
         }
 
