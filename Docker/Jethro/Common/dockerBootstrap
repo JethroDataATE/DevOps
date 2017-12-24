@@ -215,6 +215,8 @@ runBackgroudInit(){
   service jethro stop >/dev/null 2>&1
   service jethro start >/dev/null 2>&1
 
+  chown -R jethro:jethro /opt/jethro/currunt/instances
+
   # Fix jethro manager permissions and stop the service
   sleep 5
   service jethromng stop >/dev/null 2>&1
@@ -223,7 +225,7 @@ runBackgroudInit(){
   chown -R jethro:jethro /opt/jethro/jethromng/resources
   chown -R jethro:jethro /var/log/jethro/jethromng
   chmod 777 /opt/jethro/jethromng/jethromng.out
-  chown jethro.jethro /opt/jethro/jethromng/jethromng.config
+  chown jethro:jethro /opt/jethro/jethromng/jethromng.config
   
   # Restarting Jethro Manager as jethro
   if [ ! -z $RUN_JETHRO_MANAGER ]
