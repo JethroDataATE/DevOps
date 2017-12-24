@@ -8,7 +8,7 @@ node('GUI-Builder') {
         
         // cleanWs()
 
-        //  withEnv([]) {
+        withEnv([]) {
 
             stage('Get Sources') {
 
@@ -88,7 +88,7 @@ node('GUI-Builder') {
 
         
         currentBuild.result = 'SUCCESS'
-        
+
     }
     catch (any) {
         echo "Build faild: $any"
