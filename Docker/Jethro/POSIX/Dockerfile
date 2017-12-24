@@ -56,9 +56,6 @@ RUN mkdir /jethro -m 777
 RUN mkdir /jethro/persist -m 777
 RUN mkdir /jethro/instance_storage -m 777
 RUN mkdir /jethro/instance_cache -m 777
-RUN (test -d /opt/jethro/instances || mkdir /opt/jethro/instances) && (chmod 777 /opt/jethro/instances)
-RUN (test -d /opt/jethro/current/instances || mkdir /opt/jethro/current/instances) && (chmod 777 /opt/jethro/current/instances)
-RUN (test -d /var/log/jethro || mkdir /var/log/jethro) && (chmod 777 /var/log/jethro)
 VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/instance_storage", "/jethro/instance_cache"]
 
 # Docker run options
