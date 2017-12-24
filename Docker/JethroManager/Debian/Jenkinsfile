@@ -1,6 +1,6 @@
 
 // build job: 'Jethro-Manager-Build-Debian', 
-parameters: [string(name: 'RPM_URL', value: 'https://jethro.io/latest-jethro-manager'), string(name: 'Storage', value: 'Posix'), [$class: 'NodeParameterValue', name: 'GUI-Builder', labels: ['GUI-Builder'], nodeEligibility: [$class: 'AllNodeEligibility']], string(name: 'Image_type', value: 'GUI_BUILDER')]
+parameters: [string(name: 'RPM_URL', value: 'http://jethro-gui.s3.amazonaws.com/builds/master/jethromng-1.5.0-187p.x86_64.rpm'), string(name: 'Storage', value: 'Posix'), [$class: 'NodeParameterValue', name: 'GUI-Builder', labels: ['GUI-Builder'], nodeEligibility: [$class: 'AllNodeEligibility']], string(name: 'Image_type', value: 'GUI_BUILDER')]
 
 node('GUI-Builder') {
 
@@ -8,7 +8,7 @@ node('GUI-Builder') {
         
         cleanWs()
 
-        withEnv([]) {
+        withEnv(['RPM_URL='+ env.RPM_URL]) {
 
             stage('Get Sources') {
 
@@ -32,34 +32,6 @@ node('GUI-Builder') {
                 echo ''
                 sh "mkdir deb_folder -m 777"
                 sh "cd Docker/Jethro/ && docker run -e RPM_URL=$RPM_URL -v deb_folder:/jethro_volume jethrodata/jethromng-build:ubunto14.04"   
-                // echo 'Cleanup...'
-                // sh "docker stop \$(docker ps -a -q) || echo "
-                // sh "docker rm \$(docker ps -a -q) || echo "
-                // sh "docker rmi \$(docker images -q) -f || echo " 
-                // RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
-                // echo "RPM_NAME: $RPM_NAME"
-                // def buildJethroMng = (JETHRO_MANAGER_RPM != null && JETHRO_MANAGER_RPM != "")
-                // if (buildJethroMng)
-                //     echo "JETHRO_MANAGER_RPM: $JETHRO_MANAGER_RPM"
-                // VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
-                // VERSION = "$Hadoop_Distribution-$VERSION"
-                // echo "VERSION: $VERSION" 
-                // echo 'Started build...'
-                // def isPosix = ("$Hadoop_Distribution" == 'POSIX') || ("$Hadoop_Distribution" == 'sanity_tpcds');
-                // if (isPosix) {
-                //     echo 'Building POSIX docker image...'
-                //     if (buildJethroMng)
-                //         sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM -f $Hadoop_Distribution/Dockerfile ."  
-                //     else
-                //         sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version -f $Hadoop_Distribution/Dockerfile ."   
-                // }
-                // else {
-                //      echo 'Building HDFS docker image...'
-                //      if (buildJethroMng)
-                //         sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM  --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
-                //     else
-                //         sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
-                // }
             }
 
             stage('Deploy Debian') {
@@ -67,21 +39,25 @@ node('GUI-Builder') {
 
                 def deploymentTarget
                 if ($RPM_URL.indexOf("https://") > -1) {
-                    deploymentTarget = RPM.substring(8,RPM.lastIndexOf("/"))
+                    deploymentTarget = $RPM_URL.substring(8,$RPM_URL.lastIndexOf("/"))
                 }
                 else {
-                    deploymentTarget = RPM.substring(7,RPM.lastIndexOf("/"))
+                    deploymentTarget = $RPM_URL.substring(7,$RPM_URL.lastIndexOf("/"))
                 } 
                 echo "deploymentTarget: $deploymentTarget"
+                
                 def bucketName = deploymentTarget.substring(0, deploymentTarget.indexOf("."))
                 echo "bucketName: $bucketName"
+                
                 def bucketPath = ""
                 if (deploymentTarget.indexOf("/") > -1) {
                     bucketPath = deploymentTarget.substring(deploymentTarget.indexOf("/"))
                 }
                 echo "bucketPath: $bucketPath"
+                
                 def targetPath = "s3://$bucketName$bucketPath"
                 echo "targetPath: $targetPath"
+                
                 sh "aws s3 cp deb_folder/ $targetPath --recursive --acl public-read"
             }
         }
