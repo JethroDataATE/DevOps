@@ -30,4 +30,3 @@ debian/rules binary 2>/dev/null
 popd >/dev/null
 
 echo "rpm2deb completed."
-
