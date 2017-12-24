@@ -1,11 +1,15 @@
 #!/bin/bash
+
+# exit on error:
+set -e
+
 function Usage {
     echo "Usage: $0 <RPM package>.rpm"
     exit 1
 }
 
 function NotRoot {
-    echo "$0 could run only as a root, or under fakeroot environment"
+    echo "$0 could run only as a root, or under fakeroot environment."
     exit 100
 }
 
@@ -15,6 +19,8 @@ function NotRoot {
 [ "$EUID" -ne 0 ] && NotRoot
 
 DIR_NAME=`basename -s ".x86_64.rpm" $1 | sed  's/-[0-9]*[dpx][_cn6]*\?$//i'`
+echo "DIR_NAME: $DIR_NAME"
+
 [ "$DIR_NAME" = "$1" ] && echo "'$1' does not look as an RPM archive." && Usage
 
 echo "rpm2deb starting..."
