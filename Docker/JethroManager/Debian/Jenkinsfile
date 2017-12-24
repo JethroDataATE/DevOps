@@ -31,7 +31,7 @@ node('GUI-Builder') {
                 sh "docker login --username=iziko --password=pass@word3"
                 echo ''
                 sh "mkdir deb_folder -m 777"
-                sh "cd Docker/Jethro/ && docker run -e RPM_URL=$RPM_URL -v ./deb_folder:/jethro_volume jethrodata/jethromng-build:ubunto14.04"   
+                sh "cd Docker/Jethro/ && docker run -e RPM_URL=$RPM_URL -v deb_folder:/jethro_volume jethrodata/jethromng-build:ubunto14.04"   
                 // echo 'Cleanup...'
                 // sh "docker stop \$(docker ps -a -q) || echo "
                 // sh "docker rm \$(docker ps -a -q) || echo "
