@@ -14,7 +14,7 @@ function NotRoot {
 [ ! -r "$1" ] && echo "'$1' is not a readable file." && Usage
 [ "$EUID" -ne 0 ] && NotRoot
 
-DIR_NAME=`basename -s ".x86_64.rpm" $1 | sed  's/-[0-9]*[dpx]\?$//i'`
+DIR_NAME=`basename -s ".x86_64.rpm" $1 | sed  's/-[0-9]*[dpx][_cn6]*\?$//i'`
 [ "$DIR_NAME" = "$1" ] && echo "'$1' does not look as an RPM archive." && Usage
 
 echo "rpm2deb starting..."
