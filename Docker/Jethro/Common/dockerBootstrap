@@ -116,6 +116,7 @@ createAttachInstance(){
     fi
 
     # Create/attach instance
+    
     instances=( $(su - jethro -c "JethroAdmin list-storage-instances -storage-path=$INSTANCE_STORAGE_PATH -Dstorage.type=$DstorageType" | awk -v instance="$INSTANCE_NAME" '{if ($1==instance) {print $1, $3}}') )
     if ! [ -z ${instances[0]} ]
     then
@@ -194,7 +195,7 @@ runBackgroudInit(){
   fixDirectoriesPermissiosn
 
   # Remove jethro service from systemctl monitor.
-  systemctl stop jethromng.service
+  systemctl stop jethro.service >/dev/null 2>&1
 
   if [ ! -z $HADOOP_NAME_NODE_ADDRESS ]
   then
@@ -215,7 +216,7 @@ runBackgroudInit(){
   createAttachInstance
 
   # Restarting all services
-  systemctl stop jethro.service
+  systemctl stop jethro.service >/dev/null 2>&1
   service jethro stop >/dev/null 2>&1
   service jethro start >/dev/null 2>&1
 
@@ -224,6 +225,7 @@ runBackgroudInit(){
   # Fix jethro manager permissions and stop the service
   sleep 5
   service jethromng stop >/dev/null 2>&1
+  systemctl stop jethromng.service >/dev/null 2>&1
   pkill PM2 >/dev/null 2>&1
   chown -R jethro:jethro /opt/jethro/jethromng/pm2
   chown -R jethro:jethro /opt/jethro/jethromng/resources
