@@ -193,6 +193,9 @@ runBackgroudInit(){
 
   fixDirectoriesPermissiosn
 
+  # Remove jethro service from systemctl monitor.
+  systemctl stop jethromng.service
+
   if [ ! -z $HADOOP_NAME_NODE_ADDRESS ]
   then
     echo configuring name node to: $HADOOP_NAME_NODE_ADDRESS
@@ -222,7 +225,6 @@ runBackgroudInit(){
   sleep 5
   service jethromng stop >/dev/null 2>&1
   pkill PM2 >/dev/null 2>&1
-  systemctl stop jethromng.service
   chown -R jethro:jethro /opt/jethro/jethromng/pm2
   chown -R jethro:jethro /opt/jethro/jethromng/resources
   chown -R jethro:jethro /var/log/jethro/jethromng
