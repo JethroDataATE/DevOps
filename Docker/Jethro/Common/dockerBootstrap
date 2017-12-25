@@ -212,6 +212,7 @@ runBackgroudInit(){
   createAttachInstance
 
   # Restarting all services
+  systemctl stop jethro.service
   service jethro stop >/dev/null 2>&1
   service jethro start >/dev/null 2>&1
 
@@ -221,6 +222,7 @@ runBackgroudInit(){
   sleep 5
   service jethromng stop >/dev/null 2>&1
   pkill PM2 >/dev/null 2>&1
+  systemctl stop jethromng.service
   chown -R jethro:jethro /opt/jethro/jethromng/pm2
   chown -R jethro:jethro /opt/jethro/jethromng/resources
   chown -R jethro:jethro /var/log/jethro/jethromng
