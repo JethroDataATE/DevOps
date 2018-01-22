@@ -17,7 +17,7 @@ node('GUI-Builder') {
                     browser: [$class: 'GithubWeb', repoUrl: 'https://github.com/JethroDataATE/DevOps'],
                     doGenerateSubmoduleConfigurations: false,
                     extensions: [
-                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'Docker/Jethro']]]
+                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'Docker/JethroManager']]]
                     ],
                     submoduleCfg: [],
                     userRemoteConfigs: [[credentialsId: '7cf4f71c-34af-4252-be92-2a445e7b0e18', url: 'https://github.com/JethroDataATE/DevOps']]]
@@ -36,11 +36,15 @@ node('GUI-Builder') {
                 sh "docker login --username=iziko --password=pass@word3"
                 echo ''
                 sh "mkdir deb_folder -m 777"
-                sh "cd Docker/Jethro/ && docker run -e RPM_URL=$RPM_URL -v /deb_folder:/jethro_volume jethrodata/jethromng-build:ubunto14.04"   
+                sh "docker run -e RPM_URL=$RPM_URL -v /deb_folder:/jethro_volume jethrodata/jethromng-build:ubunto14.04"   
             }
 
             stage('Deploy Debian') {
                 echo 'deploying debian to s3'
+                
+                sh "echo $(pwd)"
+                sh "echo $(ls)"
+                
 
                 def deploymentTarget
                 if (RPM_URL.indexOf("https://") > -1) {
