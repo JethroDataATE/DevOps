@@ -27,9 +27,11 @@ node('GUI-Builder') {
             stage('Build Docker') {
 
                 echo 'Building Docker'
+
                 sh "docker login --username=iziko --password=pass@word3"
                 echo ''
                 echo 'Cleanup...'
+
                 sh "docker stop \$(docker ps -a -q) || echo "
                 sh "docker rm \$(docker ps -a -q) || echo "
                 sh "docker rmi \$(docker images -q) -f || echo " 
@@ -41,22 +43,45 @@ node('GUI-Builder') {
                 VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
                 VERSION = "$Hadoop_Distribution-$VERSION"
                 echo "VERSION: $VERSION" 
+
                 echo 'Started build...'
-                def isPosix = ("$Hadoop_Distribution" == 'POSIX') || ("$Hadoop_Distribution" == 'sanity_tpcds');
-                if (isPosix) {
-                    echo 'Building POSIX docker image...'
-                    if (buildJethroMng)
-                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM -f $Hadoop_Distribution/Dockerfile ."  
-                    else
-                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version -f $Hadoop_Distribution/Dockerfile ."   
+
+                def num_of_failures = 0
+                def build_sucess = false
+                
+                while (!build_sucess && num_of_failures < 3) {
+
+                    try {
+                        def isPosix = ("$Hadoop_Distribution" == 'POSIX') || ("$Hadoop_Distribution" == 'sanity_tpcds');
+                        if (isPosix) {
+                            echo 'Building POSIX docker image...'
+                            if (buildJethroMng)
+                                sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM -f $Hadoop_Distribution/Dockerfile ."  
+                            else
+                                sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version -f $Hadoop_Distribution/Dockerfile ."   
+                        }
+                        else {
+                            echo 'Building HDFS docker image...'
+                            if (buildJethroMng)
+                                sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM  --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
+                            else
+                                sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
+                        }
+
+                        build_sucess = true
+                    }
+                    catch (any) {
+                        echo "Build faild #$num_of_failures, error: $any"
+                        num_of_failures = num_of_failures + 1
+                    }
                 }
-                else {
-                     echo 'Building HDFS docker image...'
-                     if (buildJethroMng)
-                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM  --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
-                    else
-                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$Hadoop_Distribution_Version -f $Hadoop_Distribution/Dockerfile ."   
+
+                if (!build_sucess && num_of_failures >= 3) {
+                        echo "Build faild!"
+                        throw new RuntimeException("Build faild!")
                 }
+
+                
             }
 
             stage('Deploy Docker') {
