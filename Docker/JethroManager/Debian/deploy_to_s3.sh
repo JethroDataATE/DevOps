@@ -58,12 +58,11 @@ then
     LATEST_URL="$bucket/$LATEST_PATH"
     # aws s3 rm --recursive s3://$LATEST_URL
 
-    exsitedFiles=( $(aws s3api list-objects --bucket $bucket --prefix $LATEST_PATH | awk -v path="$LATEST_PATH" -v extension="$build_extension" -F ":" '{if(($0 ~ "Key") && ($2 !~ "$path\",") && ($2 ~ extension)) print $2}') )
+    exsitedFiles=( $(aws s3api list-objects --bucket $bucket --prefix $LATEST_PATH | awk -v bextension="$build_extension" -F ":" '{if(($0 ~ "Key") && ($2 ~ bextension)) print substr($2,3, length($2)-5)}') )
 
     if ! [ -z ${exsitedFiles[0]} ]
     then
-      res=${exsitedFiles[0]}
-      fileToDelete=$(substr($res,3,$(length($res)-5)))
+      fileToDelete=${exsitedFiles[0]}
 
       echo
       echo "Matched file was found on 'latest' folder: $fileToDelete - deleting..."
