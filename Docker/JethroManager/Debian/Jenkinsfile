@@ -41,9 +41,9 @@ node('GUI-Builder') {
 
             stage('Deploy Debian') {
                 echo 'deploying debian to s3'
-                
-                sh "echo $(pwd)"
-                sh "echo $(ls)"
+
+                sh "echo \$(pwd)"
+                sh "echo \$(ls)"
                 
 
                 def deploymentTarget
