@@ -63,9 +63,11 @@ then
     if ! [ -z ${exsitedFiles[0]} ]
     then
       res=${exsitedFiles[0]}
-      echo
-      echo "Matched file was found on 'latest' folder: $res - deleting..."
       fileToDelete=$(substr($res,3,$(length($res)-5)))
+
+      echo
+      echo "Matched file was found on 'latest' folder: $fileToDelete - deleting..."
+
       aws s3api delete-object --bucket jethro-gui --key $fileToDelete
     fi
 
