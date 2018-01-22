@@ -60,7 +60,7 @@ node('GUI-Builder') {
                 }
                 echo "bucketPath: $bucketPath"
                 
-                sh "Docker/Jethro/Debian/deploy_to_s3.sh /deb_folder $bucketName $bucketPath updateLatest .deb"
+                sh "Docker/JethroManager/Debian/deploy_to_s3.sh /deb_folder $bucketName $bucketPath updateLatest .deb"
                 // def targetPath = "s3://$bucketName$bucketPath"
                 // echo "targetPath: $targetPath"
                 
