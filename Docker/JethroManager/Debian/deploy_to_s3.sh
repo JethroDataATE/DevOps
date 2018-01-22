@@ -46,7 +46,7 @@ then
     echo 
     echo "Updating latest folder..."
     LATEST_PATH=$bucket_inner_path
-    if  [[ "$LATEST_URL" == */ ]]  
+    if  [[ "$LATEST_PATH" == */ ]]  
     then
       LATEST_PATH=${bucket_inner_path}latest/
     else
