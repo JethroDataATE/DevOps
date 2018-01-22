@@ -6,9 +6,9 @@ set -e
 
 filePath=$1
 bucket=$2
-bucket_inner_path=$2
-updateLatest=$3
-build_extension=$4
+bucket_inner_path=$3
+updateLatest=$4
+build_extension=$5
 
 if [ -z $filePath ]
 then
@@ -58,13 +58,15 @@ then
     LATEST_URL="$bucket/$LATEST_PATH"
     # aws s3 rm --recursive s3://$LATEST_URL
 
-    exsitedFiles=( $(aws s3api list-objects --bucket $bucket --prefix $LATEST_PATH | awk -v path="$LATEST_PATH" -v extension="$build_extension" -F ":" '{if(($0 ~ "Key") && ($2 !~ "$path\",") && ($2 ~ extension)) print substr($2,3, length($2)-5)}') )
+    exsitedFiles=( $(aws s3api list-objects --bucket $bucket --prefix $LATEST_PATH | awk -v path="$LATEST_PATH" -v extension="$build_extension" -F ":" '{if(($0 ~ "Key") && ($2 !~ "$path\",") && ($2 ~ extension)) print $2}') )
 
     if ! [ -z ${exsitedFiles[0]} ]
     then
+      res=${exsitedFiles[0]}
       echo
-      echo "Matched file was found on 'latest' folder: ${exsitedFiles[0]} - deleting..."
-      aws s3api delete-object --bucket jethro-gui --key ${exsitedFiles[0]}
+      echo "Matched file was found on 'latest' folder: $res - deleting..."
+      fileToDelete=$(substr($res,3,$(length($res)-5)))
+      aws s3api delete-object --bucket jethro-gui --key $fileToDelete
     fi
 
     echo
