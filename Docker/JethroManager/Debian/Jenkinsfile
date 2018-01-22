@@ -56,14 +56,15 @@ node('GUI-Builder') {
                 
                 def bucketPath = ""
                 if (deploymentTarget.indexOf("/") > -1) {
-                    bucketPath = deploymentTarget.substring(deploymentTarget.indexOf("/"))
+                    bucketPath = deploymentTarget.substring(deploymentTarget.indexOf("/") + 1)
                 }
                 echo "bucketPath: $bucketPath"
                 
-                def targetPath = "s3://$bucketName$bucketPath"
-                echo "targetPath: $targetPath"
+                sh "Docker/Jethro/Debian/deploy_to_s3.sh /deb_folder $bucketName $bucketPath updateLatest .deb"
+                // def targetPath = "s3://$bucketName$bucketPath"
+                // echo "targetPath: $targetPath"
                 
-                sh "aws s3 cp /deb_folder $targetPath --recursive --acl public-read"
+                // sh "aws s3 cp /deb_folder $targetPath --recursive --acl public-read"
             }
         }
 
