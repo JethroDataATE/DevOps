@@ -1,0 +1,131 @@
+
+build job: 'Start_GUI-Builder_Node', parameters: [string(name: 'Storage', value: 'Posix'), [$class: 'NodeParameterValue', name: 'GUI-Builder', labels: ['GUI-Builder'], nodeEligibility: [$class: 'AllNodeEligibility']], string(name: 'Image_type', value: 'GUI_BUILDER')]
+
+node('GUI-Builder') {
+
+    try {
+        
+        cleanWs()
+
+         withEnv(['VERSION='+ env.VERSION, 'RPM_NAME='+ env.RPM_NAME]) {
+
+            stage('Clone Sources') {
+
+                checkout(
+                    [$class: 'GitSCM', branches: [[name: '*/master']],
+                    browser: [$class: 'GithubWeb', repoUrl: 'https://github.com/JethroDataATE/DevOps'],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [
+                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'Docker/Jethro']]]
+                    ],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[credentialsId: '7cf4f71c-34af-4252-be92-2a445e7b0e18', url: 'https://github.com/JethroDataATE/DevOps']]]
+                )
+                    
+            }
+
+            stage('Build Docker') {
+
+                echo 'Building Docker'
+                sh "docker login --username=iziko --password=pass@word3"
+                echo ''
+                echo 'Cleanup...'
+                sh "docker stop \$(docker ps -a -q) || echo "
+                sh "docker rm \$(docker ps -a -q) || echo "
+                sh "docker rmi \$(docker images -q) -f || echo " 
+                RPM_NAME = RPM.substring(RPM.lastIndexOf("/")+1)
+                echo "RPM_NAME: $RPM_NAME"
+                def buildJethroMng = (JETHRO_MANAGER_RPM != null && JETHRO_MANAGER_RPM != "")
+                if (buildJethroMng)
+                    echo "JETHRO_MANAGER_RPM: $JETHRO_MANAGER_RPM"
+                VERSION = RPM_NAME.substring(7, RPM_NAME.lastIndexOf(".x86_64.rpm"))
+                echo "VERSION: $VERSION" 
+                echo 'Started build...'
+
+
+                parallel POSIX: {
+                        def POSIX_VERSION = "POSIX-$VERSION"
+                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro:$POSIX_VERSION --build-arg JETHRO_RPM_LOACTION=$RPM --build-arg JAVA_VERSION=$Java_Version --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM -f POSIX/Dockerfile ."  
+                    }, CDH: {
+                        def CDH_VERSION = "CDH-$VERSION"
+                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro:$CDH_VERSION --build-arg JETHRO_RPM_LOACTION=$RPM  --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$CDH_Version -f CDH/Dockerfile ."   
+                    }, HDP: {
+                        def HDP_VERSION = "HDP-$VERSION"
+                        sh "cd Docker/Jethro/ && docker build -t jethrodata/jethro:$HDP_VERSION --build-arg JETHRO_RPM_LOACTION=$RPM  --build-arg JETHROMNG_RPM_LOACTION=$JETHRO_MANAGER_RPM --build-arg JAVA_VERSION=$Java_Version --build-arg HADOOP_DIST_VERSION=$HDP_Version -f HDP/Dockerfile ."
+                    },
+                    failFast: true
+
+            }
+
+            stage('Deploy Docker to DockerHub') {
+                echo 'deploying to docker hub'
+
+                 parallel POSIX: {
+                        sh "docker push jethrodata/jethro:POSIX-$VERSION"
+                    }, CDH: {
+                        sh "docker push jethrodata/jethro:CDH-$VERSION"
+                    }, HDP: {
+                        sh "docker push jethrodata/jethro:HDP-$VERSION"
+                    },
+                    failFast: true
+            }
+
+            stage('Deploy Docker to S3') {
+                echo "Uploading dopcker image to S3"
+                echo "VERSION: $VERSION"
+                
+                sh "mkdir dockerDeploy"
+                def deploymentTarget
+                if (RPM.indexOf("https://") > -1) {
+                    deploymentTarget = RPM.substring(8,RPM.lastIndexOf("/"))
+                }
+                else {
+                    deploymentTarget = RPM.substring(7,RPM.lastIndexOf("/"))
+                } 
+                echo "deploymentTarget: $deploymentTarget"
+                def bucketName = deploymentTarget.substring(0, deploymentTarget.indexOf("."))
+                echo "bucketName: $bucketName"
+                def bucketPath = ""
+                if (deploymentTarget.indexOf("/") > -1) {
+                    bucketPath = deploymentTarget.substring(deploymentTarget.indexOf("/"))
+                }
+                echo "bucketPath: $bucketPath"
+                def targetPath = "s3://$bucketName$bucketPath"
+                echo "targetPath: $targetPath"
+
+                 parallel POSIX: {
+                        def posixImageFileName = "dockerDeploy/jethro_docker-POSIX-$VERSION" + ".tar"
+                        sh "docker save --output $posixImageFileName jethrodata/jethro:POSIX-$VERSION"
+                    }, CDH: {
+                         def cdhImageFileName = "dockerDeploy/jethro_docker-CDH-$VERSION" + ".tar"
+                        sh "docker save --output $cdhImageFileName jethrodata/jethro:CDH-$VERSION"
+                    }, HDP: {
+                         def hdpImageFileName = "dockerDeploy/jethro_docker-HDP-$VERSION" + ".tar"
+                        sh "docker save --output $hdpImageFileName jethrodata/jethro:HDP-$VERSION"
+                    },
+                    failFast: true
+
+                sh "aws s3 cp dockerDeploy/ $targetPath --recursive --acl public-read"
+            }
+
+        }
+        currentBuild.result = 'SUCCESS'
+    }
+    catch (any) {
+        echo "Build faild: $any"
+        currentBuild.result = 'FAILURE'
+    }
+    // finally {
+    //         def buildres = currentBuild.result;
+    //         echo "build res: $buildres"
+    //         emailext attachLog: true, 
+    //         body: "See ${env.BUILD_URL}", 
+    //         compressLog: true,
+    //         mimeType: 'text/html',
+    //         recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+    //         replyTo: 'ui@jethrodata.com',
+    //         subject: "Jethro docker build has finished with ${currentBuild.result}",
+    //         to: 'ui@jethrodata.com'
+    // }
+}
+        
