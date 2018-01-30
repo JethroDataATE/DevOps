@@ -14,33 +14,30 @@ COPY Common/dockerBootstrap /jethro_install
 
 # install systemd
 RUN yum -y update; yum clean all
-RUN yum -y install systemd initscripts
+RUN yum -y install systemd initscripts; yum clean all
 
 # install java
-RUN yum -y install $JAVA_VERSION
+RUN yum -y install $JAVA_VERSION; yum clean all
 ENV JAVA_HOME /usr/lib/jvm/jre
 
 # install ssh
-RUN yum -y install openssh openssh-server openssl openssh-clients
+RUN yum -y install openssh openssh-server openssl openssh-clients; yum clean all
 
 # Install utilities
-RUN yum -y install which wget
+RUN yum -y install which wget; yum clean all
 
 # User mode parameters
 ENV USER_ID 501 
 ENV GROUP_ID 501
 
 # change jethro user/group mode
-RUN groupadd jethro --gid $GROUP_ID
-RUN adduser jethro --uid $USER_ID --gid $GROUP_ID
-RUN echo jethro | passwd jethro --stdin
+RUN groupadd jethro --gid $GROUP_ID &&adduser jethro --uid $USER_ID --gid $GROUP_ID && echo jethro | passwd jethro --stdin
 ENV JETHRO_INSTALL_USER=jethro
 ENV JETHRO_INSTALL_GROUP=jethro
 
 # install Jethro
 ADD $JETHRO_RPM_LOACTION /jethro_install
-RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
-RUN rm -f /jethro_install/$(basename $JETHRO_RPM_LOACTION)
+RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION) && rm -f /jethro_install/$(basename $JETHRO_RPM_LOACTION)
 
 # Install Jethro Manager is asked
 RUN if [ ! -z $JETHROMNG_RPM_LOACTION ]; then wget $JETHROMNG_RPM_LOACTION && rpm -i $(basename $JETHROMNG_RPM_LOACTION) && rm -f $(basename $JETHROMNG_RPM_LOACTION); fi
@@ -53,10 +50,7 @@ ENV KEY_PATH ""
 ENV GENERAT_KEY_IF_NOT_EXIST "false"
 
 # configure volumes
-RUN mkdir /jethro -m 777
-RUN mkdir /jethro/persist -m 777
-RUN mkdir /jethro/instance_storage -m 777
-RUN mkdir /jethro/instance_cache -m 777
+RUN mkdir /jethro -m 777 && mkdir /jethro/persist -m 777 && mkdir /jethro/instance_storage -m 777 && mkdir /jethro/instance_cache -m 777
 VOLUME ["/jethro/persist", "/opt/jethro/instances", "/var/log/jethro", "/jethro/instance_storage", "/jethro/instance_cache"]
 
 # Docker run options

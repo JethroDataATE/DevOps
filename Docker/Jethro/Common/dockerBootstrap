@@ -153,13 +153,11 @@ configureKerberisedHadoopEnv(){
   sed -e "s/KERBEROS_SERVER/$KERBEROS_SERVER/" -e "s/KERBEROS_DEFAULT_RLM/$KERBEROS_DEFAULT_RLM/" /etc/krb5.conf.template > /etc/krb5.conf 
   cp $CONF_DIR/kerberos/yarn-site.xml $HADOOP_CONF_DIR
 
-  # Lounching renual cron job
+  # Set host.ini kerberos config
   if [ ! -z $KERBEROS_PRINCIPAL ] && [ ! -z $KERBEROS_KEYTAB_PATH ]
   then
-    su - jethro -c "sh $SCRIPT_DIR/ensureKerberos.sh $KERBEROS_PRINCIPAL $KERBEROS_KEYTAB_PATH"
-
-    echo "Lunching renual cron job..."
-    su - jethro -c "(crontab -l; echo '* * * * * $SCRIPT_DIR/ensureKerberos.sh $KERBEROS_PRINCIPAL $KERBEROS_KEYTAB_PATH >> /var/log/jethro/kerberos.log 2>&1' ) | crontab  -"
+    echo "hdfs.kerberos.principal=$KERBEROS_PRINCIPAL" >> /opt/jethro/config/host-conf.ini
+    echo "hdfs.kerberos.keytab=$KERBEROS_KEYTAB_PATH" >> /opt/jethro/config/host-conf.ini
   fi
 
   # Set hive configuration

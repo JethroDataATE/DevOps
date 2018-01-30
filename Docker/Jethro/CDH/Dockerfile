@@ -10,7 +10,7 @@ ARG JAVA_VERSION=java-1.8.0-openjdk.x86_64
 ARG HADOOP_DIST_VERSION=5
 
 # install java
-RUN yum -y install $JAVA_VERSION
+RUN yum -y install $JAVA_VERSION; yum -y clean all
 ENV JAVA_HOME /usr/lib/jvm/jre
 
 # install hadoop:
@@ -19,12 +19,11 @@ ADD http://archive.cloudera.com/cdh$HADOOP_DIST_VERSION/one-click-install/redhat
 RUN yum -y localinstall cloudera-cdh-$HADOOP_DIST_VERSION-0.x86_64.rpm
 
 # install hive
-RUN yum -y install hive
+RUN yum -y install hive; yum -y clean all
 
 # install Jethro
 ADD $JETHRO_RPM_LOACTION /jethro_install
-RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION)
-RUN rm -f /jethro_install/$(basename $JETHRO_RPM_LOACTION)
+RUN rpm -i /jethro_install/$(basename $JETHRO_RPM_LOACTION) && rm -f /jethro_install/$(basename $JETHRO_RPM_LOACTION)
 
 # Install Jethro Manager is asked
 RUN if [ ! -z $JETHROMNG_RPM_LOACTION ]; then wget $JETHROMNG_RPM_LOACTION && rpm -i $(basename $JETHROMNG_RPM_LOACTION) && rm -f $(basename $JETHROMNG_RPM_LOACTION); fi
