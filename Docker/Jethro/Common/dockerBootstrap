@@ -190,7 +190,7 @@ fixDirectoriesPermissiosn() {
 
 runBackgroudInit(){
 
-  fixDirectoriesPermissiosn
+  # fixDirectoriesPermissiosn
 
   # Remove jethro service from systemctl monitor.
   systemctl stop jethro.service >/dev/null 2>&1
