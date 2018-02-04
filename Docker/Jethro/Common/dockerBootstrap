@@ -182,18 +182,12 @@ configureHadoopEnv(){
   fi 
 }
 
-fixDirectoriesPermissiosn() {
-  (test -d /opt/jethro/instances || mkdir /opt/jethro/instances) && (chown -R jethro:jethro /opt/jethro/instances)
-  (test -d /opt/jethro/current/instances || mkdir /opt/jethro/current/instances) && (chown -R jethro:jethro /opt/jethro/current/instances)
-  (test -d /var/log/jethro || mkdir /var/log/jethro) && (chown -R jethro:jethro /var/log/jethro)
-}
-
 runBackgroudInit(){
-
-  # fixDirectoriesPermissiosn
 
   # Remove jethro service from systemctl monitor.
   systemctl stop jethro.service >/dev/null 2>&1
+  service jethro stop >/dev/null 2>&1
+  service jethro start >/dev/null 2>&1
 
   if [ ! -z $HADOOP_NAME_NODE_ADDRESS ]
   then
