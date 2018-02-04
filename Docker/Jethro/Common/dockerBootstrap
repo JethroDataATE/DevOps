@@ -188,6 +188,9 @@ runBackgroudInit(){
   systemctl stop jethro.service >/dev/null 2>&1
   service jethro stop >/dev/null 2>&1
   service jethro start >/dev/null 2>&1
+  sleep 5
+
+  chown jethro:jethro /opt/jethro/current/instances/jethro.out
 
   if [ ! -z $HADOOP_NAME_NODE_ADDRESS ]
   then
@@ -211,8 +214,6 @@ runBackgroudInit(){
   systemctl stop jethro.service >/dev/null 2>&1
   service jethro stop >/dev/null 2>&1
   service jethro start >/dev/null 2>&1
-
-  chown jethro:jethro /opt/jethro/current/instances/jethro.out
 
   # Fix jethro manager permissions and stop the service
   sleep 5
