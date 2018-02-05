@@ -198,10 +198,10 @@ runBackgroudInit(){
     if [ ! -z $KERBEROS_SERVER ] && [ ! -z $KERBEROS_DEFAULT_RLM ]
     then
       configureKerberisedHadoopEnv
+      echo "Genertaing Kerberos ticktes - please wait..."
+      sleep 12
     else
       configureHadoopEnv
-      echo "Genertaing Kerberos ticktes - please wait..."
-      sleep 10
     fi
   fi
 
