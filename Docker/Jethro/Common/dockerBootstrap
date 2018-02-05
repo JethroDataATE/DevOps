@@ -188,7 +188,6 @@ runBackgroudInit(){
   systemctl stop jethro.service >/dev/null 2>&1
   service jethro stop >/dev/null 2>&1
   service jethro start >/dev/null 2>&1
-  sleep 5
 
   chown jethro:jethro /opt/jethro/current/instances/jethro.out
 
@@ -201,6 +200,8 @@ runBackgroudInit(){
       configureKerberisedHadoopEnv
     else
       configureHadoopEnv
+      echo "Genertaing Kerberos ticktes - please wait..."
+      sleep 10
     fi
   fi
 
