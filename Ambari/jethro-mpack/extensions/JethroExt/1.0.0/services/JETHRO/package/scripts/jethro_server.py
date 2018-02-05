@@ -9,7 +9,8 @@ from jethro_metrics_utils import start_metrics
 from resource_management.libraries.functions.check_process_status import check_process_status
 from jethro_service_utils import create_attach_instance, setup_kerberos, \
     installJethroComponent, ensure_kerberos_tickets, get_current_instance_name, \
-    is_service_installed_for_instance, exec_jethro_client_command_file, set_param_command
+    is_service_installed_for_instance, exec_jethro_client_command_file, set_param_command, \
+    get_current_jethro_version, get_current_jethro_version
 
 
 class JethroServer(Script):
@@ -57,7 +58,8 @@ class JethroServer(Script):
 
         self.configure(env)
 
-        start_metrics(params.ams_collector_address, params.jethro_user)
+        jethor_version = get_current_jethro_version(params.jethro_user)
+        start_metrics(params.ams_collector_address, params.jethro_user, jethor_version)
 
     def stop(self, env):
         import params

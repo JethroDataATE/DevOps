@@ -1,4 +1,3 @@
-import os
 from resource_management.core import shell
 from resource_management.core.logger import Logger
 from resource_management.libraries.functions.format import format
@@ -28,7 +27,7 @@ def execute(configurations={}, parameters={}, host_name=None):
     try:
         load_src("jethro_service_utils", "../scripts/jethro_service_utils.py")
         import jethro_service_utils
-        from jethro_service_utils import get_current_instance_name, get_current_instance_port
+        from jethro_service_utils import get_current_instance_name, get_current_instance_port, get_current_jethro_version
 
         jethro_user = configurations[JETHRO_USER_KEY]
         jethro_password = configurations[JETHRO_PASS_KEY]
@@ -37,12 +36,23 @@ def execute(configurations={}, parameters={}, host_name=None):
         instance_port = get_current_instance_port()
 
         if instance_name is None:
-            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter because Jethro Server is unreachable.']
+            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro Server is not reachable.']
 
-        client_code, client_out = shell.call(
-            "service jethro status |  awk ' /" + instance_name + ".*JethroServer/ {x=$2} END{if(x != \"\") print x}'", timeout=60)
+        jethro_version = get_current_jethro_version(jethro_user)
+
+        if jethro_version is None:
+            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro version is undetectable.']
+
+        jethro_status_cmd =  "service jethro status | awk ' /JethroServer .*" + instance_name + "/ {x=$5} END{if(x != \"\") print x}'"
+        
+        # service status prompt has change from version 3.4.2
+        if(jethro_version < "3.4.2"):
+            jethro_status_cmd =  "service jethro status | awk ' /" + instance_name + ".*JethroServer/ {x=$2} END{if(x != \"\") print x}'"
+
+        client_code, client_out = shell.call(jethro_status_cmd, timeout=60)
+           
         if client_code != 0 or client_out.strip() == '':
-            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter becasue Jethro Server is unreachable.']
+            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro Server is not reachable.']
 
         cmd_part1 = format(
             "su - {jethro_user} -c \'JethroClient {instance_name} localhost:{instance_port} -u {jethro_user} -p {jethro_password} -q \"show param  dynamic.aggregation.auto.generate.enable;\"'")

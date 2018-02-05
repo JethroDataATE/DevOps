@@ -194,3 +194,13 @@ def exec_jethro_client_command_file(command_file_path):
         Logger.error("Failed changing global Jethro paramaters:\n{0}".format(out))
 
     shell.call(format('rm -f {command_file_path}'), timeout=20)
+
+def get_current_jethro_version(jethro_user):
+    jethro_version_cmd = "su - " + jethro_user + " -c \"Jethro v\" | awk '{print $2}'"
+    code, out = shell.call(jethro_version_cmd, timeout=60)
+    if code == 0:
+        return out
+    else:
+        Logger.error("Failed getting Jethro version:\n{0}".format(out))
+
+    
