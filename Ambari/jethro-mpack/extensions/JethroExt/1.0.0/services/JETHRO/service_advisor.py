@@ -39,6 +39,7 @@ class JethroExt100JETHROServiceAdvisor(service_advisor.ServiceAdvisor):
         # foundJethro = False
         if not self.isComponentHostsPopulated(jc):
             for hostName in hostsComponentsMap.keys():
+                hostComponents = hostsComponentsMap[hostName]
                 if ({"name": "NAMENODE"} in hostComponents) \
                         and {"name": "JETHRO_MAINT"} in hostComponents:
                     Logger.info(
@@ -61,6 +62,7 @@ class JethroExt100JETHROServiceAdvisor(service_advisor.ServiceAdvisor):
               ["component_name"] == "JETHRO_SERVER"][0]
         if not self.isComponentHostsPopulated(jc):
             for hostName in hostsComponentsMap.keys():
+                hostComponents = hostsComponentsMap[hostName]
                 if ({"name": "NAMENODE"} in hostComponents) \
                         and {"name": "JETHRO_SERVER"} in hostComponents:
                     Logger.info(
@@ -83,6 +85,7 @@ class JethroExt100JETHROServiceAdvisor(service_advisor.ServiceAdvisor):
               ["component_name"] == "JETHRO_LOAD_SCHEDULER"][0]
         if not self.isComponentHostsPopulated(jc):
             for hostName in hostsComponentsMap.keys():
+                hostComponents = hostsComponentsMap[hostName]
                 if ({"name": "NAMENODE"} in hostComponents) \
                         and {"name": "JETHRO_LOAD_SCHEDULER"} in hostComponents:
                     Logger.info(
