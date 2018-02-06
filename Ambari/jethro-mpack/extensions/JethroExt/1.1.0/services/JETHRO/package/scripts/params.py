@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from resource_management.libraries.functions import default
-from resource_management.libraries.functions import get_kinit_path, get_klist_path
 from resource_management.libraries.functions.format import format
 from resource_management.libraries.script.script import Script
 from ambari_commons.ambari_metrics_helper import select_metric_collector_hosts_from_hostnames
@@ -40,10 +39,6 @@ ams_collector_address = format('{metric_collector_host}:{metric_collector_port}'
 
 # Security Properties
 security_enabled = config['configurations']['cluster-env']['security_enabled']
-kinit_path = get_kinit_path(
-    default('/configurations/kerberos-env/executable_search_paths', None))
-klist_path = get_klist_path(
-    default('/configurations/kerberos-env/executable_search_paths', None))
 kerberos_realm = default('/configurations/kerberos-env/realm', None)
 jethro_kerberos_prinicipal = config['configurations']['jethro-env']['jethro.kerberos.principal']
 jethro_kerberos_keytab = config['configurations']['jethro-env']['jethro.kerberos.keytab']

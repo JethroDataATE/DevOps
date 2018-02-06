@@ -73,22 +73,12 @@ def create_attach_instance(service_name, instance_name, storage_path, cache_path
     )
 
 
-def setup_kerberos(kinit_path, principal_name, keytab_path, local_user_name):
-    Execute(
-        (kinit_path,
-         "-kt",
-         keytab_path, principal_name),
-        user=local_user_name
-    )
+def setup_kerberos_params(principal_name, keytab_path, local_user_name):
+    cmd = format("echo hdfs.kerberos.principal={principal_name} >> /opt/jethro/config/host-conf.ini")
+    Execute(cmd, user=local_user_name)
 
-
-def ensure_kerberos_tickets(klist_path, kinit_path, principal_name, keytab_path, local_user_name):
-    # If there are no tickets in the cache or they are expired, perform a kinit, else use what is in the cache
-    klist_cmd = format("{klist_path} -s")
-    if shell.call(klist_cmd, user=local_user_name, timeout=20)[0] != 0:
-        Logger.debug("Renewing Jethro kerberso tickets.")
-        setup_kerberos(kinit_path, principal_name,
-                       keytab_path, local_user_name)
+    cmd = format("echo hdfs.kerberos.keytab={keytab_path} >> /opt/jethro/config/host-conf.ini")
+    Execute(cmd, user=local_user_name)
 
 
 def get_instance_details():
@@ -107,7 +97,8 @@ def get_instance_details():
                 jethro_current_instance_name = last_inst_parts[0]
                 jethro_current_instance_port = last_inst_parts[1]
 
-    Logger.debug("Jethro instance details: {0}.".format(jethro_current_instance_name))
+    Logger.debug("Jethro instance details: {0}.".format(
+        jethro_current_instance_name))
     return jethro_current_instance_name, jethro_current_instance_port
 
 # Read last entry from services.ini and fetch instance name
@@ -185,7 +176,7 @@ def exec_jethro_client_command_file(command_file_path):
             cmd_content = cmd_file.read()
             print(format('Commands: {cmd_content}'))
     except Exception as e:
-       Logger.error("Fail to read commands file: {0}".format(e))
+        Logger.error("Fail to read commands file: {0}".format(e))
 
     code, out = shell.call(jethro_client_cmd, timeout=60)
     if code == 0:
@@ -196,11 +187,10 @@ def exec_jethro_client_command_file(command_file_path):
     shell.call(format('rm -f {command_file_path}'), timeout=20)
 
 def get_current_jethro_version(jethro_user):
-    jethro_version_cmd = "su - " + jethro_user + " -c \"Jethro v\" | awk '{print $2}'"
+    jethro_version_cmd = "su - " + jethro_user + \
+        " -c \"Jethro v\" | awk '{print $2}'"
     code, out = shell.call(jethro_version_cmd, timeout=60)
     if code == 0:
         return out
     else:
         Logger.error("Failed getting Jethro version:\n{0}".format(out))
-
-    

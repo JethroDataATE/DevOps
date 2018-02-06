@@ -27,7 +27,7 @@ def execute(configurations={}, parameters={}, host_name=None):
     try:
         load_src("jethro_service_utils", "../scripts/jethro_service_utils.py")
         import jethro_service_utils
-        from jethro_service_utils import get_current_instance_name, get_current_instance_port, get_current_jethro_version
+        from jethro_service_utils import get_current_instance_name, get_current_instance_port
 
         jethro_user = configurations[JETHRO_USER_KEY]
         jethro_password = configurations[JETHRO_PASS_KEY]
@@ -44,16 +44,7 @@ def execute(configurations={}, parameters={}, host_name=None):
         if instance_name is None:
             return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro Server is not reachable.']
 
-        jethro_version = get_current_jethro_version(jethro_user)
-
-        if jethro_version is None:
-            return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro version is undetectable.']
-
         jethro_status_cmd =  "service jethro status | awk ' /JethroServer .*" + instance_name + "/ {x=$5} END{if(x != \"\") print x}'"
-        
-        # service status prompt has change from version 3.4.2
-        if(jethro_version < "3.4.2"):
-            jethro_status_cmd =  "service jethro status | awk ' /" + instance_name + ".*JethroServer/ {x=$2} END{if(x != \"\") print x}'"
 
         client_code, client_out = shell.call(jethro_status_cmd, timeout=60)
 

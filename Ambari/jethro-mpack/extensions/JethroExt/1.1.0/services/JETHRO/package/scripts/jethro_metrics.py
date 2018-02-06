@@ -81,13 +81,9 @@ def format_instance_name(instance_name):
     return instance_name[9:-7]
 
 
-def submit_running_instances_names_metrics(jethro_version):
-    
-    jethro_status_cmd = "service jethro status | awk '{if($2 != \"JethroMonitor\") print $5}'"
 
-    # service status prompt has change from version 3.4.2
-    if(jethro_version < "3.4.2"):
-        jethro_status_cmd = "service jethro status | awk '{print $2}'"
+def get_running_instances_names():
+    jethro_status_cmd = "service jethro status | awk '{if($2 != \"JethroMonitor\") print $5}'"
 
     res = os.popen(jethro_status_cmd)
 
@@ -98,27 +94,34 @@ def submit_running_instances_names_metrics(jethro_version):
         if instance_num not in instances:
             instances.append(instance_num)
 
+    return instances
+    
+def submit_running_instances_names_metrics():    
+    instances = get_running_instances_names()
     jethro_metrice_collector.submit_metrics('jethro_mng', 'running_instances_names', instances)
 
 
 def submit_running_instances_metrics():
-
     metrics = read_metric_values(ams_host, ams_port, False, "jethro_mng", "running_instances_names", 3)
 
     val = len(set(metrics))
-    vals = []
-    vals.append(val)
 
-    jethro_metrice_collector.submit_metrics('jethro_mng', 'running_instances', vals)
+    # in case metrics value is 0, it could be because of the AMS collector delay
+    # check the actual instances running on the local machine.
+    if val == 0:
+        instances = set(get_running_instances_names())
+        if len(instances) > 0:
+            val = len(instances)
+        
+    values = []
+    values.append(val)
+
+    jethro_metrice_collector.submit_metrics('jethro_mng', 'running_instances', values)
 
 
-def submit_maint_status_metrics(jethro_version):
+def submit_maint_status_metrics():
     
     jethro_status_cmd = "service jethro status | awk '/JethroMaint/ {print $5}'"
-
-    # service status prompt has change from version 3.4.2
-    if(jethro_version < "3.4.2"):
-        jethro_status_cmd = "service jethro status | awk '/JethroMaint/ {print $2}'"
 
     res = os.popen(jethro_status_cmd)
 
@@ -130,12 +133,8 @@ def submit_maint_status_metrics(jethro_version):
     jethro_metrice_collector.submit_metrics('jethro_maint', 'running_maint_services', instances)
 
 
-def submit_load_scheduler_status_metrics(jethro_version):
+def submit_load_scheduler_status_metrics():
     jethro_status_cmd = "service jethro status | awk '/JethroLoadsScheduler/ {print $5}'"
-
-    # service status prompt has change from version 3.4.2
-    if(jethro_version < "3.4.2"):
-        jethro_status_cmd = "service jethro status | awk '/JethroLoadsScheduler/ {print $2}'"
 
     res = os.popen(jethro_status_cmd)
 
@@ -172,7 +171,7 @@ METRICS_INTERVAL = 60
 
 ams_address = sys.argv[1]
 jethro_user = sys.argv[2]
-jethro_version = sys.argv[3]
+
 jethro_metrice_collector = JethroMetrics(ams_address)
 script_dir = os.path.dirname(os.path.abspath(__file__))
 init_path = format('{script_dir}/../ams_host.ini')
@@ -189,9 +188,9 @@ while True:
 
         # Submit metrics
         submit_attached_instances_names_metrics()
-        submit_maint_status_metrics(jethro_version)
-        submit_load_scheduler_status_metrics(jethro_version)
-        submit_running_instances_names_metrics(jethro_version)
+        submit_maint_status_metrics()
+        submit_load_scheduler_status_metrics()
+        submit_running_instances_names_metrics()
         submit_running_instances_metrics()
         submit_instance_storage_metrics(jethro_user)
 

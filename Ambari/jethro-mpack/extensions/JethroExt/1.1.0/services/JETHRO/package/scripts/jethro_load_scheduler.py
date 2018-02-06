@@ -6,9 +6,9 @@ from resource_management.core.resources.system import File, Execute
 from resource_management.core.logger import Logger
 from resource_management.libraries.functions.format import format
 from jethro_metrics_utils import start_metrics
-from jethro_service_utils import create_attach_instance, setup_kerberos, installJethroComponent, \
-    ensure_kerberos_tickets, get_current_instance_name, \
-    is_service_installed_for_instance, get_current_jethro_version
+from jethro_service_utils import create_attach_instance, installJethroComponent, \
+    get_current_instance_name, setup_kerberos_params, \
+    is_service_installed_for_instance
 from resource_management.libraries.functions.check_process_status import check_process_status
 
 
@@ -27,9 +27,6 @@ class JethroLoadScheduler(Script):
 
         installJethroComponent(params.jethro_rpm_path, params.jethro_user)
 
-        # if not params.security_enabled:
-        #     self.ensure_instance_attached()
-
     def start(self, env):
         import params
         env.set_params(params)
@@ -37,7 +34,7 @@ class JethroLoadScheduler(Script):
         instance_name = get_current_instance_name()
 
         if params.security_enabled:
-            setup_kerberos(params.kinit_path, params.jethro_kerberos_prinicipal,
+            setup_kerberos_params(params.jethro_kerberos_prinicipal,
                            params.jethro_kerberos_keytab, params.jethro_user)
 
         if instance_name is None:
@@ -54,8 +51,7 @@ class JethroLoadScheduler(Script):
 
         self.configure(env)
 
-        jethor_version = get_current_jethro_version(params.jethro_user)
-        start_metrics(params.ams_collector_address, params.jethro_user, jethor_version)
+        start_metrics(params.ams_collector_address, params.jethro_user)
 
     def stop(self, env):
         import params
@@ -75,11 +71,6 @@ class JethroLoadScheduler(Script):
     def status(self, env):
         import status_params
         env.set_params(status_params)
-
-        import params
-        if params.security_enabled:
-            ensure_kerberos_tickets(params.klist_path, params.kinit_path, params.jethro_kerberos_prinicipal,
-                                    params.jethro_kerberos_keytab, params.jethro_user)
 
         if status_params.jethroloadschedule_pid_file is not None:
             return check_process_status(status_params.jethroloadschedule_pid_file)

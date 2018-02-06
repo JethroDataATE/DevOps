@@ -5,7 +5,7 @@
             <name>JETHRO</name>
             <displayName>Jethro</displayName>
             <comment>Jethro - Business Intelligence on Big Data</comment>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
             <components>
                 <component>
                     <name>JETHRO_MNG</name>
@@ -65,6 +65,17 @@
                     <cardinality>1+</cardinality>
                     <commandScript>
                         <script>scripts/jethro_load_scheduler.py</script>
+                        <scriptType>PYTHON</scriptType>
+                        <timeout>600</timeout>
+                    </commandScript>
+                </component>
+                 <component>
+                    <name>JETHRO_MONITOR</name>
+                    <displayName>Jethro Monitor</displayName>
+                    <category>MASTER</category>
+                    <cardinality>1+</cardinality>
+                    <commandScript>
+                        <script>scripts/jethro_monitor.py</script>
                         <scriptType>PYTHON</scriptType>
                         <timeout>600</timeout>
                     </commandScript>
