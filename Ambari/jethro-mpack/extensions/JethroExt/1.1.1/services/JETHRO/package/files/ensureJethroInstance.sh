@@ -71,7 +71,7 @@ then
     sed -i "/$instanceName/c $instanceName:$port:yes:$maint:$loadscheduler" /opt/jethro/instances/services.ini
     su - $jethroUser -c "service jethro start $instanceName"
     sleep 10
-    su - $jethroUser -c "JethroClient $instanceName localhost:$port -u $jethroUser -p jethro -q 'set global dynamic.aggregation.auto.generate.enable=1;'"
+    su - $jethroUser -c "JethroClient $instanceName localhost:$port -u jethro -p jethro -q 'set global dynamic.aggregation.auto.generate.enable=1;'"
 fi
 
 if [ $service == "maint" ]
