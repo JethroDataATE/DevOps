@@ -64,7 +64,7 @@ fi
 rpm -Uvh --force $rpmLocalPath
 
 sleep 3
-test -d /opt/jethro/instances/jethro.out && chown $jethroGroup:$jethroUser /opt/jethro/instances/jethro.out
+test -d /opt/jethro/instances/jethro.out && chown $jethroUser:$jethroGroup /opt/jethro/instances/jethro.out
 
 # Clean temp file
 rm -f $rpmLocalPath
