@@ -12,7 +12,7 @@ from resource_management.core.logger import Logger
 SERVICES_INI = "/opt/jethro/instances/services.ini"
 
 
-def installJethroComponent(rpm_path, jethro_user):
+def installJethroComponent(rpm_path, jethro_user, jethro_group):
 
     script_path = "/tmp/installJethroComponent.sh"
 
@@ -25,7 +25,8 @@ def installJethroComponent(rpm_path, jethro_user):
         ("sh",
          script_path,
          rpm_path,
-         jethro_user),
+         jethro_user,
+         jethro_group),
         sudo=True
     )
 

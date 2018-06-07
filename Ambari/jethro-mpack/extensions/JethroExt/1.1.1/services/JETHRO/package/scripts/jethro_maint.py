@@ -3,18 +3,18 @@
 from resource_management.core.source import StaticFile
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
-from resource_management.core.logger import Logger
 from resource_management.libraries.functions.format import format
-from jethro_metrics_utils import start_metrics
-from jethro_service_utils import create_attach_instance, installJethroComponent, \
-    get_current_instance_name, setup_kerberos_params, \
-    is_service_installed_for_instance
+from jethro_metrics_utils import start_metrics, stop_metrics
+from jethro_service_utils import create_attach_instance, setup_kerberos_params, installJethroComponent, \
+    get_current_instance_name, is_service_installed_for_instance
 from resource_management.libraries.functions.check_process_status import check_process_status
+import os
+from resource_management.core.logger import Logger
 
 
-class JethroLoadScheduler(Script):
+class JethroMaint(Script):
 
-    JETHRO_SERVICE_NAME = "loadscheduler"
+    JETHRO_SERVICE_NAME = "maint"
 
     # ************************ Script Interface methrods ***************************
 
@@ -23,9 +23,12 @@ class JethroLoadScheduler(Script):
         env.set_params(params)
         self.install_packages(env)
 
-        Logger.info("Install Jethro Load Scheduler")
+        Logger.info("Install Jethro Maint")
 
-        installJethroComponent(params.jethro_rpm_path, params.jethro_user)
+        installJethroComponent(params.jethro_rpm_path, params.jethro_user, params.jethro_group)
+
+        # if not params.security_enabled:
+        #     self.ensure_instance_attached()
 
     def start(self, env):
         import params
@@ -35,7 +38,7 @@ class JethroLoadScheduler(Script):
 
         if params.security_enabled:
             setup_kerberos_params(params.jethro_kerberos_prinicipal,
-                           params.jethro_kerberos_keytab, params.jethro_user)
+                                  params.jethro_kerberos_keytab, params.jethro_user)
 
         if instance_name is None:
             self.ensure_instance_attached()
@@ -68,21 +71,31 @@ class JethroLoadScheduler(Script):
             user=params.jethro_user
         )
 
+        # self.stopMetrics()
+
     def status(self, env):
         import status_params
         env.set_params(status_params)
 
-        if status_params.jethroloadschedule_pid_file is not None:
-            return check_process_status(status_params.jethroloadschedule_pid_file)
+        if status_params.jethromaint_pid_file is not None:
+            return check_process_status(status_params.jethromaint_pid_file)
         else:
             return check_process_status('')
-
 
     def configure(self, env):
         import params
         env.set_params(params)
 
     # ************************ Private methrods ***************************
+
+    def stop_jethro_metrics(self, env):
+        stop_metrics()
+
+    def start_jethro_metrics(self, env):
+        import params
+        env.set_params(params)
+        
+        start_metrics(params.ams_collector_address, params.jethro_user)
 
     def ensure_instance_attached(self):
         import params
@@ -97,4 +110,4 @@ class JethroLoadScheduler(Script):
 
 
 if __name__ == "__main__":
-    JethroLoadScheduler().execute()
+    JethroMaint().execute()

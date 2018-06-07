@@ -8,7 +8,7 @@
       "scope": "ANT",
       "source": {
         "type": "SCRIPT",
-        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.0/services/JETHRO/package/alerts/alert_monitor_is_running.py",
+        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.1/services/JETHRO/package/alerts/alert_monitor_is_running.py",
         "parameters": []
       }
     }],
@@ -20,7 +20,7 @@
       "scope": "ANY",
       "source": {
         "type": "SCRIPT",
-        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.0/services/JETHRO/package/alerts/alert_service_healthcheck.py",
+        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.1/services/JETHRO/package/alerts/alert_service_healthcheck.py",
         "parameters": [{
             "name": "metricName",
             "display_name": "Metrics Name",
@@ -56,7 +56,7 @@
       "scope": "ANY",
       "source": {
         "type": "SCRIPT",
-        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.0/services/JETHRO/package/alerts/alert_service_healthcheck.py",
+        "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.1/services/JETHRO/package/alerts/alert_service_healthcheck.py",
         "parameters": [{
             "name": "metricName",
             "display_name": "Metrics Name",
@@ -92,7 +92,7 @@
         "scope": "ANY",
         "source": {
           "type": "SCRIPT",
-          "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.0/services/JETHRO/package/alerts/alert_cube_generation_off.py",
+          "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.1/services/JETHRO/package/alerts/alert_cube_generation_off.py",
           "parameters": []
         }
       },
@@ -104,7 +104,7 @@
         "scope": "ANY",
         "source": {
           "type": "SCRIPT",
-          "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.0/services/JETHRO/package/alerts/alert_jethro_auto_cube_is_sync.py",
+          "path": "/var/lib/ambari-agent/cache/extensions/JethroExt/1.1.1/services/JETHRO/package/alerts/alert_jethro_auto_cube_is_sync.py",
           "parameters": []
         }
       }

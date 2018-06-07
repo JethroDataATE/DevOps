@@ -23,7 +23,7 @@ class JethroMonitor(Script):
 
         Logger.info("Install Jethro Monitor")
 
-        installJethroComponent(params.jethro_rpm_path, params.jethro_user)
+        installJethroComponent(params.jethro_rpm_path, params.jethro_user, params.jethro_group)
 
     def start(self, env):
         import params

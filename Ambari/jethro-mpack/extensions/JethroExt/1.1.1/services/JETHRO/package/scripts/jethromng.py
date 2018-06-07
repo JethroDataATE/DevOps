@@ -16,7 +16,7 @@ class JethroMng(Script):
         import params
         env.set_params(params)
         Logger.info('Install Jethro Manager')
-        installJethroComponent(params.jethromng_rpm_path, params.jethro_user)
+        installJethroComponent(params.jethromng_rpm_path, params.jethro_user, params.jethro_group)
 
     def start(self, env):
         import params

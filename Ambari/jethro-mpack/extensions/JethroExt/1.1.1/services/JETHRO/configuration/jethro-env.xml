@@ -12,6 +12,17 @@
         </value-attributes>
         <display-name>Jethro User Name</display-name>
     </property>
+        <property>
+        <name>jethro_group</name>
+        <value>jethro</value>
+        <description>Jethro Group Name</description>
+        <value-attributes>
+            <type>string</type>
+            <overridable>false</overridable>
+            <editable-only-at-install>true</editable-only-at-install>
+        </value-attributes>
+        <display-name>Jethro Group Name</display-name>
+    </property>
     <property>
         <name>jethro_password</name>
         <value>jethro</value>

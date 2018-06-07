@@ -7,6 +7,7 @@ set -e
 # Input paramaters
 rpmPath=$1
 jethroUser=$2
+jethroGroup=$3
 
 
 rpmName=$(basename $rpmPath)
@@ -52,13 +53,18 @@ echo "Installing..."
 
 if  [[ "$jethroUser" != "jethro" ]] ; then
     export JETHRO_INSTALL_USER=$jethroUser
-    export JETHRO_INSTALL_GROUP=$jethroUser
+    export JETHROMNG_INSTALL_USER=$jethroUser
+fi
+
+if  [[ "$jethroGroup" != "jethro" ]] ; then
+    export JETHRO_INSTALL_GROUP=$jethroGroup
+    export JETHROMNG_INSTALL_GROUP=$jethroGroup
 fi
 
 rpm -Uvh --force $rpmLocalPath
 
 sleep 3
-test -d /opt/jethro/instances/jethro.out && chown $jethroUser:$jethroUser /opt/jethro/instances/jethro.out
+test -d /opt/jethro/instances/jethro.out && chown $jethroGroup:$jethroUser /opt/jethro/instances/jethro.out
 
 # Clean temp file
 rm -f $rpmLocalPath

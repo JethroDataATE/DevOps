@@ -17,7 +17,7 @@ except Exception as e:
     print("Failed to load parent")
 
 
-class JethroExt110JETHROServiceAdvisor(service_advisor.ServiceAdvisor):
+class JethroExt111JETHROServiceAdvisor(service_advisor.ServiceAdvisor):
 
     def colocateService(self, hostsComponentsMap, serviceComponents):
         try:

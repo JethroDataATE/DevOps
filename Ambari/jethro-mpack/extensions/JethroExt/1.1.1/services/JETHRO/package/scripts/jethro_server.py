@@ -1,34 +1,33 @@
 #!/usr/bin/env python
 
-from resource_management.core.source import StaticFile
+import time
 from resource_management.libraries.script.script import Script
 from resource_management.core.resources.system import File, Execute
-from resource_management.libraries.functions.format import format
-from jethro_metrics_utils import start_metrics, stop_metrics
-from jethro_service_utils import create_attach_instance, setup_kerberos_params, installJethroComponent, \
-    get_current_instance_name, is_service_installed_for_instance
-from resource_management.libraries.functions.check_process_status import check_process_status
-import os
 from resource_management.core.logger import Logger
+from resource_management.libraries.functions.format import format
+from jethro_metrics_utils import start_metrics
+from resource_management.libraries.functions.check_process_status import check_process_status
+from jethro_service_utils import create_attach_instance, setup_kerberos_params, \
+    installJethroComponent, get_current_instance_name, \
+    is_service_installed_for_instance, exec_jethro_client_command_file, set_param_command
 
 
-class JethroMaint(Script):
+class JethroServer(Script):
 
-    JETHRO_SERVICE_NAME = "maint"
+    JETHRO_SERVICE_NAME = "server"
+    COMMAND_FILE_PATH = "/tmp/jethro_client_commands.sql"
 
-    # ************************ Script Interface methrods ***************************
+# ************************ Script Interface methrods ***************************
 
     def install(self, env):
         import params
         env.set_params(params)
         self.install_packages(env)
 
-        Logger.info("Install Jethro Maint")
+        Logger.info("Install Jethro Server")
 
-        installJethroComponent(params.jethro_rpm_path, params.jethro_user)
+        installJethroComponent(params.jethro_rpm_path, params.jethro_user, params.jethro_group)
 
-        # if not params.security_enabled:
-        #     self.ensure_instance_attached()
 
     def start(self, env):
         import params
@@ -38,7 +37,7 @@ class JethroMaint(Script):
 
         if params.security_enabled:
             setup_kerberos_params(params.jethro_kerberos_prinicipal,
-                                  params.jethro_kerberos_keytab, params.jethro_user)
+                           params.jethro_kerberos_keytab, params.jethro_user)
 
         if instance_name is None:
             self.ensure_instance_attached()
@@ -47,10 +46,12 @@ class JethroMaint(Script):
             self.ensure_instance_attached()
 
         Execute(
-            ("service", "jethro", "start",
-             instance_name, self.JETHRO_SERVICE_NAME),
+            ("service", "jethro", "start", instance_name),
             user=params.jethro_user
         )
+
+        # wait 5 secs for service start before trying to configure.
+        time.sleep(5)
 
         self.configure(env)
 
@@ -66,36 +67,35 @@ class JethroMaint(Script):
             return
 
         Execute(
-            ("service", "jethro", "stop",
-             instance_name, self.JETHRO_SERVICE_NAME),
+            ("service", "jethro", "stop", instance_name),
             user=params.jethro_user
         )
-
-        # self.stopMetrics()
 
     def status(self, env):
         import status_params
         env.set_params(status_params)
 
-        if status_params.jethromaint_pid_file is not None:
-            return check_process_status(status_params.jethromaint_pid_file)
+        if status_params.jethroserver_pid_file is not None:
+            return check_process_status(status_params.jethroserver_pid_file)
         else:
             return check_process_status('')
+
 
     def configure(self, env):
         import params
         env.set_params(params)
+        commands = ""
+        commands += set_param_command("jethro-global",
+                                      "dynamic.aggregation.auto.generate.enable")
 
-    # ************************ Private methrods ***************************
+        commands += set_param_command("jethro-global",
+                                      "dynamic.aggregation.auto.generate.execution.hosts")
 
-    def stop_jethro_metrics(self, env):
-        stop_metrics()
+        File(self.COMMAND_FILE_PATH, content=commands)
 
-    def start_jethro_metrics(self, env):
-        import params
-        env.set_params(params)
-        
-        start_metrics(params.ams_collector_address, params.jethro_user)
+        exec_jethro_client_command_file(self.COMMAND_FILE_PATH)
+
+    # ************************ Private methods ***************************
 
     def ensure_instance_attached(self):
         import params
@@ -110,4 +110,4 @@ class JethroMaint(Script):
 
 
 if __name__ == "__main__":
-    JethroMaint().execute()
+    JethroServer().execute()

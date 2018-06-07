@@ -43,6 +43,7 @@ kerberos_realm = default('/configurations/kerberos-env/realm', None)
 jethro_kerberos_prinicipal = config['configurations']['jethro-env']['jethro.kerberos.principal']
 jethro_kerberos_keytab = config['configurations']['jethro-env']['jethro.kerberos.keytab']
 jethro_user = config['configurations']['jethro-env']['jethro_user']
+jethro_group = config['configurations']['jethro-env']['jethro_group']
 jethro_password = config['configurations']['jethro-env']['jethro_password']
 
 if security_enabled and (jethro_kerberos_prinicipal == 'none'):
