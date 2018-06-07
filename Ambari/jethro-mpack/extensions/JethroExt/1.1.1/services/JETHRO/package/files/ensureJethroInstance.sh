@@ -31,7 +31,7 @@ resetInstanceServicesConfig() {
 }
 
 # Create/attach instance
-instances=( $(su - jethro -c "JethroAdmin list-storage-instances -storage-path=$storagePath -Dstorage.type=HDFS" | awk -v instance="$instanceName" '{if ($1==instance) {print $1, $3}}') )
+instances=( $(su - $jethroUser -c "JethroAdmin list-storage-instances -storage-path=$storagePath -Dstorage.type=HDFS" | awk -v instance="$instanceName" '{if ($1==instance) {print $1, $3}}') )
 if ! [ -z ${instances[0]} ]
 then
    echo
