@@ -46,7 +46,7 @@ def execute(configurations={}, parameters={}, host_name=None):
             return RESULT_STATE_UNKNOWN, ['Unable to read Jethro auto-cube generation parameter - Jethro Server is not reachable.']
 
         cmd_part1 = format(
-            "su - {jethro_user} -c \'JethroClient {instance_name} localhost:{instance_port} -u {jethro_user} -p {jethro_password} -q \"show param  dynamic.aggregation.auto.generate.enable;\"'")
+            "su - {jethro_user} -c \'JethroClient {instance_name} localhost:{instance_port} -u jethro -p {jethro_password} -q \"show param  dynamic.aggregation.auto.generate.enable;\"'")
         cmd_part2 = " | awk -F \"|\" '$4 ~ /dynamic.aggregation.auto.generate.enable/ {x=$5} END{print x}'"
         cmd = cmd_part1 + cmd_part2
         code, out = shell.call(cmd, timeout=60)

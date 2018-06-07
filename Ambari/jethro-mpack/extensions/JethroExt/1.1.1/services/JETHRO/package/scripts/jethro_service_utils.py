@@ -169,7 +169,7 @@ def exec_jethro_client_command_file(command_file_path):
     inst_name = get_current_instance_name()
     inst_port = get_current_instance_port()
     jethro_client_cmd = format(
-        "JethroClient {inst_name} 127.0.0.1:{inst_port} -u {params.jethro_user} -p {params.jethro_password} -i {command_file_path} -c -d '|'")
+        "JethroClient {inst_name} 127.0.0.1:{inst_port} -u jethro -p {params.jethro_password} -i {command_file_path} -c -d '|'")
     Logger.debug("Set params command: {0}".format(jethro_client_cmd))
 
     try:
