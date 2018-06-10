@@ -15,8 +15,7 @@ runBackgroudInit(){
   service jethromng stop >/dev/null 2>&1
   $PM2 kill >/dev/null 2>&1
   pkill PM2 >/dev/null 2>&1
-  chown -R jethro:jethro /opt/jethro/jethromng/pm2
-  chown -R jethro:jethro /opt/jethro/jethromng/resources
+  chown -R jethro:jethro /opt/jethro/jethromng
   chown -R jethro:jethro /var/log/jethro/jethromng
   chmod -R 777 /opt/jethro/jethromng/pm2/ >/dev/null 2>&1
   su - jethro -c "service jethromng start >/dev/null 2>&1"
