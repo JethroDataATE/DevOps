@@ -20,6 +20,9 @@ RUN yum -y install systemd initscripts
 RUN yum -y install java-1.8.0-openjdk-devel.x86_64
 ENV JAVA_HOME /usr/lib/jvm/jre
 
+# Install utilities
+RUN yum -y install which wget; yum clean all
+
 # install ssh
 RUN yum -y install openssh openssh-server openssl openssh-clients
 
