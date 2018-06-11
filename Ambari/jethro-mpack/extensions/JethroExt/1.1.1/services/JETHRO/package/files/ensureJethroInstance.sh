@@ -51,7 +51,7 @@ then
 
 else
    echo "Instance $instanceName not found."
-   echo "Creating instanse..."
+   echo "Creating instance..."
    test -d $cachePath || su - $jethroUser -c "mkdir -p $cachePath"
    su - $jethroUser -c "JethroAdmin create-instance $instanceName -storage-path=$storagePath -cache-path=$cachePath -cache-size=$cacheSize"
    resetInstanceServicesConfig
